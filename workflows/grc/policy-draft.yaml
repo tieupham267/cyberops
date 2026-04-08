@@ -1,0 +1,68 @@
+name: policy-draft
+title: Soạn thảo chính sách/quy trình bảo mật
+description: >
+  Soạn thảo tài liệu quản trị bảo mật: policy, standard, procedure, guideline.
+  Theo template chuẩn với document control, map sang framework controls.
+category: grc
+
+agent: grc-advisor
+skills:
+  - compliance-frameworks
+
+input:
+  - field: document_type
+    prompt: "Loại tài liệu?"
+    type: choice
+    options: [Policy, Standard, Procedure, Guideline]
+    required: true
+  - field: topic
+    prompt: "Chủ đề? (Access Control, Incident Response, Data Classification, BYOD, Remote Work, ...)"
+    type: text
+    required: true
+  - field: framework_ref
+    prompt: "Framework tham chiếu?"
+    type: choice
+    options: [ISO 27001, NIST CSF, CIS Controls, Vietnamese regulations, Không cần]
+    required: false
+    default: ISO 27001
+  - field: audience
+    prompt: "Đối tượng áp dụng?"
+    type: choice
+    options: [All staff, IT/Engineering, Developers, Management, Khác]
+    required: true
+  - field: existing_doc
+    prompt: "Có template/policy cũ cần cập nhật không? (trỏ đến file nếu có)"
+    type: file
+    required: false
+
+output:
+  format: policy-template
+  sections:
+    - document-control
+    - purpose-scope
+    - policy-statements
+    - roles-responsibilities
+    - compliance-enforcement
+    - related-documents
+    - revision-history
+  language: vi
+
+keywords:
+  - policy
+  - chính sách
+  - procedure
+  - quy trình
+  - standard
+  - guideline
+  - hướng dẫn
+  - soạn thảo
+triggers:
+  - "soạn policy"
+  - "viết chính sách"
+  - "tạo quy trình"
+  - "draft policy"
+priority: 3
+
+tags: [grc, policy, documentation]
+version: "1.0.0"
+author: secops-team

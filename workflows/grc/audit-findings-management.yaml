@@ -1,0 +1,161 @@
+name: audit-findings-management
+title: Quản lý findings sau audit / kiểm tra
+description: >
+  Sau khi nhận audit report hoặc kết luận kiểm tra: phân loại findings,
+  lập kế hoạch remediation, track tiến độ, chuẩn bị closure evidence,
+  báo cáo follow-up. Áp dụng cho tất cả loại audit/kiểm tra.
+category: grc
+
+chain:
+  - agent: grc-advisor
+    skills:
+      - compliance-frameworks
+      - vietnam-regulations
+      - document-drafting
+    task: >
+      **Step 1: Findings Classification & Analysis**
+
+      1. Đọc audit report / kết luận kiểm tra
+      2. Phân loại từng finding:
+         - Severity: Major Nonconformity / Minor Nonconformity / Observation / Opportunity for Improvement
+         - Category: Policy / Process / Technical / People / Documentation
+         - Framework control mapping (ISO 27001 control / PCI DSS requirement / TT 09 điều khoản)
+         - Regulatory implication: có vi phạm pháp luật không? (NĐ 85, TT 09, Luật ANM)
+
+      3. Root cause analysis cho mỗi finding:
+         - Tại sao xảy ra? (không có process / có nhưng không tuân thủ / resource thiếu / awareness thiếu)
+         - Có systemic issue không? (nhiều findings cùng root cause)
+
+      4. Tạo findings register:
+         - Finding ID, description, severity, category
+         - Root cause, affected controls
+         - Regulatory reference
+         - Deadline (nếu auditor/regulator đặt)
+    output_key: findings_analysis
+  - agent: risk-assessor
+    skills:
+      - risk-assessment
+    task: >
+      **Step 2: Remediation Planning**
+
+      Từ findings analysis:
+      1. Prioritize remediation:
+         - Major findings → fix đầu tiên (thường có deadline cứng)
+         - Minor findings → fix trong cycle tiếp theo
+         - Observations → improve khi có resource
+         - Regulatory violations → fix NGAY (risk bị phạt)
+
+      2. Remediation plan cho mỗi finding:
+         - Corrective action: fix immediate issue
+         - Preventive action: ngăn tái diễn
+         - Owner (map từ org_mapping)
+         - Deadline
+         - Evidence cần để close finding
+         - Budget/resource estimate
+
+      3. Dependencies và sequencing:
+         - Finding A cần fix trước B?
+         - Resource conflicts?
+         - Quick wins vs long-term projects
+
+      4. Risk assessment:
+         - Risk nếu finding không được close đúng hạn
+         - Impact lên certification/license
+    output_key: remediation_plan
+  - agent: ciso-fintech
+    skills:
+      - document-drafting
+      - compliance-frameworks
+    task: >
+      **Step 3: Tracking & Reporting**
+
+      1. Findings tracker template:
+         - Bảng tracking: finding ID, description, severity, owner,
+           corrective action, deadline, status, evidence, closure date
+         - Dashboard metrics: total findings, open/closed, overdue, by severity
+
+      2. Follow-up báo cáo cho auditor/regulator:
+         - Summary: X findings received, Y closed, Z in progress
+         - Per-finding: action taken, evidence, closure status
+         - Request for closure (nếu applicable)
+
+      3. Executive report:
+         - Tổng quan kết quả audit
+         - Critical findings và impact
+         - Remediation progress
+         - Budget cần thiết
+         - Timeline to full closure
+
+      4. Lessons learned:
+         - Gaps trong preparation nên cải thiện
+         - Process improvements
+         - Updates cần cho security roadmap
+         - Input cho next audit cycle
+    output_key: tracking_and_reporting
+
+input:
+  - field: audit_report
+    prompt: "Audit report / kết luận kiểm tra? (paste nội dung hoặc trỏ file)"
+    type: multiline
+    required: true
+  - field: audit_type
+    prompt: "Loại audit vừa qua?"
+    type: choice
+    options:
+      - PCI-DSS
+      - ISO 27001
+      - SOC 2
+      - "NHNN — kiểm tra định kỳ"
+      - "NHNN — kiểm tra đột xuất"
+      - Internal audit
+      - Khác
+    required: true
+  - field: auditor
+    prompt: "Đơn vị audit / kiểm tra?"
+    type: text
+    required: true
+  - field: deadline
+    prompt: "Deadline remediation (nếu auditor/regulator quy định)?"
+    type: text
+    required: false
+  - field: previous_findings
+    prompt: "Có findings từ lần trước chưa close không?"
+    type: multiline
+    required: false
+
+output:
+  format: findings-management-package
+  sections:
+    - findings-register
+    - severity-classification
+    - root-cause-analysis
+    - remediation-plan
+    - priority-matrix
+    - findings-tracker-template
+    - follow-up-report-template
+    - executive-summary
+    - lessons-learned
+  language: vi
+
+keywords:
+  - findings
+  - audit findings
+  - remediation
+  - corrective action
+  - nonconformity
+  - kết luận kiểm tra
+  - khắc phục
+  - follow-up
+  - closure
+triggers:
+  - "audit findings"
+  - "kết quả audit"
+  - "kết luận kiểm tra"
+  - "findings management"
+  - "khắc phục findings"
+  - "nhận được audit report"
+priority: 2
+
+tags: [grc, audit, findings, remediation, tracking]
+version: "1.0.0"
+author: secops-team

@@ -1,0 +1,56 @@
+name: vuln-report
+title: Phân tích vulnerability scan và tạo báo cáo
+description: >
+  Phân tích kết quả vulnerability scan từ Nessus, Qualys, OpenVAS, Burp, Trivy.
+  Deduplicate, risk-based prioritization (SSVC), remediation tracker, executive dashboard.
+category: soc
+
+agent: vuln-manager
+skills: []
+
+input:
+  - field: scan_results
+    prompt: "Cung cấp scan results (file CSV/JSON/XML, hoặc paste trực tiếp)"
+    type: file
+    required: true
+  - field: scanner
+    prompt: "Scanner nào?"
+    type: choice
+    options: [Nessus, Qualys, OpenVAS, Burp Suite, Trivy, npm audit, Khác]
+    required: true
+  - field: scope
+    prompt: "Scope scan?"
+    type: choice
+    options: [Internal network, External, Web application, Container, Cloud, Khác]
+    required: true
+
+output:
+  format: vuln-analysis-report
+  sections:
+    - deduplicated-findings
+    - risk-prioritization
+    - remediation-tracker
+    - executive-dashboard
+    - top5-critical-deep-dive
+    - sla-compliance
+  language: bilingual
+
+keywords:
+  - vulnerability
+  - vuln scan
+  - nessus
+  - qualys
+  - trivy
+  - cve
+  - patch
+  - lỗ hổng
+  - quét lỗ hổng
+triggers:
+  - "phân tích scan"
+  - "vuln report"
+  - "kết quả quét lỗ hổng"
+priority: 2
+
+tags: [soc, vulnerability, scan]
+version: "1.0.0"
+author: secops-team

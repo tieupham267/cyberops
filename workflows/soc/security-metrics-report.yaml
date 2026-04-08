@@ -1,0 +1,85 @@
+name: security-metrics-report
+title: Báo cáo Security Metrics / KPI
+description: >
+  Tạo báo cáo security metrics định kỳ (monthly/quarterly).
+  SOC KPIs, vulnerability metrics, incident trends, compliance status.
+  2 versions: technical (cho security team) + executive (cho leadership).
+category: soc
+
+chain:
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Tạo security operations metrics:
+      1. Alert volume, classification breakdown (TP/FP/BTP)
+      2. MTTD (Mean Time to Detect), MTTR (Mean Time to Respond)
+      3. Incident count by severity and type
+      4. Detection coverage (MITRE ATT&CK heat map)
+      5. Threat hunting findings summary
+      6. Top 10 alert sources
+      Tạo SIEM queries để pull data cho từng metric.
+    output_key: soc_metrics
+  - agent: ciso-fintech
+    skills:
+      - risk-assessment
+    task: >
+      Tạo executive security report:
+      1. Security posture summary (1 paragraph)
+      2. Key risk changes since last report
+      3. Top 5 risks with trend (↑↓→)
+      4. Compliance status dashboard
+      5. Budget utilization (nếu có data)
+      6. Recommendations for leadership
+      Focus: business impact, risk appetite, investment justification.
+    output_key: executive_report
+
+input:
+  - field: report_period
+    prompt: "Kỳ báo cáo?"
+    type: choice
+    options: [Monthly, Quarterly, Annual, Custom]
+    required: true
+  - field: period_dates
+    prompt: "Thời gian cụ thể? (e.g., 01/03/2026 - 31/03/2026)"
+    type: text
+    required: true
+  - field: audience
+    prompt: "Đối tượng báo cáo?"
+    type: choice
+    options: [Security team only, Management, Board/C-level, Tất cả (multi-version)]
+    required: true
+    default: "Tất cả (multi-version)"
+
+output:
+  format: security-metrics-package
+  sections:
+    - soc-operations-metrics
+    - siem-queries-for-data
+    - vulnerability-metrics
+    - incident-trend-analysis
+    - detection-coverage
+    - executive-summary
+    - risk-trend-dashboard
+    - recommendations
+  language: vi
+
+keywords:
+  - metrics
+  - KPI
+  - report
+  - báo cáo
+  - dashboard
+  - monthly report
+  - security posture
+  - SOC metrics
+triggers:
+  - "báo cáo security"
+  - "security metrics"
+  - "SOC KPI"
+  - "monthly report"
+  - "báo cáo tháng"
+priority: 3
+
+tags: [soc, metrics, reporting, executive]
+version: "1.0.0"
+author: secops-team

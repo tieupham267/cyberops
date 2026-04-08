@@ -1,0 +1,79 @@
+name: threat-hunt
+title: Khởi tạo phiên Threat Hunting
+description: >
+  Structured threat hunting session: hypothesis-driven, IOC-driven, hoặc anomaly-driven.
+  Tạo hunting plan, queries cho SIEM, execute, document findings.
+category: soc
+
+chain:
+  - agent: threat-analyst
+    skills: []
+    task: >
+      Xây dựng hunting hypothesis dựa trên:
+      1. Threat intelligence hiện tại (advisories gần đây, TTPs trending)
+      2. MITRE ATT&CK techniques chưa có detection coverage
+      3. Yếu điểm trong tech stack (đọc company-profile.yaml)
+      Tạo hypothesis statement, data sources cần, expected findings.
+    output_key: hypothesis
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Từ hypothesis, tạo hunting queries cụ thể cho SIEM
+      (dựa vào company-profile.yaml — OpenSearch/Splunk/etc):
+      1. Queries cho từng data source
+      2. Baseline normal behavior vs anomaly indicators
+      3. Pivot queries khi tìm thấy leads
+      4. False positive filtering criteria
+      Kết thúc: document findings, tạo detection rules mới nếu phát hiện gap.
+    output_key: hunting_execution
+
+input:
+  - field: hunt_type
+    prompt: "Loại threat hunt?"
+    type: choice
+    options: [Hypothesis-driven (MITRE ATT&CK), IOC-driven (từ threat intel), Anomaly-driven (baseline deviation), Khác]
+    required: true
+  - field: focus_area
+    prompt: "Focus area? (technique cụ thể, threat actor, hệ thống, hoặc để trống để suggest)"
+    type: text
+    required: false
+  - field: data_sources
+    prompt: "Data sources có sẵn? (firewall, endpoint, proxy, DNS, GitLab, etc.)"
+    type: multiline
+    required: false
+    auto_from: context/company-profile.yaml
+  - field: time_range
+    prompt: "Khoảng thời gian hunt? (last 7d, 30d, custom)"
+    type: text
+    required: true
+    default: "30 ngày gần nhất"
+
+output:
+  format: threat-hunt-report
+  sections:
+    - hypothesis
+    - data-sources-used
+    - hunting-queries
+    - findings
+    - new-detection-rules
+    - recommendations
+  language: bilingual
+
+keywords:
+  - threat hunt
+  - hunting
+  - threat hunting
+  - proactive
+  - hypothesis
+  - anomaly
+  - tìm kiếm mối đe dọa
+triggers:
+  - "threat hunt"
+  - "threat hunting"
+  - "hunting session"
+  - "proactive hunt"
+priority: 2
+
+tags: [soc, threat-hunting, proactive]
+version: "1.0.0"
+author: secops-team

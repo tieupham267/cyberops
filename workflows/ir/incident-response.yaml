@@ -1,0 +1,69 @@
+name: incident-response
+title: Khởi tạo quy trình ứng phó sự cố
+description: >
+  Quy trình ứng phó sự cố bảo mật đầy đủ: triage, containment, eradication,
+  recovery. Tạo checklist, template thông báo, evidence collection guide.
+  Tự động nhắc yêu cầu pháp lý VN (72h NĐ 13/2023, VNCERT/CC).
+category: ir
+
+agent: incident-commander
+skills:
+  - incident-response
+
+input:
+  - field: incident_type
+    prompt: "Loại sự cố?"
+    type: choice
+    options: [Ransomware, BEC, Data Breach, Malware, DDoS, Account Compromise, CI/CD Compromise, Khác]
+    required: true
+  - field: detection_time
+    prompt: "Thời điểm phát hiện?"
+    type: text
+    required: true
+  - field: affected_systems
+    prompt: "Hệ thống/dữ liệu bị ảnh hưởng?"
+    type: multiline
+    required: true
+  - field: severity
+    prompt: "Mức độ nghiêm trọng ước tính?"
+    type: choice
+    options: [CRITICAL, HIGH, MEDIUM, LOW]
+    required: true
+  - field: status
+    prompt: "Sự cố đang diễn ra hay đã được ngăn chặn?"
+    type: choice
+    options: [Đang diễn ra, Đã ngăn chặn, Chưa rõ]
+    required: true
+
+output:
+  format: incident-response-plan
+  sections:
+    - incident-summary
+    - immediate-actions-checklist
+    - internal-notification-template
+    - evidence-collection-guide
+    - timeline-tracker
+    - legal-requirements
+  language: vi
+
+keywords:
+  - incident
+  - sự cố
+  - breach
+  - ransomware
+  - malware
+  - ddos
+  - compromise
+  - ứng phó
+  - containment
+triggers:
+  - "có sự cố"
+  - "incident response"
+  - "bị tấn công"
+  - "bị hack"
+  - "data breach"
+priority: 1
+
+tags: [ir, critical, compliance]
+version: "1.0.0"
+author: secops-team

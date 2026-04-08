@@ -1,0 +1,85 @@
+name: threat-advisory
+title: Xử lý threat advisory / threat intelligence report
+description: >
+  Xử lý advisory từ CERT, vendor, hoặc threat intel feed. Enrichment IOCs,
+  MITRE ATT&CK mapping, tạo detection rules, đánh giá relevance, brief cho team và leadership.
+  Multi-agent: threat-analyst → soc-analyst → ciso-fintech.
+category: advisory
+
+chain:
+  - agent: threat-analyst
+    skills: []
+    task: >
+      Phân tích advisory: extract IOCs, enrich qua workflow enrichment,
+      map MITRE ATT&CK, profile threat actor, đánh giá confidence level.
+    output_key: threat_intel
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Từ IOCs và TTPs đã phân tích, tạo detection rules (Sigma, Snort/Suricata,
+      SIEM queries) và threat hunting hypotheses.
+    output_key: detection_rules
+  - agent: ciso-fintech
+    skills:
+      - risk-assessment
+    task: >
+      Đánh giá relevance cho tổ chức, risk assessment, tạo executive brief
+      với business impact và recommended actions cho leadership.
+    output_key: executive_brief
+
+input:
+  - field: advisory_content
+    prompt: "Paste nội dung advisory hoặc trỏ đến file"
+    type: multiline
+    required: true
+  - field: source
+    prompt: "Nguồn advisory?"
+    type: text
+    required: true
+    default: "CERT/Vendor Advisory"
+  - field: our_tech_stack
+    prompt: "Tech stack liên quan của tổ chức? (tự động từ company-profile.yaml nếu đã điền)"
+    type: multiline
+    required: false
+    auto_from: context/company-profile.yaml
+  - field: audience
+    prompt: "Output cho ai?"
+    type: choice
+    options: [SOC Team only, SOC + Engineering, Full (SOC + Engineering + Leadership)]
+    required: true
+    default: "Full (SOC + Engineering + Leadership)"
+
+output:
+  format: advisory-response-package
+  sections:
+    - ioc-enrichment-report
+    - mitre-attack-mapping
+    - detection-rules
+    - threat-hunting-hypotheses
+    - relevance-assessment
+    - executive-brief
+    - action-items-by-team
+  language: bilingual
+
+keywords:
+  - advisory
+  - threat intel
+  - ioc
+  - indicator
+  - campaign
+  - apt
+  - cảnh báo
+  - threat intelligence
+  - cert
+  - flash alert
+triggers:
+  - "có advisory mới"
+  - "nhận được threat intel"
+  - "xử lý advisory"
+  - "process advisory"
+  - "threat intelligence report"
+priority: 1
+
+tags: [advisory, threat-intel, multi-agent, critical]
+version: "1.0.0"
+author: secops-team

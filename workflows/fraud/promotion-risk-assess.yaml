@@ -1,0 +1,123 @@
+name: promotion-risk-assess
+title: Đánh giá rủi ro bảo mật & gian lận cho chương trình khuyến mãi
+description: >
+  Đánh giá rủi ro fraud và bảo mật cho CTKM/promotion trước khi launch.
+  Multi-agent: fraud-analyst đánh giá fraud vectors → soc-analyst tạo detection rules
+  → grc-advisor check regulatory (NĐ 13/2023, PCI DSS).
+  Dùng khi MKT/Business đề xuất CTKM mới cần security review.
+category: fraud
+
+chain:
+  - agent: fraud-analyst
+    skills:
+      - payment-fraud
+    task: >
+      1. Decompose promotion: giá trị, điều kiện, kênh, giới hạn, đối tác
+      2. Identify tất cả fraud vectors: refund abuse, multi-card, collusion,
+         bot abuse, stolen card, virtual card, merchant fraud, promo stacking
+      3. Risk scoring 5×5 cho mỗi vector
+      4. Worst case financial estimation
+      5. Recommend controls: preventive (design changes) + detective (monitoring rules)
+      6. Tạo promotion risk assessment checklist
+    output_key: fraud_assessment
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Từ fraud vectors đã xác định, tạo detection rules cho SIEM
+      (dựa vào company-profile.yaml để chọn đúng platform — OpenSearch/Splunk/etc):
+      1. Velocity rules (card, terminal, device)
+      2. Refund pattern rules
+      3. Multi-card / multi-device rules
+      4. Threshold clustering rules
+      5. Collusion indicators
+      Bao gồm queries cụ thể + alert thresholds.
+    output_key: detection_rules
+  - agent: grc-advisor
+    skills:
+      - vietnam-regulations
+      - compliance-frameworks
+    task: >
+      Đánh giá regulatory compliance cho CTKM:
+      1. NĐ 13/2023: dữ liệu giao dịch = DLCN nhạy cảm? consent trong T&C?
+         data sharing agreement giữa các bên?
+      2. PCI DSS: card data handling trong reconciliation, merchant compliance
+      3. TT 09/2020: rủi ro CNTT liên quan payment
+      4. Recommendation cho T&C, hợp đồng, DPA
+    output_key: regulatory
+
+input:
+  - field: promotion_detail
+    prompt: "Nội dung CTKM? (paste brief từ MKT/Business)"
+    type: multiline
+    required: true
+  - field: promo_value
+    prompt: "Giá trị ưu đãi? (VNĐ hoặc %)"
+    type: text
+    required: true
+  - field: min_spend
+    prompt: "Điều kiện chi tiêu tối thiểu?"
+    type: text
+    required: true
+  - field: payment_method
+    prompt: "Phương thức thanh toán?"
+    type: choice
+    options: [Thẻ Visa, Thẻ Mastercard, Thẻ JCB, Thẻ nội địa (Napas), E-wallet (Momo/ZaloPay), QR Code, Tất cả, Khác]
+    required: true
+  - field: channels
+    prompt: "Kênh giao dịch?"
+    type: choice
+    options: [POS only, Online only, Cả POS + Online, App only]
+    required: true
+  - field: limits
+    prompt: "Giới hạn? (per card, per customer, per day, total budget)"
+    type: multiline
+    required: true
+  - field: duration
+    prompt: "Thời gian CTKM?"
+    type: text
+    required: true
+  - field: partners
+    prompt: "Đối tác tham gia? (merchant, card network, payment gateway)"
+    type: multiline
+    required: false
+  - field: total_budget
+    prompt: "Tổng budget CTKM? (để so sánh worst case)"
+    type: text
+    required: false
+
+output:
+  format: promotion-risk-assessment
+  sections:
+    - promotion-analysis
+    - fraud-risk-register
+    - risk-matrix
+    - worst-case-estimation
+    - recommended-controls
+    - fraud-detection-rules
+    - regulatory-considerations
+    - promotion-checklist
+    - executive-summary
+  language: vi
+
+keywords:
+  - promotion
+  - khuyến mãi
+  - CTKM
+  - campaign
+  - fraud
+  - gian lận
+  - ưu đãi
+  - cashback
+  - discount
+  - voucher
+triggers:
+  - "đánh giá CTKM"
+  - "review khuyến mãi"
+  - "promotion risk"
+  - "fraud risk cho CTKM"
+  - "MKT đặt hàng"
+priority: 2
+
+tags: [fraud, promotion, payment, multi-agent]
+version: "1.0.0"
+author: secops-team

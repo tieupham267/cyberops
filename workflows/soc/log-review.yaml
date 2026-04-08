@@ -1,0 +1,55 @@
+name: log-review
+title: Rà soát log định kỳ
+description: >
+  Periodic log review cho compliance và security monitoring.
+  Tạo queries, checklist, findings report. Yêu cầu bởi NĐ 85/2016 cấp 3+
+  và TT 09/2020.
+category: soc
+
+agent: soc-analyst
+skills: []
+
+input:
+  - field: review_scope
+    prompt: "Scope log review?"
+    type: choice
+    options: [Firewall logs, Authentication/access logs, SIEM alerts summary, Database audit logs, Application logs, Tất cả]
+    required: true
+  - field: review_period
+    prompt: "Khoảng thời gian review?"
+    type: text
+    required: true
+    default: "Tháng trước"
+  - field: focus_areas
+    prompt: "Focus areas? (failed logins, privilege escalation, data access, policy violations, hoặc để trống cho general review)"
+    type: multiline
+    required: false
+
+output:
+  format: log-review-report
+  sections:
+    - review-scope-summary
+    - queries-executed
+    - findings-by-category
+    - anomalies-detected
+    - compliance-checklist
+    - recommendations
+  language: vi
+
+keywords:
+  - log review
+  - rà soát log
+  - audit log
+  - log analysis
+  - periodic review
+  - compliance log
+triggers:
+  - "review log"
+  - "rà soát log"
+  - "log audit"
+  - "kiểm tra log"
+priority: 3
+
+tags: [soc, log-review, compliance, periodic]
+version: "1.0.0"
+author: secops-team

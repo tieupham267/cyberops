@@ -1,0 +1,62 @@
+name: pipeline-review
+title: Review bảo mật CI/CD pipeline
+description: >
+  Security review cho CI/CD pipelines: GitHub Actions, GitLab CI, Jenkins, ArgoCD.
+  Kiểm tra secrets management, permissions, supply chain, container security.
+category: devsecops
+
+agent: devsecops
+skills: []
+
+input:
+  - field: platform
+    prompt: "CI/CD platform?"
+    type: choice
+    options: [GitHub Actions, GitLab CI, Jenkins, ArgoCD, FluxCD, Khác]
+    required: true
+  - field: review_target
+    prompt: "Đối tượng review? (pipeline config file, K8s manifests, Dockerfile, ...)"
+    type: multiline
+    required: true
+  - field: context
+    prompt: "Bối cảnh? (routine review, incident response, compliance audit)"
+    type: choice
+    options: [Routine review, Incident response, Compliance audit]
+    required: true
+  - field: related_advisory
+    prompt: "Có advisory hoặc IOCs liên quan không? (paste nếu có)"
+    type: multiline
+    required: false
+
+output:
+  format: pipeline-security-review
+  sections:
+    - security-findings
+    - mitre-mapping
+    - hardening-recommendations
+    - detection-rules
+    - compliance-mapping
+  language: bilingual
+
+keywords:
+  - cicd
+  - ci/cd
+  - pipeline
+  - github actions
+  - gitlab ci
+  - jenkins
+  - argocd
+  - container
+  - kubernetes
+  - docker
+  - supply chain
+triggers:
+  - "review pipeline"
+  - "kiểm tra cicd"
+  - "pipeline security"
+  - "review ci/cd"
+priority: 2
+
+tags: [devsecops, cicd, container, k8s]
+version: "1.0.0"
+author: secops-team

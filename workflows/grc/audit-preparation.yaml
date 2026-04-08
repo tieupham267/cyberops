@@ -1,0 +1,169 @@
+name: audit-preparation
+title: Chuẩn bị cho kỳ audit / đánh giá tuân thủ
+description: >
+  Chuẩn bị toàn diện cho kỳ audit định kỳ: PCI-DSS, ISO 27001, SOC 2,
+  hoặc đánh giá NHNN. Bao gồm: audit readiness assessment, evidence
+  collection checklist, gap remediation plan, pre-audit dry run,
+  stakeholder briefing. Multi-agent chain cho từng phase.
+category: grc
+
+chain:
+  - agent: grc-advisor
+    skills:
+      - compliance-frameworks
+      - vietnam-regulations
+      - itsm-reference
+      - document-drafting
+    task: >
+      **Phase 1: Audit Scoping & Readiness Assessment**
+
+      1. Xác định scope audit:
+         - Framework nào? (PCI-DSS v4.0 / ISO 27001:2022 / SOC 2 / TT 09/2020 / NĐ 85/2016)
+         - Scope: toàn bộ hay specific systems/processes?
+         - Auditor: internal / external / regulatory (NHNN)?
+         - Timeline: khi nào audit? Còn bao lâu để chuẩn bị?
+
+      2. Readiness assessment:
+         - Đọc company-profile.yaml → xác định controls hiện có
+         - Map controls hiện có vs yêu cầu framework
+         - Scoring: Ready / Partial / Not Ready cho từng control domain
+         - Identify critical gaps cần remediate trước audit
+
+      3. Tạo evidence collection checklist:
+         - Liệt kê TẤT CẢ evidence cần cho từng control
+         - Loại evidence: document, screenshot, log, config, interview
+         - Owner cho từng evidence item
+         - Status: collected / pending / not available
+
+      4. Tạo audit readiness scorecard:
+         - Overall readiness %
+         - Per-domain readiness
+         - Critical findings cần fix trước audit
+         - Risk areas auditor có thể focus
+    output_key: readiness_assessment
+  - agent: risk-assessor
+    skills:
+      - risk-assessment
+    task: >
+      **Phase 2: Gap Prioritization & Remediation Plan**
+
+      Từ readiness assessment:
+      1. Prioritize gaps theo:
+         - Severity nếu bị finding (major nonconformity vs minor vs observation)
+         - Effort to fix (quick fix vs project)
+         - Likelihood auditor sẽ kiểm tra
+         - Dependency (fix A trước mới fix được B)
+
+      2. Tạo remediation plan:
+         - Mỗi gap: action, owner, deadline, status
+         - Quick wins (fix trong 1-2 tuần)
+         - Medium term (fix trong 1-2 tháng)
+         - Accept risk (items không fix kịp → chuẩn bị giải trình)
+
+      3. Tạo risk register cho audit:
+         - Risks nếu không pass audit (regulatory penalty, business impact)
+         - Residual risks sau remediation
+    output_key: remediation_plan
+  - agent: ciso-fintech
+    skills:
+      - document-drafting
+      - security-maturity
+    task: >
+      **Phase 3: Stakeholder Briefing & Logistics**
+
+      1. Pre-audit briefing cho team:
+         - Scope, timeline, auditor info
+         - Roles: ai trả lời interview, ai cung cấp evidence, ai escort
+         - Do's and don'ts khi nói chuyện với auditor
+         - Key messages (strengths to highlight)
+
+      2. Evidence organization guide:
+         - Folder structure cho evidence
+         - Naming convention
+         - Evidence quality checklist (dated, complete, relevant)
+
+      3. Executive summary cho leadership:
+         - Readiness status
+         - Critical gaps và remediation status
+         - Budget/resource needs
+         - Risk if audit fails
+
+      4. Audit day logistics:
+         - Schedule (opening meeting, interviews, walk-through, closing)
+         - Room/system access preparation
+         - Contact list
+    output_key: audit_logistics
+
+input:
+  - field: audit_type
+    prompt: "Loại audit?"
+    type: choice
+    options:
+      - PCI-DSS v4.0
+      - ISO 27001:2022 (certification / surveillance / re-certification)
+      - SOC 2 Type II
+      - "NHNN — Đánh giá ATTT theo TT 09/2020"
+      - "NHNN — Đánh giá cấp độ ATTT theo NĐ 85/2016 + TT 12/2022"
+      - Internal audit
+      - Khác
+    required: true
+  - field: audit_date
+    prompt: "Thời gian dự kiến audit?"
+    type: text
+    required: true
+  - field: auditor
+    prompt: "Đơn vị audit?"
+    type: text
+    required: true
+  - field: scope
+    prompt: "Scope audit? (toàn bộ / hệ thống cụ thể / process cụ thể)"
+    type: multiline
+    required: true
+  - field: previous_findings
+    prompt: "Findings từ audit lần trước? (paste hoặc trỏ file nếu có)"
+    type: multiline
+    required: false
+  - field: preparation_time
+    prompt: "Còn bao lâu để chuẩn bị?"
+    type: text
+    required: true
+
+output:
+  format: audit-preparation-package
+  sections:
+    - audit-scope-summary
+    - readiness-scorecard
+    - evidence-collection-checklist
+    - gap-analysis
+    - remediation-plan-prioritized
+    - previous-findings-status
+    - stakeholder-briefing
+    - evidence-organization-guide
+    - audit-day-logistics
+    - executive-summary
+  language: vi
+
+keywords:
+  - audit
+  - đánh giá
+  - kiểm toán
+  - PCI-DSS
+  - ISO 27001
+  - SOC 2
+  - certification
+  - surveillance
+  - preparation
+  - chuẩn bị audit
+  - evidence
+triggers:
+  - "chuẩn bị audit"
+  - "audit preparation"
+  - "sắp tới có audit"
+  - "chuẩn bị ISO 27001"
+  - "chuẩn bị PCI-DSS"
+  - "đánh giá NHNN"
+priority: 1
+
+tags: [grc, audit, compliance, preparation, multi-agent]
+version: "1.0.0"
+author: secops-team

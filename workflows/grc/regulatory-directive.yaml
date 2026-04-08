@@ -1,0 +1,209 @@
+name: regulatory-directive
+title: Xử lý công văn / chỉ thị / thông tư từ cơ quan quản lý
+description: >
+  Xử lý văn bản quy phạm hoặc chỉ đạo từ cơ quan quản lý (NHNN, Bộ TT&TT,
+  Bộ Công an, etc.). Bao gồm: xác minh phạm vi áp dụng, validate thông tin tổ chức,
+  extract nghĩa vụ liên quan CyberSec/IT, gap analysis vs hiện trạng, lập kế hoạch
+  hành động với deadline + owner + KPI.
+  Multi-agent chain: grc-advisor (verify scope + extract + gap) → ciso-fintech (action plan).
+category: grc
+
+chain:
+  - agent: grc-advisor
+    skills:
+      - vietnam-regulations
+      - compliance-frameworks
+      - document-drafting
+    task: >
+      **STEP 0 — PHẢI THỰC HIỆN TRƯỚC KHI LÀM BẤT KỲ ĐIỀU GÌ KHÁC**
+
+      0a. Đọc company-profile.yaml → kiểm tra các fields BẮT BUỘC phải có để xử lý văn bản:
+          - company.industry (ngành)
+          - company.products (sản phẩm/dịch vụ)
+          - Giấy phép hoạt động: TCTD? TGTT? Chi nhánh NHTM nước ngoài? Công ty CNTT ngân hàng?
+          (thông tin này có thể nằm trong company.products, compliance, hoặc notes)
+
+          NẾU THIẾU bất kỳ thông tin nào → DỪNG LẠI, hỏi user:
+          "Để xác định văn bản này có áp dụng cho tổ chức hay không, tôi cần biết:
+          - Công ty có giấy phép gì từ NHNN? (TCTD / Trung gian thanh toán / Không có)
+          - Loại hình hoạt động cụ thể? (ngân hàng / ví điện tử / cổng thanh toán / cho vay / khác)
+          - [Các thông tin khác còn thiếu trong profile]"
+
+          KHÔNG ĐƯỢC GIẢ ĐỊNH — nếu không chắc chắn → hỏi.
+
+      0b. Đọc văn bản → trích xuất PHẠM VI ÁP DỤNG (đối tượng điều chỉnh):
+          - Ai là đối tượng "để thực hiện"?
+          - Ai là đối tượng "để biết" / "để phối hợp"?
+          - Có điều kiện nào không? (quy mô, loại hình, giấy phép)
+
+      0c. ĐỐI CHIẾU phạm vi áp dụng vs thông tin tổ chức:
+
+          Kết quả phải là 1 trong 4:
+          | Kết luận | Hành động |
+          | THUỘC phạm vi (đối tượng trực tiếp) | Tiếp tục Step 1-2 đầy đủ |
+          | THUỘC phạm vi GIÁN TIẾP (đối tác/khách hàng thuộc phạm vi) | Tiếp tục nhưng focus vào items ảnh hưởng gián tiếp |
+          | KHÔNG THUỘC phạm vi | DỪNG — thông báo user, nêu lý do, khuyến nghị: lưu tham khảo hoặc phản hồi cơ quan gửi |
+          | KHÔNG ĐỦ THÔNG TIN để kết luận | DỪNG — hỏi user thông tin còn thiếu |
+
+          Trình bày kết luận phạm vi RÕ RÀNG với bằng chứng (trích dẫn điều khoản trong văn bản).
+
+      **CHỈ TIẾP TỤC STEP 0d NẾU KẾT LUẬN LÀ "THUỘC phạm vi"**
+
+      0d. KIỂM TRA VĂN BẢN THAM CHIẾU (Reference Check):
+          Đọc văn bản → xác định: văn bản này có REFERENCE hoặc ĐÍNH KÈM văn bản khác không?
+
+          Các dạng reference:
+          - Cover letter (công văn gửi kèm) → đính kèm kế hoạch/thông tư/quyết định
+          - Văn bản đôn đốc/nhắc nhở → reference văn bản gốc đã ban hành trước
+          - Văn bản sửa đổi/bổ sung → reference văn bản cần sửa
+          - Văn bản triển khai → reference nghị quyết/chỉ thị cấp trên
+
+          NẾU CÓ reference văn bản khác → HỎI USER:
+
+          "Văn bản này tham chiếu/đính kèm [tên văn bản gốc]. Tôi cần biết:
+          - Văn bản gốc [X] đã được tiếp nhận và xử lý tại tổ chức chưa?
+            ☐ Chưa tiếp nhận → Cần xử lý toàn bộ văn bản gốc
+            ☐ Đã tiếp nhận, đang triển khai → Cần review tiến độ, focus items chưa hoàn thành
+            ☐ Đã triển khai đầy đủ → Ghi nhận văn bản mới, chỉ xử lý yêu cầu bổ sung (nếu có)
+            ☐ Không rõ → Cần kiểm tra"
+
+          Dựa vào câu trả lời:
+          | Trạng thái văn bản gốc | Hành động |
+          | Chưa tiếp nhận | Xử lý văn bản gốc đầy đủ (Step 1-2) |
+          | Đang triển khai | Review tiến độ + focus items chưa hoàn thành + xử lý yêu cầu mới từ văn bản hiện tại |
+          | Đã hoàn thành | CHỈ xử lý yêu cầu MỚI/BỔ SUNG từ văn bản hiện tại (nếu có). Nếu không có yêu cầu mới → ghi nhận, lưu hồ sơ, KHÔNG tạo action plan trùng lặp |
+          | Không rõ | Hỏi user kiểm tra trước khi tiếp tục |
+
+          KHÔNG BAO GIỜ xử lý lại văn bản đã hoàn thành mà không có yêu cầu mới.
+
+      **CHỈ TIẾP TỤC STEP 1 SAU KHI HOÀN THÀNH 0a → 0b → 0c → 0d**
+
+      --- STEP 1: Extract Obligations ---
+
+      1. Đọc toàn bộ văn bản (công văn, kế hoạch, phụ lục)
+      2. Trích xuất TẤT CẢ nhiệm vụ liên quan đến CyberSec / ATTT / IT Security:
+         - Nhiệm vụ cụ thể (nội dung)
+         - Đơn vị chủ trì theo văn bản
+         - Đơn vị phối hợp
+         - Deadline / thời hạn hoàn thành
+         - KPI / chỉ số đánh giá kết quả
+         - Căn cứ giao nhiệm vụ (reference)
+      3. Phân loại nhiệm vụ:
+         - Directly applicable: áp dụng trực tiếp cho tổ chức
+         - Indirectly applicable: ảnh hưởng gián tiếp (cần theo dõi)
+         - Not applicable: không liên quan
+      4. Gap analysis vs hiện trạng (đọc company-profile.yaml):
+         - Nhiệm vụ nào đã đáp ứng?
+         - Nhiệm vụ nào chưa đáp ứng? (gap)
+         - Nhiệm vụ nào đang triển khai dở?
+         NẾU profile thiếu thông tin để đánh giá gap → đánh dấu [VERIFY] và liệt kê
+         câu hỏi cần xác nhận ở cuối output.
+      5. Map sang quy định hiện có trong skills/vietnam-regulations/:
+         NĐ 85/2016, TT 09/2020, TT 12/2022, NĐ 13/2023, etc.
+    output_key: obligation_analysis
+  - agent: ciso-fintech
+    skills:
+      - security-maturity
+      - compliance-frameworks
+    task: >
+      Từ obligation analysis, lập kế hoạch hành động:
+      1. Prioritize theo:
+         - Deadline ngắn nhất trước
+         - Risk nếu không tuân thủ (regulatory penalty, reputational)
+         - Effort (quick wins trước)
+      2. Assign owner theo org_mapping trong company-profile.yaml
+         (nếu org_mapping trống → dùng generic role + flag "cần xác định")
+      3. Mỗi action item:
+         - Nhiệm vụ gốc (reference từ văn bản)
+         - Hành động cụ thể tại tổ chức
+         - Owner (từ org_mapping)
+         - Deadline (từ văn bản hoặc đề xuất)
+         - KPI đo lường
+         - Status hiện tại (chưa bắt đầu / đang triển khai / đã hoàn thành)
+         - Budget estimate nếu cần
+      4. Executive summary cho leadership:
+         - Tóm tắt văn bản (2-3 câu)
+         - Phạm vi áp dụng và căn cứ (từ Step 0)
+         - Số lượng nhiệm vụ applicable
+         - Gaps chính
+         - Quyết định cần từ leadership (nếu có)
+      5. Tạo template báo cáo tiến độ (theo yêu cầu báo cáo định kỳ trong văn bản)
+    output_key: action_plan
+
+input:
+  - field: document
+    prompt: "Văn bản cần xử lý? (paste nội dung, trỏ file, hoặc đính kèm PDF)"
+    type: multiline
+    required: true
+  - field: issuing_authority
+    prompt: "Cơ quan ban hành?"
+    type: choice
+    options: [NHNN, Bộ TT&TT, Bộ Công an, Chính phủ, Ban Chỉ đạo Trung ương, Khác]
+    required: true
+  - field: document_type
+    prompt: "Loại văn bản?"
+    type: choice
+    options: [Kế hoạch, Công văn, Thông tư, Nghị định, Quyết định, Chỉ thị, Thông báo kết luận, Khác]
+    required: true
+  - field: our_role
+    prompt: "Vai trò của tổ chức? (đọc từ profile nếu có)"
+    type: choice
+    options:
+      - Đối tượng trực tiếp (TCTD, trung gian thanh toán)
+      - Đối tượng gián tiếp (doanh nghiệp trong ngành)
+      - Chưa rõ — cần xác minh
+      - Tham khảo (không thuộc đối tượng nhưng cần cập nhật)
+    required: true
+    default: "Chưa rõ — cần xác minh"
+    auto_from: context/company-profile.yaml
+  - field: focus_areas
+    prompt: "Lĩnh vực cần focus? (để trống = tự extract tất cả liên quan CyberSec)"
+    type: multiline
+    required: false
+    default: "An ninh mạng, bảo mật thông tin, an ninh dữ liệu, chuyển đổi số, phòng chống gian lận"
+
+output:
+  format: regulatory-directive-response
+  sections:
+    - scope-verification
+    - profile-validation
+    - document-summary
+    - obligation-extraction-table
+    - applicability-classification
+    - gap-analysis
+    - regulation-cross-reference
+    - action-plan-prioritized
+    - owner-assignment
+    - timeline-tracker
+    - executive-summary
+    - progress-report-template
+    - items-needing-input
+  language: vi
+
+keywords:
+  - công văn
+  - thông tư
+  - nghị định
+  - chỉ thị
+  - kế hoạch
+  - NHNN
+  - Bộ TT&TT
+  - Bộ Công an
+  - quy định mới
+  - regulatory
+  - directive
+  - compliance requirement
+  - nhiệm vụ
+triggers:
+  - "nhận được công văn"
+  - "công văn NHNN"
+  - "thông tư mới"
+  - "xử lý văn bản"
+  - "regulatory directive"
+  - "nhiệm vụ từ NHNN"
+  - "kế hoạch NHNN"
+priority: 1
+
+tags: [grc, regulatory, compliance, nhnn, directive, cross-department]
+version: "3.0.0"
+author: secops-team

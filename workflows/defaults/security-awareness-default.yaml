@@ -1,0 +1,59 @@
+name: security-awareness-default
+title: "[Default] Quy trình đào tạo nhận thức ATTT"
+description: >
+  Lập kế hoạch đào tạo nhận thức ATTT cho nhân viên theo
+  ISO 27001 A.6.3 và CIS Control 14. Bao gồm: needs assessment,
+  content plan, delivery, measurement.
+  Dùng khi chưa có quy trình awareness riêng.
+category: awareness
+type: default
+
+agent: awareness-designer
+skills: []
+
+input:
+  - field: audience
+    prompt: "Đối tượng đào tạo?"
+    type: choice
+    options: [Toàn bộ nhân viên, IT/Engineering, Management, Nhân viên mới, Department cụ thể]
+    required: true
+  - field: focus_topics
+    prompt: "Chủ đề trọng tâm? (phishing, password, data handling, social engineering, ...)"
+    type: multiline
+    required: false
+  - field: format
+    prompt: "Hình thức đào tạo?"
+    type: choice
+    options: [Online (e-learning), Workshop trực tiếp, Phishing simulation, Kết hợp, Recommend cho tôi]
+    required: true
+    default: "Recommend cho tôi"
+
+output:
+  format: awareness-plan
+  sections:
+    - needs-assessment
+    - training-plan
+    - content-outline
+    - delivery-schedule
+    - phishing-simulation-plan
+    - measurement-metrics
+    - reporting-template
+  language: vi
+
+keywords:
+  - awareness
+  - nhận thức
+  - đào tạo
+  - training
+  - phishing simulation
+  - security culture
+triggers:
+  - "đào tạo ATTT"
+  - "security awareness"
+  - "training plan"
+  - "lập kế hoạch đào tạo"
+priority: 3
+
+tags: [awareness, training, default, iso-27001]
+version: "1.0.0"
+author: secops-defaults

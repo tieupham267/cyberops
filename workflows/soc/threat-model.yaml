@@ -1,0 +1,57 @@
+name: threat-model
+title: Khởi tạo threat modeling session
+description: >
+  Threat modeling cho hệ thống/ứng dụng: STRIDE, PASTA, LINDDUN.
+  Decompose, identify threats, rate severity, propose mitigations.
+category: soc
+
+agent: threat-modeler
+skills: []
+
+input:
+  - field: target_system
+    prompt: "Hệ thống/ứng dụng cần threat model?"
+    type: text
+    required: true
+  - field: architecture
+    prompt: "Có architecture diagram hoặc DFD không? (trỏ đến file nếu có)"
+    type: file
+    required: false
+  - field: methodology
+    prompt: "Methodology?"
+    type: choice
+    options: [STRIDE, PASTA, LINDDUN, Recommend cho tôi]
+    required: true
+    default: "Recommend cho tôi"
+  - field: scope
+    prompt: "Scope: toàn bộ hệ thống hay component cụ thể?"
+    type: text
+    required: true
+
+output:
+  format: threat-model-report
+  sections:
+    - system-decomposition
+    - threat-identification
+    - severity-rating
+    - mitigations
+    - review-schedule
+  language: bilingual
+
+keywords:
+  - threat model
+  - stride
+  - pasta
+  - linddun
+  - dfd
+  - threat modeling
+  - mô hình mối đe dọa
+triggers:
+  - "threat model"
+  - "threat modeling"
+  - "mô hình mối đe dọa"
+priority: 2
+
+tags: [soc, architecture, threat-modeling]
+version: "1.0.0"
+author: secops-team

@@ -1,0 +1,115 @@
+name: supply-chain-advisory
+title: Xử lý advisory về supply chain compromise (npm, PyPI, Docker, etc.)
+description: >
+  Xử lý advisory về software supply chain attack: compromised packages, malicious
+  dependencies, trojanized libraries. Multi-agent chain bao gồm threat intel, DevSecOps
+  scan/remediation, SOC detection, và executive brief. Khác threat-advisory ở chỗ
+  có bước devsecops kiểm tra codebase, dependencies, CI/CD artifacts, build servers.
+category: advisory
+
+chain:
+  - agent: threat-analyst
+    skills: []
+    task: >
+      Phân tích advisory: extract IOCs (C2 domains/IPs, malicious packages, file
+      artifacts, hashes), map MITRE ATT&CK (supply chain focus: T1195, T1059, T1053),
+      profile threat actor, đánh giá confidence level. Phân loại: affected versions,
+      safe versions, malicious dependencies.
+    output_key: threat_intel
+  - agent: devsecops
+    skills: []
+    task: >
+      Từ threat intel, tạo hướng dẫn kiểm tra và remediation cho engineering team:
+      1. Lệnh scan cụ thể cho affected packages trong repos (grep, npm ls, pip list, etc.)
+      2. Kiểm tra lock files (package-lock.json, yarn.lock, Pipfile.lock) cho malicious versions
+      3. Kiểm tra CI/CD pipeline runs trong thời gian nhiễm — jobs nào đã install affected packages?
+      4. Kiểm tra RAT artifacts trên build servers, dev machines, production
+      5. Dependency audit: postinstall scripts, vendored dependencies
+      6. Remediation steps: downgrade/upgrade commands, cache cleanup, node_modules purge
+      7. Prevention: lockfile enforcement, dependency pinning, install script policies
+    output_key: devsecops_scan
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Từ IOCs đã phân tích, tạo detection rules cho SIEM (dựa vào company-profile.yaml
+      để chọn đúng platform), EDR IOC import, firewall block rules.
+      Thêm: hunt cho RAT artifacts trên endpoints, C2 beacon patterns,
+      DNS queries đến malicious domains.
+    output_key: detection_rules
+  - agent: ciso-fintech
+    skills:
+      - risk-assessment
+    task: >
+      Đánh giá relevance cho tổ chức (đọc company-profile.yaml), risk assessment,
+      tạo executive brief với business impact. Đánh giá: có dùng affected package không?
+      CI/CD có bị ảnh hưởng không? Credential rotation scope? Regulatory obligations?
+    output_key: executive_brief
+
+input:
+  - field: advisory_content
+    prompt: "Paste nội dung advisory hoặc trỏ đến file/URL"
+    type: multiline
+    required: true
+  - field: source
+    prompt: "Nguồn advisory?"
+    type: text
+    required: true
+    default: "Security Research / Vendor Advisory"
+  - field: ecosystem
+    prompt: "Ecosystem bị ảnh hưởng?"
+    type: choice
+    options: [npm, PyPI, Maven, Docker Hub, GitHub Actions, NuGet, RubyGems, Go modules, Khác]
+    required: true
+  - field: our_tech_stack
+    prompt: "Tech stack liên quan? (tự động từ company-profile.yaml nếu đã điền)"
+    type: multiline
+    required: false
+    auto_from: context/company-profile.yaml
+  - field: audience
+    prompt: "Output cho ai?"
+    type: choice
+    options: [SOC Team only, SOC + Engineering, Full (SOC + Engineering + Leadership)]
+    required: true
+    default: "Full (SOC + Engineering + Leadership)"
+
+output:
+  format: supply-chain-response-package
+  sections:
+    - ioc-enrichment-report
+    - mitre-attack-mapping
+    - affected-versions-safe-versions
+    - dependency-scan-commands
+    - cicd-audit-guide
+    - rat-artifact-check
+    - remediation-steps
+    - prevention-recommendations
+    - detection-rules
+    - threat-hunting-hypotheses
+    - executive-brief
+    - action-items-by-team
+  language: bilingual
+
+keywords:
+  - supply chain
+  - npm
+  - pypi
+  - package compromise
+  - malicious dependency
+  - dependency confusion
+  - trojan package
+  - postinstall
+  - typosquatting
+  - backdoor library
+  - compromised maintainer
+triggers:
+  - "supply chain attack"
+  - "npm package compromised"
+  - "malicious package"
+  - "dependency compromise"
+  - "tấn công chuỗi cung ứng"
+  - "package bị nhiễm"
+priority: 1
+
+tags: [advisory, supply-chain, devsecops, multi-agent, critical]
+version: "1.0.0"
+author: secops-team

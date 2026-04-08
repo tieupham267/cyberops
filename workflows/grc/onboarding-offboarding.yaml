@@ -1,0 +1,67 @@
+name: onboarding-offboarding
+title: Security checklist cho Onboarding / Offboarding nhân viên
+description: >
+  Tạo security checklist cho quy trình onboarding (nhận việc) và offboarding
+  (nghỉ việc/chuyển phòng). Đảm bảo cấp/thu hồi quyền truy cập đúng quy trình.
+  Liên phòng ban: HR + IT + CyberSec + Phòng ban nhân viên.
+category: grc
+
+agent: grc-advisor
+skills:
+  - compliance-frameworks
+  - vietnam-regulations
+
+input:
+  - field: process_type
+    prompt: "Loại quy trình?"
+    type: choice
+    options: [Onboarding (nhận việc), Offboarding (nghỉ việc), Transfer (chuyển phòng), Contractor onboarding, Contractor offboarding]
+    required: true
+  - field: role
+    prompt: "Vị trí/vai trò? (developer, finance, admin, management, etc.)"
+    type: text
+    required: true
+  - field: access_level
+    prompt: "Mức độ quyền truy cập?"
+    type: choice
+    options: [Standard user, Privileged (admin/root), Developer (source code), Finance (financial data), Executive]
+    required: true
+  - field: systems
+    prompt: "Hệ thống liên quan? (tự động từ profile nếu có)"
+    type: multiline
+    required: false
+    auto_from: context/company-profile.yaml
+
+output:
+  format: onboarding-offboarding-checklist
+  sections:
+    - checklist-by-department
+    - access-provisioning-deprovisioning
+    - security-briefing-requirements
+    - equipment-handling
+    - nda-compliance
+    - timeline-sla
+    - sign-off-template
+  language: vi
+
+keywords:
+  - onboarding
+  - offboarding
+  - nhận việc
+  - nghỉ việc
+  - chuyển phòng
+  - access provisioning
+  - cấp quyền
+  - thu hồi quyền
+triggers:
+  - "onboarding"
+  - "offboarding"
+  - "nhân viên mới"
+  - "nghỉ việc"
+  - "thu hồi quyền"
+  - "cấp quyền"
+priority: 3
+
+tags: [grc, access-control, hr, cross-department]
+version: "1.0.0"
+author: secops-team

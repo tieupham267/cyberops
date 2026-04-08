@@ -1,0 +1,78 @@
+name: data-breach-notification-default
+title: "[Default] Quy trình thông báo vi phạm dữ liệu cá nhân"
+description: >
+  Quy trình thông báo vi phạm DLCN theo NĐ 13/2023 Điều 23 (72 giờ).
+  Bao gồm: đánh giá phạm vi, chuẩn bị filing, thông báo chủ thể dữ liệu.
+  Dùng khi chưa có quy trình breach notification riêng.
+category: ir
+type: default
+
+chain:
+  - agent: incident-commander
+    skills:
+      - incident-response
+    task: >
+      Đánh giá phạm vi breach: loại DLCN bị ảnh hưởng (cơ bản vs nhạy cảm),
+      số lượng chủ thể, hệ thống liên quan. Xác định timeline 72 giờ.
+    output_key: breach_assessment
+  - agent: grc-advisor
+    skills:
+      - vietnam-regulations
+      - compliance-frameworks
+    task: >
+      Chuẩn bị filing theo NĐ 13/2023:
+      1. Thông báo cho Bộ Công an (Cục An ninh mạng) — template chuẩn
+      2. Thông báo cho chủ thể dữ liệu
+      3. Nếu fintech: báo cáo NHNN theo TT 09/2020 song song
+      Đánh giá: cần DPIA không? DPO đã involved chưa?
+    output_key: regulatory_filing
+
+input:
+  - field: breach_description
+    prompt: "Mô tả vi phạm dữ liệu?"
+    type: multiline
+    required: true
+  - field: data_types
+    prompt: "Loại DLCN bị ảnh hưởng?"
+    type: choice
+    options: [DLCN cơ bản (tên/sđt/email), DLCN nhạy cảm (tài chính/sức khỏe), Cả hai, Chưa xác định]
+    required: true
+  - field: affected_count
+    prompt: "Số lượng chủ thể bị ảnh hưởng (ước tính)?"
+    type: text
+    required: true
+  - field: discovery_time
+    prompt: "Thời điểm phát hiện? (để tính deadline 72h)"
+    type: text
+    required: true
+
+output:
+  format: breach-notification-package
+  sections:
+    - breach-assessment
+    - timeline-72h
+    - filing-bca-template
+    - data-subject-notification
+    - nhnn-report-template
+    - dpo-checklist
+    - remediation-plan
+  language: vi
+
+keywords:
+  - data breach
+  - rò rỉ dữ liệu
+  - vi phạm DLCN
+  - breach notification
+  - thông báo vi phạm
+  - 72 giờ
+  - NĐ 13
+triggers:
+  - "rò rỉ dữ liệu"
+  - "data breach notification"
+  - "thông báo vi phạm DLCN"
+  - "breach 72h"
+priority: 1
+
+tags: [ir, breach, compliance, default, nd-13-2023]
+version: "1.0.0"
+author: secops-defaults

@@ -1,0 +1,32 @@
+{
+  "name": "secops-toolkit",
+  "description": "Cybersecurity team toolkit — SOC, incident response, threat modeling, risk management, vulnerability management, GRC, fraud analysis, DevSecOps, security awareness, threat intelligence. 12 agents, 8 skills, hybrid orchestration with workflow templates. Aligned to ISO 27001, NIST CSF, MITRE ATT&CK, PCI DSS, and Vietnamese cybersecurity regulations.",
+  "version": "2.0.0",
+  "author": {
+    "name": "CyberSec Team"
+  },
+  "license": "MIT",
+  "agents": "./agents",
+  "skills": "./skills",
+  "hooks": "./hooks/hooks.json",
+  "commands": "./commands",
+  "keywords": [
+    "cybersecurity",
+    "soc",
+    "incident-response",
+    "threat-modeling",
+    "risk-management",
+    "vulnerability-management",
+    "grc",
+    "compliance",
+    "fraud-detection",
+    "devsecops",
+    "iso-27001",
+    "nist-csf",
+    "mitre-attack",
+    "pci-dss",
+    "security-awareness",
+    "threat-intelligence",
+    "vietnam-regulations"
+  ]
+}

@@ -1,0 +1,57 @@
+name: ciso-consult
+title: Tư vấn bảo mật cấp CISO cho fintech
+description: >
+  Tư vấn chiến lược bảo mật cho fintech Việt Nam: risk management, regulatory
+  compliance (PCI DSS, NHNN, NĐ 13/2023), security architecture, board reporting.
+category: grc
+
+agent: ciso-fintech
+skills:
+  - compliance-frameworks
+  - risk-assessment
+
+input:
+  - field: topic
+    prompt: "Vấn đề cần tư vấn? (rủi ro, tuân thủ, kiến trúc, sự cố, chiến lược)"
+    type: text
+    required: true
+  - field: company_context
+    prompt: "Bối cảnh công ty? (quy mô, sản phẩm: thanh toán/cho vay/ví điện tử/ngân hàng số)"
+    type: multiline
+    required: false
+  - field: audience
+    prompt: "Đối tượng nhận output?"
+    type: choice
+    options: [Technical team, Board/C-level, Regulatory, Cả hai tech + leadership]
+    required: true
+    default: "Cả hai tech + leadership"
+
+output:
+  format: ciso-advisory
+  sections:
+    - situation-assessment
+    - risk-analysis
+    - recommendations
+    - references
+  language: vi
+
+keywords:
+  - ciso
+  - fintech
+  - chiến lược
+  - strategy
+  - board
+  - risk appetite
+  - tư vấn bảo mật
+  - nhnn
+  - pci dss
+triggers:
+  - "tư vấn ciso"
+  - "hỏi ciso"
+  - "tư vấn chiến lược bảo mật"
+  - "fintech security"
+priority: 2
+
+tags: [grc, fintech, strategy, leadership]
+version: "1.0.0"
+author: secops-team

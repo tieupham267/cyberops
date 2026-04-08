@@ -1,0 +1,63 @@
+name: detection-engineering
+title: Viết và tune detection rules
+description: >
+  Tạo hoặc cải thiện detection rules: Sigma, YARA, Snort/Suricata, SIEM queries.
+  Bao gồm: rule creation, testing guidance, false positive tuning, MITRE mapping.
+category: soc
+
+agent: soc-analyst
+skills: []
+
+input:
+  - field: rule_purpose
+    prompt: "Mục đích rule?"
+    type: choice
+    options: [Detect specific threat/TTP, Convert from advisory IOCs, Improve existing rule (reduce FP), Cover MITRE ATT&CK gap, Custom use case]
+    required: true
+  - field: threat_detail
+    prompt: "Chi tiết threat/TTP cần detect? (mô tả, MITRE technique, IOCs, advisory)"
+    type: multiline
+    required: true
+  - field: rule_format
+    prompt: "Format rule cần tạo?"
+    type: choice
+    options: [Sigma (platform-agnostic), SIEM query (cho platform hiện có), Snort/Suricata, YARA, Tất cả applicable]
+    required: true
+    default: "Tất cả applicable"
+  - field: existing_rule
+    prompt: "Rule hiện có cần tune? (paste nếu có)"
+    type: multiline
+    required: false
+
+output:
+  format: detection-rules-package
+  sections:
+    - rule-description
+    - mitre-mapping
+    - rules-created
+    - testing-guidance
+    - false-positive-notes
+    - tuning-recommendations
+  language: bilingual
+
+keywords:
+  - detection rule
+  - sigma
+  - yara
+  - snort
+  - suricata
+  - detection engineering
+  - rule writing
+  - false positive
+  - tuning
+triggers:
+  - "viết detection rule"
+  - "tạo sigma rule"
+  - "detection engineering"
+  - "tune rule"
+  - "giảm false positive"
+priority: 2
+
+tags: [soc, detection, rules-engineering]
+version: "1.0.0"
+author: secops-team

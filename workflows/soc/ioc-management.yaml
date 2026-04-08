@@ -1,0 +1,73 @@
+name: ioc-management
+title: Xử lý và quản lý IOCs
+description: >
+  Process IOCs từ threat intel feeds, advisories, hoặc incidents.
+  Enrichment, classification, tạo blocklist updates, detection rules.
+category: soc
+
+chain:
+  - agent: threat-analyst
+    skills: []
+    task: >
+      1. Validate và normalize IOCs (defang, dedup, format)
+      2. Classify: IP, domain, URL, hash, email, file path
+      3. Enrichment workflow: VirusTotal, AbuseIPDB, Shodan, etc.
+      4. Assign confidence level (High/Medium/Low)
+      5. Assign actionability (Block/Monitor/Investigate/Informational)
+      6. Map to threat actors/campaigns if known
+    output_key: enriched_iocs
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Từ enriched IOCs:
+      1. Tạo firewall block rules (dựa vào company-profile: Checkpoint/Palo Alto/etc.)
+      2. Tạo SIEM detection queries
+      3. Tạo EDR IOC import list (CrowdStrike/Defender/etc.)
+      4. Tạo DNS blocklist entries
+      5. Retrospective search: IOCs đã xuất hiện trong logs chưa?
+    output_key: blocklist_updates
+
+input:
+  - field: ioc_source
+    prompt: "Nguồn IOCs?"
+    type: choice
+    options: [Threat advisory, Incident investigation, Threat intel feed, CERT alert, Manual submission]
+    required: true
+  - field: iocs
+    prompt: "Danh sách IOCs (paste hoặc trỏ file)?"
+    type: multiline
+    required: true
+  - field: context
+    prompt: "Context/campaign liên quan? (nếu biết)"
+    type: text
+    required: false
+
+output:
+  format: ioc-management-report
+  sections:
+    - ioc-classification-table
+    - enrichment-results
+    - firewall-block-rules
+    - siem-detection-queries
+    - edr-import-list
+    - retrospective-search-queries
+    - action-summary
+  language: bilingual
+
+keywords:
+  - ioc
+  - indicator
+  - blocklist
+  - block list
+  - threat feed
+  - enrichment
+triggers:
+  - "xử lý IOCs"
+  - "IOC management"
+  - "update blocklist"
+  - "block IPs"
+priority: 2
+
+tags: [soc, threat-intel, ioc, detection]
+version: "1.0.0"
+author: secops-team

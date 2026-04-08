@@ -1,0 +1,120 @@
+name: software-evaluation
+title: Đánh giá phần mềm trước khi đưa vào sử dụng
+description: >
+  Quy trình đánh giá phần mềm mới bao gồm 3 góc: nghiệp vụ (tạo template cho
+  bộ phận đề xuất), kỹ thuật IT (compatibility, license, support), và bảo mật
+  (data handling, authentication, vendor security, compliance). Multi-agent chain.
+  Đọc process doc: context/process-docs/software-evaluation.md
+category: grc
+
+chain:
+  - agent: grc-advisor
+    skills:
+      - compliance-frameworks
+      - itsm-reference
+    task: >
+      1. Tạo phiếu đề xuất phần mềm (template cho bộ phận đề xuất điền)
+      2. Tạo checklist đánh giá nghiệp vụ (cho requester tự đánh giá)
+      3. Tạo checklist đánh giá kỹ thuật IT: license, compatibility, deployment,
+         update mechanism, vendor support, EOL, backup/export
+      4. Xác định risk level (LOW/MEDIUM/HIGH/CRITICAL) dựa trên loại data xử lý
+      5. Xác định approval chain theo risk level
+    output_key: evaluation_framework
+  - agent: vuln-manager
+    skills: []
+    task: >
+      Đánh giá vulnerability & supply chain risk:
+      1. CVE history của phần mềm
+      2. Known vulnerabilities hiện tại
+      3. Dependencies / third-party libraries risk
+      4. Vendor security track record
+      5. Update/patch frequency
+    output_key: vuln_assessment
+  - agent: risk-assessor
+    skills:
+      - risk-assessment
+    task: >
+      Đánh giá bảo mật toàn diện:
+      1. Data handling: loại data, lưu trữ ở đâu, encryption, retention
+      2. Authentication: SSO/SAML/OIDC, MFA, RBAC, audit log
+      3. Network: connections, ports, telemetry, API security
+      4. Vendor compliance: SOC 2, ISO 27001, PCI DSS
+      5. Risk scoring: inherent risk → existing controls → residual risk
+    output_key: security_assessment
+  - agent: grc-advisor
+    skills:
+      - vietnam-regulations
+    task: >
+      Regulatory compliance check:
+      1. NĐ 13/2023: phần mềm xử lý DLCN? Cần DPA? Data residency?
+      2. TT 09/2020: nếu fintech — yêu cầu đánh giá CNTT thuê ngoài (Điều 28-32)
+      3. PCI DSS: nếu xử lý card data
+      4. Tổng hợp kết quả 4 bước → biên bản phê duyệt/từ chối
+      5. Tạo template sign-off cho approval chain
+    output_key: regulatory_and_summary
+
+input:
+  - field: software_name
+    prompt: "Tên phần mềm?"
+    type: text
+    required: true
+  - field: vendor
+    prompt: "Nhà cung cấp / website?"
+    type: text
+    required: true
+  - field: purpose
+    prompt: "Mục đích sử dụng — giải quyết vấn đề gì?"
+    type: multiline
+    required: true
+  - field: software_type
+    prompt: "Loại phần mềm?"
+    type: choice
+    options: [SaaS (cloud), On-premise license, Open source, Freemium, Mobile app, Browser extension, Khác]
+    required: true
+  - field: data_handled
+    prompt: "Phần mềm sẽ xử lý dữ liệu gì?"
+    type: choice
+    options: [Không có data nhạy cảm, Internal data only, Customer data (PII), Financial data, Tất cả trên]
+    required: true
+  - field: user_count
+    prompt: "Số người dùng dự kiến?"
+    type: text
+    required: false
+  - field: requesting_dept
+    prompt: "Bộ phận đề xuất?"
+    type: text
+    required: true
+
+output:
+  format: software-evaluation-report
+  sections:
+    - request-form-template
+    - business-evaluation-checklist
+    - it-technical-evaluation
+    - vulnerability-assessment
+    - security-risk-assessment
+    - regulatory-compliance-check
+    - overall-risk-rating
+    - approval-recommendation
+    - sign-off-template
+  language: vi
+
+keywords:
+  - software evaluation
+  - đánh giá phần mềm
+  - phần mềm mới
+  - software procurement
+  - mua phần mềm
+  - SaaS review
+  - tool review
+triggers:
+  - "đánh giá phần mềm"
+  - "review phần mềm mới"
+  - "software evaluation"
+  - "mua phần mềm"
+  - "cài phần mềm mới"
+priority: 2
+
+tags: [grc, software, evaluation, cross-department]
+version: "1.0.0"
+author: secops-team

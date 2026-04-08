@@ -1,0 +1,147 @@
+name: security-roadmap
+title: Xây dựng Security Roadmap
+description: >
+  Xây dựng lộ trình bảo mật (SOC roadmap hoặc tổng thể CyberSec) với
+  maturity assessment, gap analysis, phased plan, budget estimation.
+  Multi-agent: ciso-fintech (strategy + phases + board presentation) →
+  grc-advisor (compliance milestones + framework mapping) →
+  risk-assessor (risk-based prioritization).
+  Output 2 versions: technical detail + executive summary cho Board.
+category: grc
+
+chain:
+  - agent: ciso-fintech
+    skills:
+      - security-maturity
+    task: >
+      1. Đánh giá maturity hiện tại:
+         - Score từng domain (governance, risk, IAM, data, network, endpoint,
+           appsec, SOC, IR, vuln mgmt, awareness, 3rd-party, BCP, compliance)
+         - Xác định NIST CSF Tier, CIS IG, SOC-CMM level
+      2. Xác định target maturity dựa trên business context (đọc company-profile.yaml)
+      3. Xây dựng roadmap phases:
+         - Phase 1 (Quick wins, foundation) — 1-3 tháng
+         - Phase 2 (Build, standardize) — 4-6 tháng
+         - Phase 3 (Optimize, automate) — 7-12 tháng
+         - Phase 4 (Advanced, nếu cần) — Year 2
+      4. Mỗi phase: deliverables, milestones, headcount, budget estimate
+      5. Prioritization: quick wins first, risk-based, dependency-aware
+      6. Executive summary cho Board: investment justification, risk reduction,
+         compliance milestones, ROI narrative
+    output_key: roadmap_strategy
+  - agent: grc-advisor
+    skills:
+      - compliance-frameworks
+      - vietnam-regulations
+    task: >
+      Từ roadmap, bổ sung:
+      1. Compliance milestones mapping:
+         - NĐ 13/2023 requirements → đặt vào phase nào?
+         - NĐ 85/2016 / TT 12/2022 (cấp độ ATTT) → đặt vào phase nào?
+         - TT 09/2020 (fintech) → annual requirements
+         - ISO 27001 / PCI DSS nếu target certification → timeline
+      2. Framework gap mapping: roadmap items → ISO 27001 controls / CIS safeguards
+      3. Regulatory deadlines và non-negotiable milestones
+      4. Audit preparation timeline nếu có
+    output_key: compliance_milestones
+  - agent: risk-assessor
+    skills:
+      - risk-assessment
+    task: >
+      Từ roadmap + compliance milestones:
+      1. Validate prioritization: items nào giảm risk nhiều nhất nên ở Phase 1
+      2. Risk-based sequencing: dependencies, nếu A chưa xong thì B vô nghĩa
+      3. Residual risk projection: ước tính residual risk sau mỗi phase
+      4. Risk heat map trước vs sau roadmap
+      5. Flag: items nào delay sẽ tạo regulatory risk
+    output_key: risk_prioritization
+
+input:
+  - field: roadmap_scope
+    prompt: "Scope roadmap?"
+    type: choice
+    options:
+      - SOC Roadmap (operations, detection, response)
+      - CyberSec tổng thể (toàn bộ security program)
+      - Compliance Roadmap (đạt certification cụ thể)
+      - Khác
+    required: true
+  - field: current_state
+    prompt: "Mô tả current state? (tools hiện có, team size, processes, maturity tự đánh giá)"
+    type: multiline
+    required: true
+    auto_from: context/company-profile.yaml
+  - field: target_state
+    prompt: "Target state mong muốn? (ví dụ: SOC-CMM 3.0, đạt ISO 27001, PCI DSS compliant)"
+    type: text
+    required: true
+  - field: timeline
+    prompt: "Timeline tổng thể?"
+    type: choice
+    options: [6 tháng, 12 tháng, 18 tháng, 24 tháng]
+    required: true
+    default: "12 tháng"
+  - field: budget_constraint
+    prompt: "Budget constraint? (tổng budget hoặc 'chưa xác định')"
+    type: text
+    required: false
+    default: "Chưa xác định — cần estimate"
+  - field: headcount_plan
+    prompt: "Headcount plan? (current + planned hiring)"
+    type: text
+    required: false
+    auto_from: context/company-profile.yaml
+  - field: certification_target
+    prompt: "Target certification? (nếu có)"
+    type: choice
+    options: [ISO 27001:2022, PCI DSS v4.0, SOC 2 Type II, Không có target cụ thể]
+    required: false
+  - field: audience
+    prompt: "Roadmap cho ai?"
+    type: choice
+    options: [Security team only, Management, Board/C-level, Tất cả (multi-version)]
+    required: true
+    default: "Tất cả (multi-version)"
+
+output:
+  format: security-roadmap-package
+  sections:
+    - maturity-assessment-current
+    - maturity-target
+    - gap-summary
+    - roadmap-phases
+    - deliverables-per-phase
+    - compliance-milestones
+    - risk-prioritization
+    - residual-risk-projection
+    - budget-estimation
+    - headcount-plan
+    - executive-summary-board
+    - appendix-maturity-scorecard
+  language: vi
+
+keywords:
+  - roadmap
+  - lộ trình
+  - chiến lược
+  - strategy
+  - maturity
+  - trưởng thành
+  - security program
+  - SOC roadmap
+  - kế hoạch bảo mật
+  - investment
+  - đầu tư
+triggers:
+  - "xây dựng roadmap"
+  - "security roadmap"
+  - "lộ trình bảo mật"
+  - "SOC roadmap"
+  - "chiến lược cybersec"
+  - "kế hoạch bảo mật"
+  - "security strategy"
+priority: 2
+
+tags: [grc, strategy, roadmap, maturity, executive, multi-agent]
+version: "1.0.0"
+author: secops-team

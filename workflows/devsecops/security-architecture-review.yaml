@@ -1,0 +1,93 @@
+name: security-architecture-review
+title: Review kiến trúc bảo mật hệ thống
+description: >
+  Review kiến trúc bảo mật cho hệ thống mới hoặc thay đổi lớn.
+  Bao gồm: network segmentation, data flow, authentication, encryption,
+  attack surface analysis. Liên phòng ban: CyberSec + DevOps + Architect.
+category: devsecops
+
+chain:
+  - agent: threat-modeler
+    skills: []
+    task: >
+      1. Phân tích kiến trúc: data flow, trust boundaries, entry points
+      2. Threat modeling (STRIDE) cho architecture
+      3. Identify attack surface
+      4. Map threats to MITRE ATT&CK
+    output_key: threat_model
+  - agent: devsecops
+    skills: []
+    task: >
+      Review technical security controls:
+      1. Network segmentation, firewall rules
+      2. Authentication & authorization architecture
+      3. Encryption (at rest, in transit, key management)
+      4. API security, input validation
+      5. Logging & monitoring coverage
+      6. CI/CD pipeline security cho hệ thống này
+      7. Infrastructure hardening
+    output_key: technical_review
+  - agent: grc-advisor
+    skills:
+      - compliance-frameworks
+      - vietnam-regulations
+    task: >
+      Compliance mapping:
+      1. NĐ 85/2016: hệ thống nên được phân loại cấp mấy?
+      2. TT 12/2022: yêu cầu kỹ thuật theo cấp độ
+      3. TT 09/2020: nếu fintech — yêu cầu ATTT
+      4. NĐ 13/2023: nếu xử lý DLCN
+      5. ISO 27001, PCI DSS mapping nếu applicable
+    output_key: compliance_review
+
+input:
+  - field: system_name
+    prompt: "Tên hệ thống?"
+    type: text
+    required: true
+  - field: architecture_doc
+    prompt: "Architecture document / diagram? (paste mô tả hoặc trỏ file)"
+    type: multiline
+    required: true
+  - field: review_context
+    prompt: "Bối cảnh review?"
+    type: choice
+    options: [Hệ thống mới (trước triển khai), Thay đổi lớn (major change), Periodic review, Post-incident, Audit requirement]
+    required: true
+  - field: data_types
+    prompt: "Loại dữ liệu hệ thống xử lý?"
+    type: choice
+    options: [Internal only, Customer data (PII), Financial/payment data, Cả hai (customer + financial), Public data]
+    required: true
+
+output:
+  format: security-architecture-review
+  sections:
+    - architecture-overview
+    - threat-model
+    - attack-surface-analysis
+    - technical-controls-review
+    - gap-analysis
+    - compliance-mapping
+    - risk-findings
+    - recommendations
+    - sign-off-template
+  language: bilingual
+
+keywords:
+  - architecture review
+  - security architecture
+  - kiến trúc bảo mật
+  - system design
+  - design review
+  - network segmentation
+triggers:
+  - "review kiến trúc"
+  - "architecture review"
+  - "security design review"
+  - "hệ thống mới"
+priority: 2
+
+tags: [devsecops, architecture, threat-modeling, cross-department]
+version: "1.0.0"
+author: secops-team

@@ -1,0 +1,103 @@
+name: incident-response-default
+title: "[Default] Quy trình ứng phó sự cố bảo mật"
+description: >
+  Quy trình ứng phó sự cố tổng quát theo NIST SP 800-61 Rev.2.
+  Dùng khi tổ chức chưa có quy trình IR riêng. Sẽ bị override
+  khi có custom workflow từ process-docs.
+category: ir
+type: default
+
+chain:
+  - agent: incident-commander
+    skills:
+      - incident-response
+    task: >
+      Triage sự cố: xác nhận severity, classify loại sự cố,
+      tạo checklist hành động tức thì (containment), template thông báo nội bộ,
+      danh sách evidence cần thu thập, timeline tracking.
+      Áp dụng NIST phases: Preparation → Detection → Containment → Eradication → Recovery → Lessons Learned.
+    output_key: ir_plan
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Phân tích kỹ thuật: log analysis, IOC extraction, MITRE ATT&CK mapping,
+      tạo detection rules để phát hiện tái diễn.
+    output_key: technical_analysis
+  - agent: grc-advisor
+    skills:
+      - vietnam-regulations
+      - compliance-frameworks
+    task: >
+      Đánh giá nghĩa vụ pháp lý: NĐ 13/2023 (72h breach notification nếu DLCN),
+      TT 09/2020 (24h báo cáo NHNN nếu fintech), Luật ANM 2018.
+      Chuẩn bị template filing nếu cần.
+    output_key: regulatory
+
+input:
+  - field: incident_type
+    prompt: "Loại sự cố?"
+    type: choice
+    options: [Ransomware, Data Breach, Malware, Account Compromise, DDoS, Insider Threat, Supply Chain, Phishing, Khác]
+    required: true
+  - field: detection_time
+    prompt: "Thời điểm phát hiện?"
+    type: text
+    required: true
+  - field: affected_systems
+    prompt: "Hệ thống/dữ liệu bị ảnh hưởng?"
+    type: multiline
+    required: true
+  - field: severity
+    prompt: "Mức độ nghiêm trọng?"
+    type: choice
+    options: [CRITICAL, HIGH, MEDIUM, LOW]
+    required: true
+  - field: status
+    prompt: "Sự cố đang diễn ra hay đã ngăn chặn?"
+    type: choice
+    options: [Đang diễn ra, Đã ngăn chặn, Chưa rõ]
+    required: true
+  - field: personal_data
+    prompt: "Có dữ liệu cá nhân bị ảnh hưởng không?"
+    type: choice
+    options: ["Có", "Không", "Chưa rõ"]
+    required: true
+
+output:
+  format: incident-response-report
+  sections:
+    - incident-summary
+    - severity-classification
+    - immediate-actions-checklist
+    - containment-steps
+    - evidence-collection-guide
+    - timeline-tracker
+    - internal-notification
+    - technical-analysis
+    - ioc-list
+    - detection-rules
+    - regulatory-obligations
+    - filing-templates
+    - lessons-learned-template
+  language: vi
+
+keywords:
+  - incident
+  - sự cố
+  - breach
+  - ransomware
+  - malware
+  - hack
+  - compromise
+  - tấn công
+  - ứng phó
+triggers:
+  - "có sự cố"
+  - "bị tấn công"
+  - "incident response"
+  - "data breach"
+priority: 1
+
+tags: [ir, critical, default, nist-800-61]
+version: "1.0.0"
+author: secops-defaults

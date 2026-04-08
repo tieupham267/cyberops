@@ -1,0 +1,59 @@
+name: phishing-campaign
+title: Thiết kế chiến dịch phishing simulation
+description: >
+  Thiết kế phishing simulation cho awareness training: email template,
+  landing page, metrics, follow-up training. Phù hợp ngữ cảnh Việt Nam.
+category: awareness
+
+agent: awareness-designer
+skills: []
+
+input:
+  - field: target_audience
+    prompt: "Target audience?"
+    type: choice
+    options: [All staff, Department cụ thể, Executives, IT/Engineering]
+    required: true
+  - field: difficulty
+    prompt: "Difficulty level?"
+    type: choice
+    options: [Easy, Medium, Hard]
+    required: true
+  - field: theme
+    prompt: "Theme/scenario mong muốn? (hoặc để trống để suggest dựa trên threat landscape)"
+    type: text
+    required: false
+  - field: platform
+    prompt: "Platform đang dùng?"
+    type: choice
+    options: [KnowBe4, GoPhish, Proofpoint, Manual, Khác]
+    required: false
+
+output:
+  format: phishing-campaign-package
+  sections:
+    - email-template
+    - landing-page
+    - success-metrics
+    - followup-training
+    - campaign-timeline
+    - report-template
+  language: vi
+
+keywords:
+  - phishing
+  - simulation
+  - awareness
+  - training
+  - giả lập phishing
+  - đào tạo nhận thức
+triggers:
+  - "phishing campaign"
+  - "giả lập phishing"
+  - "awareness training"
+  - "thiết kế phishing"
+priority: 3
+
+tags: [awareness, training, phishing]
+version: "1.0.0"
+author: secops-team

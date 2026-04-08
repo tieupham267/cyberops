@@ -1,0 +1,235 @@
+name: solution-comparison
+title: So sánh và lựa chọn giải pháp bảo mật
+description: >
+  So sánh nhiều giải pháp bảo mật (SIEM, SOAR, EDR, Firewall, WAF, IAM, DLP...)
+  trên các tiêu chí có trọng số: tính năng, chi phí, tích hợp, bảo mật, vendor
+  stability, compliance fit, vận hành. Output: weighted scorecard, bảng so sánh
+  side-by-side, trade-off analysis, TCO estimate, khuyến nghị cuối cùng.
+  Multi-agent chain: ciso-fintech (strategy + cost-benefit) → soc-analyst
+  (technical fit + integration) → risk-assessor (risk + vendor assessment) →
+  grc-advisor (compliance + final recommendation).
+category: grc
+
+chain:
+  - agent: ciso-fintech
+    skills:
+      - security-maturity
+    task: >
+      Phân tích chiến lược & chi phí:
+      1. Đọc company-profile.yaml: xác định tech stack, team size, maturity level
+      2. Xác định business requirements: vấn đề cần giải quyết, use cases ưu tiên
+      3. Định nghĩa tiêu chí đánh giá và trọng số mặc định:
+         - Tính năng core (25%) — coverage use cases chính
+         - Chi phí TCO 3 năm (20%) — license + infra + implementation + training + maintenance
+         - Khả năng tích hợp (15%) — API, protocol, compatibility với stack hiện tại
+         - Vendor stability (10%) — market position, tài chính, support quality, roadmap
+         - Bảo mật của chính giải pháp (10%) — CVE history, architecture, certifications
+         - Vận hành & triển khai (10%) — complexity, team skill gap, time-to-value
+         - Compliance fit (10%) — đáp ứng regulatory requirements
+      4. Với mỗi giải pháp: ước tính TCO 3 năm (Year 1 setup + Year 2-3 recurring)
+         - License/subscription cost
+         - Infrastructure cost (nếu on-prem)
+         - Implementation & integration effort (man-days)
+         - Training cost
+         - Ongoing maintenance & support
+      5. Build vs Buy analysis (nếu có option tự build)
+      6. Strategic fit: giải pháp nào align với security roadmap dài hạn?
+    output_key: strategic_analysis
+
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Đánh giá kỹ thuật & khả năng tích hợp:
+      1. Feature comparison matrix:
+         - Với mỗi giải pháp, list tính năng theo categories (detection, response,
+           reporting, automation, API, scalability)
+         - Mark: ✅ native | ⚡ via plugin/add-on | ❌ không có | 🔄 roadmap
+      2. Integration assessment:
+         - Compatibility với tech stack hiện tại (từ company-profile.yaml)
+         - API quality: REST/GraphQL, documentation, rate limits, webhook support
+         - Data format: CEF, LEEF, JSON, Syslog — ingestion & export
+         - SIEM: EPS capacity, data retention, search performance, correlation rules
+         - SOAR: playbook engine, integration count, custom connector support
+         - EDR: OS coverage, detection engine, response actions, memory/CPU footprint
+         - Firewall/WAF: throughput, rule management, SSL inspection, cloud-native
+      3. Operational complexity:
+         - Deployment model: SaaS / hybrid / on-prem
+         - Skill requirements: team cần skill gì để vận hành?
+         - Time-to-value: bao lâu để go-live với basic use cases?
+         - Day-2 operations: update, tuning, content development effort
+      4. Scalability: horizontal/vertical scaling, multi-tenant, HA/DR options
+      5. Proof-of-Concept checklist: POC scope đề xuất cho top candidates
+    output_key: technical_assessment
+
+  - agent: risk-assessor
+    skills:
+      - risk-assessment
+    task: >
+      Đánh giá rủi ro & vendor due diligence:
+      1. Vendor risk assessment cho mỗi giải pháp:
+         - Vendor profile: founded, headcount, revenue, funding, market share
+         - Security certifications: SOC 2 Type II, ISO 27001, FedRAMP, CSA STAR
+         - Data handling: data residency, encryption (at-rest, in-transit), key management
+         - Incident history: past breaches, CVE track record, disclosure practices
+         - Business continuity: vendor lock-in risk, data portability, exit strategy
+      2. Risk comparison matrix:
+         - Inherent risk score cho mỗi giải pháp (5x5 matrix)
+         - Risk factors: data exposure, vendor dependency, technology obsolescence,
+           integration complexity, compliance gaps
+         - Residual risk sau khi áp dụng controls
+      3. Third-party risk questionnaire highlights (top concerns per vendor)
+      4. Concentration risk: nếu chọn giải pháp cùng vendor với tools hiện có
+      5. Migration risk: effort & risk chuyển từ solution hiện tại sang mỗi candidate
+    output_key: risk_assessment
+
+  - agent: grc-advisor
+    skills:
+      - compliance-frameworks
+      - vietnam-regulations
+    task: >
+      Compliance check & tổng hợp khuyến nghị:
+      1. Regulatory compliance mapping cho mỗi giải pháp:
+         - NĐ 13/2023: data processing, cross-border transfer, DPA requirements
+         - NĐ 85/2016 / TT 12/2022: yêu cầu theo cấp độ ATTT
+         - TT 09/2020: yêu cầu fintech (nếu applicable)
+         - PCI DSS v4.0: nếu xử lý payment data
+         - ISO 27001: control coverage mapping
+      2. Tổng hợp WEIGHTED SCORECARD:
+         - Compile điểm từ tất cả agents (strategic, technical, risk, compliance)
+         - Apply trọng số → tính điểm tổng cho mỗi giải pháp
+         - Bảng xếp hạng cuối cùng
+      3. Trade-off analysis:
+         - Giải pháp A tốt hơn ở đâu vs giải pháp B?
+         - Scenario analysis: nếu ưu tiên cost → chọn gì? Nếu ưu tiên feature → chọn gì?
+      4. Khuyến nghị cuối cùng:
+         - TOP recommendation với justification
+         - Runner-up và khi nào nên reconsider
+         - Điều kiện tiên quyết trước khi triển khai
+         - POC recommendation: scope, timeline, success criteria
+         - Phê duyệt: approval chain theo risk level
+      5. Executive summary (1 trang) cho management/board
+    output_key: final_recommendation
+
+input:
+  - field: solution_category
+    prompt: "Loại giải pháp cần so sánh?"
+    type: choice
+    options:
+      - SIEM (Security Information & Event Management)
+      - SOAR (Security Orchestration, Automation & Response)
+      - EDR/XDR (Endpoint Detection & Response)
+      - Firewall / NGFW
+      - WAF (Web Application Firewall)
+      - IAM / PAM (Identity & Access Management)
+      - DLP (Data Loss Prevention)
+      - CNAPP / CSPM (Cloud Security)
+      - Email Security
+      - Khác (ghi rõ trong mô tả)
+    required: true
+  - field: candidates
+    prompt: >
+      Danh sách giải pháp cần so sánh? (liệt kê tên, mỗi dòng 1 giải pháp,
+      ví dụ: Splunk ES, Microsoft Sentinel, Elastic SIEM)
+    type: multiline
+    required: true
+  - field: problem_statement
+    prompt: "Vấn đề cần giải quyết / lý do đánh giá?"
+    type: multiline
+    required: true
+  - field: current_solution
+    prompt: "Giải pháp đang dùng hiện tại? (nếu có, ghi tên + pain points)"
+    type: multiline
+    required: false
+    default: "Chưa có giải pháp — triển khai mới"
+  - field: priority_criteria
+    prompt: "Ưu tiên tiêu chí nào nhất?"
+    type: choice
+    options:
+      - Balanced (dùng trọng số mặc định)
+      - Cost-first (ưu tiên chi phí thấp)
+      - Feature-first (ưu tiên tính năng mạnh)
+      - Integration-first (ưu tiên tích hợp tốt với stack hiện tại)
+      - Compliance-first (ưu tiên đáp ứng regulatory)
+      - Speed-first (ưu tiên time-to-value nhanh)
+    required: true
+    default: "Balanced (dùng trọng số mặc định)"
+  - field: budget_range
+    prompt: "Budget dự kiến? (ví dụ: $50K-100K/năm, hoặc 'chưa xác định')"
+    type: text
+    required: false
+    default: "Chưa xác định — cần estimate"
+  - field: deployment_preference
+    prompt: "Deployment model ưu tiên?"
+    type: choice
+    options:
+      - SaaS / Cloud-hosted
+      - On-premise
+      - Hybrid
+      - Không có preference
+    required: false
+    default: "Không có preference"
+  - field: timeline
+    prompt: "Timeline triển khai mong muốn?"
+    type: choice
+    options: [1-3 tháng, 3-6 tháng, 6-12 tháng, Chưa xác định]
+    required: false
+    default: "Chưa xác định"
+  - field: tech_stack
+    prompt: "Tech stack hiện tại? (auto-load từ company profile nếu có)"
+    type: multiline
+    required: false
+    auto_from: context/company-profile.yaml
+
+output:
+  format: solution-comparison-report
+  sections:
+    - executive-summary
+    - business-requirements
+    - evaluation-criteria-weights
+    - feature-comparison-matrix
+    - integration-assessment
+    - tco-comparison-3year
+    - vendor-risk-assessment
+    - compliance-mapping
+    - weighted-scorecard
+    - trade-off-analysis
+    - recommendation
+    - poc-plan
+    - approval-sign-off
+  language: vi
+
+keywords:
+  - so sánh giải pháp
+  - solution comparison
+  - compare solutions
+  - chọn SIEM
+  - chọn SOAR
+  - chọn EDR
+  - chọn firewall
+  - chọn WAF
+  - lựa chọn giải pháp
+  - vendor comparison
+  - so sánh vendor
+  - tool selection
+  - product evaluation
+  - RFP
+  - scorecard
+  - bảng đánh giá
+  - security tool
+  - công cụ bảo mật
+triggers:
+  - "so sánh giải pháp"
+  - "compare security solutions"
+  - "chọn SIEM nào"
+  - "chọn SOAR nào"
+  - "chọn EDR nào"
+  - "chọn firewall nào"
+  - "lựa chọn giải pháp bảo mật"
+  - "solution comparison"
+  - "vendor comparison"
+  - "đánh giá nhiều giải pháp"
+priority: 2
+
+tags: [grc, comparison, evaluation, scorecard, vendor, tco, multi-agent]
+version: "1.0.0"
+author: secops-team

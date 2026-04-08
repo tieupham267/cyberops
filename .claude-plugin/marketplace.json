@@ -1,0 +1,19 @@
+{
+  "name": "secops",
+  "description": "Cybersecurity team plugins for Claude Code — SOC, IR, threat modeling, risk management, GRC, and more",
+  "owner": {
+    "name": "CyberSec Team",
+    "email": "security@your-org.vn"
+  },
+  "metadata": {
+    "version": "2.0.0"
+  },
+  "plugins": [
+    {
+      "name": "secops-toolkit",
+      "description": "Complete cybersecurity team toolkit — 12 agents, 8 skills, hybrid orchestration, hooks, and rules. Aligned to ISO 27001, NIST CSF, MITRE ATT&CK, PCI DSS, and Vietnamese regulations.",
+      "source": "./",
+      "version": "2.0.0"
+    }
+  ]
+}

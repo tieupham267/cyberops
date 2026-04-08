@@ -1,0 +1,65 @@
+name: vendor-risk-default
+title: "[Default] Quy trình đánh giá rủi ro vendor/bên thứ ba"
+description: >
+  Đánh giá rủi ro CNTT khi sử dụng dịch vụ bên thứ ba theo
+  TT 09/2020 Chương IV và ISO 27001 A.5.19-5.22.
+  Dùng khi chưa có quy trình third-party risk riêng.
+category: grc
+type: default
+
+agent: grc-advisor
+skills:
+  - compliance-frameworks
+  - risk-assessment
+
+input:
+  - field: vendor_name
+    prompt: "Tên vendor/đối tác?"
+    type: text
+    required: true
+  - field: service_type
+    prompt: "Loại dịch vụ?"
+    type: choice
+    options: [Cloud/SaaS, Outsource development, Managed services, Payment partner, Data processing, Khác]
+    required: true
+  - field: data_shared
+    prompt: "Dữ liệu nào chia sẻ với vendor? (DLCN, dữ liệu tài chính, source code, ...)"
+    type: multiline
+    required: true
+  - field: contract_docs
+    prompt: "File hợp đồng/security addendum (nếu có)?"
+    type: file
+    required: false
+
+output:
+  format: vendor-risk-assessment
+  sections:
+    - vendor-profile
+    - risk-classification
+    - security-questionnaire
+    - data-handling-assessment
+    - regulatory-requirements
+    - risk-rating
+    - remediation-requirements
+    - contract-recommendations
+  language: vi
+
+keywords:
+  - vendor
+  - third party
+  - bên thứ ba
+  - outsource
+  - đối tác
+  - nhà cung cấp
+  - SaaS
+  - thuê ngoài
+triggers:
+  - "đánh giá vendor"
+  - "vendor risk"
+  - "third party assessment"
+  - "thuê ngoài"
+priority: 3
+
+tags: [grc, vendor-risk, default, tt-09-2020]
+version: "1.0.0"
+author: secops-defaults

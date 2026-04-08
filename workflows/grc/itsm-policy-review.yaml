@@ -1,0 +1,79 @@
+name: itsm-policy-review
+title: Review chính sách ITSM từ góc nhìn bảo mật
+description: >
+  Review một hoặc nhiều chính sách ITSM (Incident, Change, Problem, Service Request,
+  CMDB, SLA, Asset, Release, etc.) từ góc nhìn an toàn bảo mật thông tin.
+  Đánh giá security controls, gap analysis, framework mapping, scoring.
+  Dùng khi cần review/audit ITSM policies cho security compliance.
+category: grc
+
+agent: grc-advisor
+skills:
+  - itsm-reference
+  - compliance-frameworks
+  - vietnam-regulations
+
+input:
+  - field: review_scope
+    prompt: "Scope review?"
+    type: choice
+    options: [Tất cả ITSM policies, Chọn policies cụ thể]
+    required: true
+  - field: policies
+    prompt: "Policy files cần review? (trỏ đến files hoặc paste nội dung)"
+    type: multiline
+    required: true
+  - field: itsm_processes
+    prompt: "ITSM processes nào cần review? (chọn nhiều)"
+    type: multiline
+    required: false
+    default: "Incident Management, Change Management, Problem Management, Service Request, CMDB, SLA, Asset Management, Release & Deployment, Availability, Knowledge Management"
+  - field: review_purpose
+    prompt: "Mục đích review?"
+    type: choice
+    options: [Audit preparation, Periodic review, Post-incident improvement, New policy assessment, Compliance gap analysis]
+    required: true
+  - field: target_frameworks
+    prompt: "Frameworks tham chiếu?"
+    type: multiline
+    required: false
+    default: "ISO 27001:2022, NIST CSF 2.0, CIS Controls v8, TT 09/2020/TT-NHNN"
+
+output:
+  format: itsm-policy-review-report
+  sections:
+    - review-scope-summary
+    - per-policy-assessment
+    - security-score-matrix
+    - gap-analysis
+    - framework-mapping
+    - priority-recommendations
+    - compliance-status
+    - sign-off-template
+  language: vi
+
+keywords:
+  - ITSM
+  - ITIL
+  - policy review
+  - chính sách
+  - incident management
+  - change management
+  - problem management
+  - service desk
+  - CMDB
+  - SLA
+  - review bảo mật
+  - IT service
+triggers:
+  - "review ITSM"
+  - "review chính sách IT"
+  - "đánh giá ITSM"
+  - "ITSM policy review"
+  - "audit ITSM"
+  - "review IT service management"
+priority: 2
+
+tags: [grc, itsm, policy-review, audit, compliance]
+version: "1.0.0"
+author: secops-team

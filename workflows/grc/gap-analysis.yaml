@@ -1,0 +1,56 @@
+name: gap-analysis
+title: Phân tích khoảng cách tuân thủ
+description: >
+  Gap analysis cho compliance frameworks: ISO 27001, NIST CSF, CIS Controls,
+  PCI-DSS, Vietnamese regulations. Tạo gap table, compliance score, remediation roadmap.
+category: grc
+
+agent: grc-advisor
+skills:
+  - compliance-frameworks
+
+input:
+  - field: framework
+    prompt: "Framework nào?"
+    type: choice
+    options: [ISO 27001:2022, NIST CSF 2.0, CIS Controls v8, PCI-DSS v4.0, NĐ 85/2016, NĐ 13/2023, SOC 2]
+    required: true
+  - field: scope
+    prompt: "Scope: toàn bộ framework hay domain/control cụ thể?"
+    type: text
+    required: true
+  - field: existing_assessment
+    prompt: "Có assessment hiện tại không? (trỏ đến file nếu có)"
+    type: file
+    required: false
+
+output:
+  format: gap-analysis-report
+  sections:
+    - gap-analysis-table
+    - compliance-score
+    - priority-remediation-roadmap
+    - effort-estimation
+    - cross-framework-mapping
+  language: vi
+
+keywords:
+  - gap analysis
+  - compliance
+  - tuân thủ
+  - audit
+  - framework
+  - iso 27001
+  - nist
+  - pci-dss
+  - đánh giá tuân thủ
+triggers:
+  - "gap analysis"
+  - "phân tích khoảng cách"
+  - "đánh giá tuân thủ"
+  - "chuẩn bị audit"
+priority: 2
+
+tags: [grc, compliance, audit]
+version: "1.0.0"
+author: secops-team

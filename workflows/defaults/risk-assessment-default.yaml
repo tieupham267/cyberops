@@ -1,0 +1,122 @@
+name: risk-assessment-default
+title: "[Default] Quy trình đánh giá rủi ro an ninh mạng"
+description: >
+  Quy trình đánh giá rủi ro CNTT tổng quát theo ISO 31000, NIST RMF,
+  và yêu cầu TT 09/2020/TT-NHNN (bắt buộc hàng năm cho fintech).
+  Multi-agent chain: risk-assessor đánh giá → grc-advisor map regulatory.
+  Dùng khi tổ chức chưa có quy trình risk assessment riêng.
+category: ir
+type: default
+
+chain:
+  - agent: risk-assessor
+    skills:
+      - risk-assessment
+    task: >
+      Thực hiện đánh giá rủi ro:
+      1. Xác định assets trong scope
+      2. Xác định threats và vulnerabilities cho từng asset
+      3. Đánh giá likelihood và impact (qualitative 5x5 hoặc FAIR)
+      4. Tính inherent risk → existing controls → residual risk
+      5. Tạo risk register entries
+      6. Đề xuất risk treatment (mitigate/transfer/accept/avoid)
+      7. Tạo risk matrix visualization
+
+      Cover 6 loại rủi ro theo TT 09/2020:
+      - Rủi ro hạ tầng CNTT
+      - Rủi ro ứng dụng CNTT
+      - Rủi ro bảo mật thông tin
+      - Rủi ro nhân sự CNTT
+      - Rủi ro hoạt động CNTT (operational)
+      - Rủi ro bên thứ ba (outsourcing)
+    output_key: risk_assessment
+  - agent: grc-advisor
+    skills:
+      - vietnam-regulations
+      - compliance-frameworks
+    task: >
+      Từ kết quả đánh giá rủi ro:
+      1. Map vào yêu cầu NĐ 85/2016 — xác định/xác nhận cấp độ ATTT
+      2. Kiểm tra yêu cầu TT 09/2020 — đã cover đủ 6 loại rủi ro chưa?
+      3. Xác định cần DPIA không (NĐ 13/2023) nếu xử lý DLCN nhạy cảm
+      4. Tạo regulatory compliance risk section
+      5. Đề xuất: cần báo cáo NHNN không? cần nâng cấp cấp độ ATTT không?
+      6. Tạo template báo cáo đánh giá rủi ro cho HĐQT (yêu cầu TT 09/2020)
+    output_key: regulatory_mapping
+
+input:
+  - field: target
+    prompt: "Đối tượng đánh giá? (hệ thống, dự án, vendor, quy trình, toàn bộ tổ chức)"
+    type: text
+    required: true
+  - field: assessment_type
+    prompt: "Loại đánh giá?"
+    type: choice
+    options: [Định kỳ hàng năm, Trước triển khai hệ thống mới, Sau sự cố, Theo yêu cầu audit, Vendor/Third-party]
+    required: true
+  - field: methodology
+    prompt: "Phương pháp?"
+    type: choice
+    options: [Qualitative 5x5, Quantitative FAIR, Cả hai, Recommend cho tôi]
+    required: true
+    default: "Recommend cho tôi"
+  - field: scope
+    prompt: "Scope và boundaries?"
+    type: multiline
+    required: true
+  - field: personal_data
+    prompt: "Hệ thống xử lý dữ liệu cá nhân?"
+    type: choice
+    options: ["Có - DLCN nhạy cảm (tài chính, sức khỏe)", "Có - DLCN cơ bản", "Không", "Chưa rõ"]
+    required: true
+  - field: system_level
+    prompt: "Cấp độ ATTT hiện tại? (NĐ 85/2016)"
+    type: choice
+    options: ["Cấp 1", "Cấp 2", "Cấp 3", "Cấp 4", "Cấp 5", "Chưa phân loại"]
+    required: false
+    default: "Chưa phân loại"
+  - field: previous_assessment
+    prompt: "File đánh giá rủi ro lần trước (nếu có)?"
+    type: file
+    required: false
+
+output:
+  format: risk-assessment-full-report
+  sections:
+    - asset-inventory
+    - threat-identification
+    - vulnerability-identification
+    - risk-register
+    - risk-matrix
+    - risk-treatment-plan
+    - regulatory-compliance-risk
+    - system-level-assessment
+    - dpia-determination
+    - tt09-2020-coverage-check
+    - board-report-template
+    - executive-summary
+    - next-review-date
+  language: vi
+
+keywords:
+  - risk assessment
+  - đánh giá rủi ro
+  - risk register
+  - risk matrix
+  - fair
+  - rủi ro CNTT
+  - cấp độ ATTT
+  - TT 09
+  - annual risk
+  - định kỳ
+triggers:
+  - "đánh giá rủi ro"
+  - "risk assessment"
+  - "rủi ro CNTT"
+  - "đánh giá rủi ro hàng năm"
+  - "annual risk assessment"
+priority: 2
+
+tags: [ir, risk, default, iso-31000, tt-09-2020, nd-85-2016]
+version: "1.0.0"
+author: secops-defaults

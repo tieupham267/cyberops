@@ -1,0 +1,81 @@
+name: security-exception
+title: Xử lý Security Exception / Risk Acceptance
+description: >
+  Quy trình khi một bộ phận yêu cầu exception khỏi security policy
+  hoặc chấp nhận rủi ro (risk acceptance). Đánh giá rủi ro, điều kiện,
+  thời hạn, approval chain. Liên phòng ban: Requester + CyberSec + CISO.
+category: grc
+
+chain:
+  - agent: risk-assessor
+    skills:
+      - risk-assessment
+    task: >
+      Đánh giá rủi ro của exception request:
+      1. Rủi ro nếu approve exception
+      2. Compensating controls có thể áp dụng
+      3. Impact nếu exploited
+      4. Thời hạn exception (không nên vĩnh viễn)
+      5. Residual risk sau compensating controls
+    output_key: risk_assessment
+  - agent: ciso-fintech
+    skills:
+      - compliance-frameworks
+      - vietnam-regulations
+    task: >
+      1. Exception có vi phạm regulatory requirements không? (NĐ 85/2016, TT 09/2020, PCI DSS)
+      2. Nếu vi phạm → không thể approve, đề xuất alternative
+      3. Nếu không vi phạm → risk acceptance recommendation
+      4. Xác định approval authority theo risk level
+      5. Tạo risk acceptance form với expiry date + review schedule
+    output_key: approval_recommendation
+
+input:
+  - field: exception_request
+    prompt: "Mô tả exception request? (policy nào, muốn exception gì, lý do)"
+    type: multiline
+    required: true
+  - field: requesting_dept
+    prompt: "Bộ phận yêu cầu?"
+    type: text
+    required: true
+  - field: duration
+    prompt: "Thời hạn exception mong muốn?"
+    type: choice
+    options: [30 ngày, 90 ngày, 6 tháng, 1 năm, Vĩnh viễn (cần strong justification)]
+    required: true
+  - field: compensating_controls
+    prompt: "Compensating controls đề xuất? (nếu có)"
+    type: multiline
+    required: false
+
+output:
+  format: security-exception-report
+  sections:
+    - exception-summary
+    - risk-assessment
+    - compensating-controls
+    - regulatory-impact
+    - approval-recommendation
+    - risk-acceptance-form
+    - review-schedule
+  language: vi
+
+keywords:
+  - exception
+  - risk acceptance
+  - chấp nhận rủi ro
+  - ngoại lệ
+  - waiver
+  - compensating control
+triggers:
+  - "security exception"
+  - "risk acceptance"
+  - "xin ngoại lệ"
+  - "chấp nhận rủi ro"
+  - "exception request"
+priority: 2
+
+tags: [grc, risk, exception, approval]
+version: "1.0.0"
+author: secops-team

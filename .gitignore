@@ -1,0 +1,28 @@
+# === Company-specific data (sensitive, not for distribution) ===
+context/org-docs/
+context/process-docs/
+context/company-profile.yaml
+reports/
+
+# === Environment & secrets ===
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+
+# === Claude Code local state ===
+.claude/
+~/.cybersec-audit-logs/
+
+# === OS files ===
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# === Editor / IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

@@ -1,0 +1,55 @@
+name: alert-triage
+title: Phân tích và phân loại alert bảo mật
+description: >
+  Triage security alert từ SIEM, EDR, IDS, firewall. Phân loại TP/FP,
+  map MITRE ATT&CK, trích xuất IOCs, đề xuất SIEM query để investigate.
+category: soc
+
+agent: soc-analyst
+skills: []
+
+input:
+  - field: alert_source
+    prompt: "Alert từ nguồn nào? (SIEM, EDR, IDS, Firewall, Email Gateway, Cloud)"
+    type: choice
+    options: [SIEM, EDR, IDS, Firewall, Email Gateway, Cloud, Khác]
+    required: true
+  - field: alert_detail
+    prompt: "Paste nội dung alert hoặc trỏ đến log file"
+    type: multiline
+    required: true
+  - field: siem_platform
+    prompt: "SIEM platform đang dùng? (để tạo query phù hợp)"
+    type: choice
+    options: [Splunk, Elastic/ELK, Microsoft Sentinel, QRadar, Khác]
+    required: false
+
+output:
+  format: alert-analysis-report
+  sections:
+    - alert-summary
+    - mitre-mapping
+    - affected-assets
+    - recommended-actions
+    - iocs-extracted
+    - siem-queries
+  language: bilingual
+
+keywords:
+  - alert
+  - triage
+  - soc
+  - siem
+  - phân loại alert
+  - security alert
+  - detection
+  - false positive
+triggers:
+  - "triage alert"
+  - "phân tích alert"
+  - "có alert cần xử lý"
+priority: 1
+
+tags: [soc, detection, triage, daily-ops]
+version: "1.0.0"
+author: secops-team

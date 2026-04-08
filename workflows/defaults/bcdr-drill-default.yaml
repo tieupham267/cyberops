@@ -1,0 +1,78 @@
+name: bcdr-drill-default
+title: "[Default] Quy trình diễn tập BCP/DRP"
+description: >
+  Lập kế hoạch và thực hiện diễn tập Business Continuity / Disaster Recovery
+  theo TT 09/2020 và ISO 22301. Bắt buộc ít nhất 1 lần/năm cho fintech.
+  Dùng khi chưa có quy trình BCP/DRP drill riêng.
+category: ir
+type: default
+
+chain:
+  - agent: incident-commander
+    skills:
+      - incident-response
+    task: >
+      Thiết kế kịch bản diễn tập: scenario, scope, participants,
+      success criteria, timeline. Loại drill: tabletop, functional, full-scale.
+    output_key: drill_plan
+  - agent: grc-advisor
+    skills:
+      - compliance-frameworks
+      - vietnam-regulations
+    task: >
+      Đánh giá compliance: kịch bản diễn tập có cover yêu cầu
+      TT 09/2020 (BCP/DRP drill hàng năm) và NĐ 85/2016 không?
+      Tạo template báo cáo kết quả diễn tập cho NHNN nếu cần.
+    output_key: compliance_check
+
+input:
+  - field: drill_type
+    prompt: "Loại diễn tập?"
+    type: choice
+    options: [Tabletop exercise, Functional test, Full-scale drill]
+    required: true
+  - field: scenario
+    prompt: "Kịch bản? (ransomware, DC failure, data breach, DDoS, ...)"
+    type: text
+    required: true
+  - field: scope
+    prompt: "Phạm vi? (hệ thống nào, team nào tham gia)"
+    type: multiline
+    required: true
+  - field: rpo_rto_target
+    prompt: "RPO/RTO mục tiêu? (nếu đã xác định)"
+    type: text
+    required: false
+
+output:
+  format: bcdr-drill-package
+  sections:
+    - drill-plan
+    - scenario-detail
+    - participant-roles
+    - success-criteria
+    - execution-checklist
+    - observation-template
+    - after-action-report-template
+    - compliance-mapping
+  language: vi
+
+keywords:
+  - bcp
+  - drp
+  - disaster recovery
+  - business continuity
+  - diễn tập
+  - drill
+  - khôi phục
+  - dự phòng
+triggers:
+  - "diễn tập BCP"
+  - "disaster recovery drill"
+  - "business continuity test"
+  - "diễn tập dự phòng"
+priority: 2
+
+tags: [ir, bcdr, default, tt-09-2020]
+version: "1.0.0"
+author: secops-defaults

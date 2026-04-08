@@ -1,0 +1,60 @@
+name: change-management-default
+title: "[Default] Quy trình quản lý thay đổi"
+description: >
+  Quy trình change management cho hệ thống CNTT theo ISO 27001 A.8.32
+  và TT 09/2020. Bao gồm: request, review, approve, implement, verify, close.
+  Dùng khi chưa có quy trình change management riêng.
+category: grc
+type: default
+
+agent: grc-advisor
+skills:
+  - compliance-frameworks
+
+input:
+  - field: change_type
+    prompt: "Loại thay đổi?"
+    type: choice
+    options: [Standard (pre-approved), Normal (cần approval), Emergency (khẩn cấp)]
+    required: true
+  - field: change_description
+    prompt: "Mô tả thay đổi?"
+    type: multiline
+    required: true
+  - field: affected_systems
+    prompt: "Hệ thống bị ảnh hưởng?"
+    type: multiline
+    required: true
+  - field: rollback_plan
+    prompt: "Có rollback plan không? (mô tả nếu có)"
+    type: multiline
+    required: false
+
+output:
+  format: change-request-form
+  sections:
+    - change-request-detail
+    - risk-assessment
+    - approval-checklist
+    - implementation-plan
+    - rollback-plan
+    - verification-steps
+    - post-change-review
+  language: vi
+
+keywords:
+  - change management
+  - thay đổi
+  - change request
+  - deployment
+  - release
+  - triển khai
+triggers:
+  - "change request"
+  - "yêu cầu thay đổi"
+  - "triển khai hệ thống"
+priority: 3
+
+tags: [grc, change-management, default, iso-27001]
+version: "1.0.0"
+author: secops-defaults

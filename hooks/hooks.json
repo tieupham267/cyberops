@@ -1,0 +1,81 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash hooks/scripts/check-secrets.sh \"$TOOL_INPUT_FILE_PATH\"",
+            "timeout": 10,
+            "description": "Block nếu phát hiện secrets/credentials trong file output"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git commit*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash hooks/scripts/pre-commit-security.sh",
+            "timeout": 30,
+            "description": "Security check trước mỗi commit: scan secrets, validate classification headers"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash hooks/scripts/block-no-verify.sh \"$TOOL_INPUT_COMMAND\"",
+            "timeout": 5,
+            "description": "Chặn --no-verify, --no-gpg-sign, và force push lên main/master"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash hooks/scripts/post-write-classify.sh \"$TOOL_INPUT_FILE_PATH\"",
+            "timeout": 5,
+            "description": "Nhắc nhở data classification cho file mới tạo nếu chứa từ khóa nhạy cảm"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash hooks/scripts/session-summary.sh",
+            "timeout": 10,
+            "description": "Lưu session summary cho audit trail khi kết thúc session"
+          },
+          {
+            "type": "command",
+            "command": "bash hooks/scripts/batch-security-check.sh",
+            "timeout": 30,
+            "description": "Batch security scan tất cả files đã thay đổi trong session"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Analyze this prompt for security context. If it mentions incidents, breaches, vulnerabilities, risks, or compliance, respond with JSON: {\"additionalContext\": \"[SECURITY CONTEXT] Remember to follow severity classification (CRITICAL/HIGH/MEDIUM/LOW), include MITRE ATT&CK mapping where relevant, and reference Vietnamese regulations if compliance is involved.\"}. If not security-related, respond with empty JSON: {}",
+            "description": "Tự động inject security context khi phát hiện prompt liên quan đến security"
+          }
+        ]
+      }
+    ]
+  }
+}

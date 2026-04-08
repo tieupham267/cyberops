@@ -1,0 +1,142 @@
+name: regulatory-inspection
+title: Ứng phó kiểm tra đột xuất từ cơ quan quản lý
+description: >
+  Ứng phó khi NHNN, Bộ TT&TT, Bộ Công an, hoặc cơ quan quản lý thông báo
+  kiểm tra đột xuất. Khác audit định kỳ: timeline cấp bách (thường 1-7 ngày),
+  scope không biết trước, cần response team ngay. Bao gồm: immediate response
+  checklist, gap assessment nhanh, evidence preparation, team briefing.
+category: grc
+
+chain:
+  - agent: grc-advisor
+    skills:
+      - compliance-frameworks
+      - vietnam-regulations
+      - document-drafting
+    task: >
+      **IMMEDIATE (trong vòng 2-4 giờ sau khi nhận thông báo)**
+
+      1. Phân tích thông báo kiểm tra:
+         - Cơ quan nào kiểm tra?
+         - Phạm vi kiểm tra (nếu có thông báo trước)
+         - Thời gian kiểm tra
+         - Thành phần đoàn kiểm tra
+         - Căn cứ pháp lý (Luật ANM 2018 Điều 13? TT 09/2020? NĐ 85/2016?)
+
+      2. Đối chiếu với company profile → xác định:
+         - Hệ thống/quy trình nào trong scope kiểm tra?
+         - Controls hiện có vs yêu cầu pháp luật
+         - Gaps nghiêm trọng nhất cần giải trình
+
+      3. Immediate response checklist:
+         - [ ] Xác nhận nhận thông báo (phản hồi cơ quan kiểm tra)
+         - [ ] Thông báo lãnh đạo (CEO/CTO/CISO)
+         - [ ] Triệu tập response team
+         - [ ] Xác định scope + assign owners
+         - [ ] Bắt đầu thu thập evidence
+         - [ ] Chuẩn bị phòng làm việc cho đoàn kiểm tra
+         - [ ] Review previous audit findings (nếu có)
+
+      4. Quick gap assessment:
+         - Dựa trên scope → check từng yêu cầu pháp lý
+         - Flag: items chưa đáp ứng → chuẩn bị giải trình
+         - Flag: items đang triển khai → chuẩn bị báo cáo tiến độ
+    output_key: immediate_response
+  - agent: ciso-fintech
+    skills:
+      - compliance-frameworks
+      - document-drafting
+    task: >
+      **PREPARATION (24-48 giờ trước kiểm tra)**
+
+      1. Evidence package chuẩn bị nhanh:
+         - Danh sách policies/SOPs hiện có → sẵn sàng trình
+         - Logs/reports gần nhất (SIEM, vuln scan, pentest)
+         - Hồ sơ cấp độ ATTT (NĐ 85/2016)
+         - Báo cáo đánh giá rủi ro gần nhất
+         - Hồ sơ incident response (nếu có sự cố gần đây)
+         - Chứng chỉ/AOC (ISO 27001, PCI DSS nếu có)
+
+      2. Team briefing:
+         - Ai trả lời lĩnh vực nào (CyberSec, IT, Legal, Business)
+         - Key messages: strengths, improvements đang triển khai
+         - Do's: trả lời đúng câu hỏi, cung cấp evidence theo yêu cầu
+         - Don'ts: không tình nguyện thông tin ngoài scope, không nói "không biết"
+            mà nói "sẽ kiểm tra và phản hồi", không cung cấp tài liệu chưa review
+
+      3. Giải trình cho gaps đã biết:
+         - Mỗi gap: thừa nhận → giải thích lý do → nêu kế hoạch khắc phục → timeline
+         - Chuẩn bị compensating controls nếu có
+         - KHÔNG BAO GIỜ che giấu hoặc bịa thông tin cho cơ quan kiểm tra
+
+      4. Logistics:
+         - Phòng làm việc cho đoàn
+         - Network/system access cho demo (nếu cần)
+         - Người escort đoàn kiểm tra
+         - Ghi chép (minute taker) cho mọi buổi làm việc
+    output_key: preparation
+
+input:
+  - field: notification
+    prompt: "Nội dung thông báo kiểm tra? (paste hoặc mô tả)"
+    type: multiline
+    required: true
+  - field: authority
+    prompt: "Cơ quan kiểm tra?"
+    type: choice
+    options:
+      - NHNN (Cục CNTT / Cơ quan Thanh tra giám sát)
+      - Bộ TT&TT (Cục ATTT)
+      - Bộ Công an (Cục An ninh mạng)
+      - Kiểm toán Nhà nước
+      - Khác
+    required: true
+  - field: inspection_date
+    prompt: "Thời gian kiểm tra?"
+    type: text
+    required: true
+  - field: scope_known
+    prompt: "Phạm vi kiểm tra đã biết? (nếu chưa biết ghi 'Chưa rõ')"
+    type: multiline
+    required: true
+    default: "Chưa rõ — cần xác nhận với cơ quan kiểm tra"
+  - field: preparation_time
+    prompt: "Còn bao lâu? (số ngày/giờ)"
+    type: text
+    required: true
+
+output:
+  format: inspection-response-package
+  sections:
+    - notification-analysis
+    - legal-basis
+    - immediate-response-checklist
+    - quick-gap-assessment
+    - evidence-package
+    - team-briefing
+    - gap-justification-guide
+    - logistics-checklist
+    - escalation-contacts
+  language: vi
+
+keywords:
+  - kiểm tra
+  - đột xuất
+  - thanh tra
+  - inspection
+  - NHNN kiểm tra
+  - Bộ Công an
+  - Bộ TT&TT
+  - đoàn kiểm tra
+triggers:
+  - "kiểm tra đột xuất"
+  - "NHNN kiểm tra"
+  - "đoàn kiểm tra"
+  - "thanh tra"
+  - "inspection"
+  - "Bộ Công an kiểm tra"
+priority: 1
+
+tags: [grc, regulatory, inspection, urgent, compliance]
+version: "1.0.0"
+author: secops-team

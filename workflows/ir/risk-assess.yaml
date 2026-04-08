@@ -1,0 +1,80 @@
+name: risk-assess
+title: Khởi tạo đánh giá rủi ro
+description: >
+  Đánh giá rủi ro an ninh mạng: qualitative 5x5, quantitative FAIR, vendor risk.
+  Tạo risk register, risk matrix, treatment recommendations. Tự động tham chiếu
+  NĐ 85/2016 (cấp độ ATTT), TT 09/2020 (yêu cầu NHNN), NĐ 13/2023 (DPIA nếu DLCN).
+category: ir
+
+agent: risk-assessor
+skills:
+  - risk-assessment
+  - vietnam-regulations
+  - compliance-frameworks
+
+input:
+  - field: target
+    prompt: "Đối tượng đánh giá? (hệ thống, dự án, vendor, quy trình)"
+    type: text
+    required: true
+  - field: methodology
+    prompt: "Phương pháp?"
+    type: choice
+    options: [Qualitative 5x5, Quantitative FAIR, Cả hai, Recommend cho tôi]
+    required: true
+    default: "Recommend cho tôi"
+  - field: scope
+    prompt: "Scope và boundaries?"
+    type: multiline
+    required: true
+  - field: frameworks
+    prompt: "Frameworks compliance liên quan?"
+    type: choice
+    options: [ISO 27001, NIST CSF, PCI-DSS, Vietnamese regulations, Tất cả applicable]
+    required: false
+    default: "Tất cả applicable"
+  - field: personal_data
+    prompt: "Hệ thống có xử lý dữ liệu cá nhân không? (để xác định cần DPIA)"
+    type: choice
+    options: ["Có - DLCN nhạy cảm", "Có - DLCN cơ bản", "Không", "Chưa rõ"]
+    required: true
+  - field: system_level
+    prompt: "Hệ thống đã phân loại cấp độ ATTT chưa? (NĐ 85/2016)"
+    type: choice
+    options: ["Cấp 1", "Cấp 2", "Cấp 3", "Cấp 4", "Cấp 5", "Chưa phân loại"]
+    required: false
+    default: "Chưa phân loại"
+
+output:
+  format: risk-assessment-report
+  sections:
+    - risk-register
+    - risk-matrix
+    - risk-treatment-recommendations
+    - regulatory-compliance-risk
+    - system-level-assessment
+    - dpia-determination
+    - nhnn-reporting-requirements
+    - executive-summary
+  language: vi
+
+keywords:
+  - risk assessment
+  - đánh giá rủi ro
+  - risk register
+  - risk matrix
+  - fair
+  - vendor risk
+  - rủi ro CNTT
+  - cấp độ ATTT
+  - DPIA
+triggers:
+  - "đánh giá rủi ro"
+  - "risk assessment"
+  - "vendor assessment"
+  - "rủi ro CNTT"
+priority: 2
+
+tags: [ir, risk, assessment, nd-85-2016, tt-09-2020, nd-13-2023]
+version: "2.0.0"
+author: secops-team

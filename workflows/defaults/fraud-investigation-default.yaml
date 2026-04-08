@@ -1,0 +1,98 @@
+name: fraud-investigation-default
+title: "[Default] Quy trình điều tra gian lận"
+description: >
+  Quy trình điều tra khi phát hiện giao dịch gian lận hoặc fraud alert.
+  Multi-agent: fraud-analyst investigate → soc-analyst collect evidence →
+  grc-advisor assess regulatory obligations.
+  Dùng khi chưa có quy trình fraud investigation riêng.
+category: fraud
+type: default
+
+chain:
+  - agent: fraud-analyst
+    skills:
+      - payment-fraud
+    task: >
+      1. Analyze alert/suspicious transaction: timeline, parties, amounts
+      2. Link analysis: related transactions, cards, devices, accounts
+      3. Pattern matching: map to known fraud typologies
+      4. Impact assessment: total financial loss, affected customers
+      5. Root cause: design flaw, control gap, insider, or external attack
+      6. Immediate actions: block card/account, freeze funds, preserve evidence
+    output_key: investigation
+  - agent: soc-analyst
+    skills: []
+    task: >
+      1. Collect technical evidence: transaction logs, POS logs, IP addresses,
+         device fingerprints, session data
+      2. Create timeline from logs
+      3. Check for related IOCs if external attack suspected
+      4. Preserve evidence chain (hash logs, screenshots)
+      5. Update detection rules to catch similar patterns
+    output_key: evidence
+  - agent: grc-advisor
+    skills:
+      - vietnam-regulations
+    task: >
+      Assess regulatory obligations:
+      1. NĐ 13/2023: nếu DLCN bị compromised → breach notification?
+      2. TT 09/2020: nếu fintech → báo cáo NHNN (mức sự cố)?
+      3. PCI DSS: nếu card data involved → incident response requirements
+      4. Law enforcement: khi nào cần báo công an (Bộ luật Hình sự Điều 174 - lừa đảo)
+      5. Customer communication: thông báo khách hàng bị ảnh hưởng
+    output_key: regulatory
+
+input:
+  - field: alert_detail
+    prompt: "Mô tả alert hoặc giao dịch nghi vấn?"
+    type: multiline
+    required: true
+  - field: fraud_type
+    prompt: "Loại gian lận nghi ngờ?"
+    type: choice
+    options: [Promotion abuse, Card fraud, Refund fraud, Collusion, Account takeover, Merchant fraud, Chưa xác định]
+    required: true
+  - field: estimated_loss
+    prompt: "Thiệt hại ước tính (nếu biết)?"
+    type: text
+    required: false
+  - field: affected_customers
+    prompt: "Có khách hàng bị ảnh hưởng không?"
+    type: choice
+    options: ["Có", "Không", "Chưa rõ"]
+    required: true
+
+output:
+  format: fraud-investigation-report
+  sections:
+    - investigation-summary
+    - timeline
+    - link-analysis
+    - impact-assessment
+    - root-cause
+    - evidence-collected
+    - immediate-actions
+    - detection-rule-updates
+    - regulatory-obligations
+    - customer-communication
+    - prevention-recommendations
+  language: vi
+
+keywords:
+  - fraud investigation
+  - điều tra gian lận
+  - suspicious transaction
+  - giao dịch nghi vấn
+  - fraud alert
+  - chargeback
+  - dispute
+triggers:
+  - "điều tra gian lận"
+  - "fraud investigation"
+  - "giao dịch nghi vấn"
+  - "phát hiện fraud"
+priority: 1
+
+tags: [fraud, investigation, default, critical]
+version: "1.0.0"
+author: secops-defaults

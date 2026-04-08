@@ -1,0 +1,56 @@
+name: vuln-management-default
+title: "[Default] Quy trình quản lý lỗ hổng bảo mật"
+description: >
+  Quy trình xử lý lỗ hổng từ phát hiện đến remediation theo NIST SP 800-40.
+  Bao gồm: triage, risk-based prioritization (SSVC), assign owner, track SLA.
+  Dùng khi chưa có quy trình vuln management riêng.
+category: soc
+type: default
+
+agent: vuln-manager
+skills: []
+
+input:
+  - field: vuln_source
+    prompt: "Nguồn phát hiện lỗ hổng?"
+    type: choice
+    options: [Vulnerability scan, Pentest, Bug bounty, Vendor advisory, Threat intel, Tự phát hiện, Khác]
+    required: true
+  - field: vuln_detail
+    prompt: "Chi tiết lỗ hổng (CVE, mô tả, hệ thống affected)?"
+    type: multiline
+    required: true
+  - field: scan_results
+    prompt: "File scan results (nếu có)?"
+    type: file
+    required: false
+
+output:
+  format: vuln-management-report
+  sections:
+    - vuln-triage
+    - risk-prioritization
+    - remediation-plan
+    - owner-assignment
+    - sla-tracking
+    - verification-plan
+  language: bilingual
+
+keywords:
+  - vulnerability
+  - lỗ hổng
+  - cve
+  - patch
+  - remediation
+  - scan
+  - pentest findings
+triggers:
+  - "có lỗ hổng mới"
+  - "kết quả pentest"
+  - "vulnerability report"
+  - "cần patch"
+priority: 2
+
+tags: [soc, vulnerability, default]
+version: "1.0.0"
+author: secops-defaults

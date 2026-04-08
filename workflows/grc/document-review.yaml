@@ -1,0 +1,91 @@
+name: document-review
+title: Review tài liệu (proposal, policy, report, SOP, etc.)
+description: >
+  Review chất lượng và nội dung tài liệu bất kỳ. Tự động chọn agent phù hợp
+  theo loại tài liệu: technical proposal → ciso-fintech, policy → grc-advisor,
+  incident report → incident-commander, etc. Luôn gắn skill document-drafting
+  để enforce format chuẩn.
+category: grc
+
+# Không define agent/chain cố định — orchestrator chọn agent dựa vào document_type
+# Fallback: grc-advisor nếu không xác định loại
+agent: grc-advisor
+skills:
+  - document-drafting
+  - compliance-frameworks
+
+input:
+  - field: document
+    prompt: "Tài liệu cần review? (paste nội dung hoặc trỏ đến file)"
+    type: multiline
+    required: true
+  - field: document_type
+    prompt: "Loại tài liệu?"
+    type: choice
+    options:
+      - Technical proposal / Đề án kỹ thuật
+      - Security policy / Chính sách bảo mật
+      - ITSM policy
+      - SOP / Quy trình / Playbook
+      - Incident report / Post-mortem
+      - Vulnerability / Pentest report
+      - Architecture design document
+      - Awareness / Training material
+      - Risk assessment report
+      - Board / Executive report
+      - Regulatory filing
+      - Khác
+    required: true
+  - field: review_purpose
+    prompt: "Mục đích review?"
+    type: choice
+    options:
+      - Approval (phê duyệt trước khi ban hành)
+      - Quality check (kiểm tra chất lượng)
+      - Compliance check (kiểm tra tuân thủ)
+      - Periodic review (rà soát định kỳ)
+      - Feedback for author (góp ý cho tác giả)
+    required: true
+  - field: author_context
+    prompt: "Tác giả là ai? (staff, intern, vendor, partner — để điều chỉnh kỳ vọng)"
+    type: choice
+    options: [Senior staff, Junior staff, Intern/Thực tập sinh, Vendor/Partner, Không rõ]
+    required: false
+    default: "Không rõ"
+
+output:
+  format: document-review-report
+  sections:
+    - document-info
+    - structure-assessment
+    - accuracy-check
+    - consistency-check
+    - content-quality
+    - compliance-mapping
+    - scoring-summary
+    - items-needing-input
+    - improvement-suggestions
+  language: vi
+
+keywords:
+  - review
+  - đánh giá tài liệu
+  - review proposal
+  - review policy
+  - review report
+  - kiểm tra tài liệu
+  - góp ý
+  - phê duyệt
+  - document review
+triggers:
+  - "review tài liệu"
+  - "review proposal"
+  - "đánh giá document"
+  - "kiểm tra chất lượng tài liệu"
+  - "review đề án"
+  - "góp ý tài liệu"
+priority: 2
+
+tags: [grc, document-review, quality, cross-type]
+version: "1.0.0"
+author: secops-team
