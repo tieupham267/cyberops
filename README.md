@@ -1,54 +1,66 @@
 # secops — Claude Code Plugin
 
-Plugin toàn diện cho team Cyber Security. Biến Claude Code thành trợ lý bảo mật với 8 agents chuyên biệt, 3 skills chuyên sâu, 8 slash commands, hooks tự động, và rules enforce standards.
+Plugin toàn diện cho team Cyber Security. Biến Claude Code thành trợ lý bảo mật với 12 agents chuyên biệt, 8 skills chuyên sâu, 14 slash commands, hooks tự động, và rules enforce standards. Hỗ trợ hybrid orchestration với workflow templates.
 
 ## Cài đặt
 
 > Hướng dẫn chi tiết từng bước: xem [GETTING-STARTED.md](GETTING-STARTED.md)
 
-### Từ GitHub
-```bash
-/plugin install github:tieupham267/secops
+### Từ GitHub *(recommended)*
+
+```text
+/plugin marketplace add https://github.com/tieupham267/secops
+/plugin install secops-toolkit@secops
 ```
 
 ### Từ local (dev/testing)
-```bash
-claude --plugin-dir ./secops
-```
 
-### Từ marketplace
 ```bash
-/plugin marketplace add tieupham267/secops-marketplace
-/plugin install secops@secops-marketplace
+git clone https://github.com/tieupham267/secops.git
+cd secops
+claude --plugin-dir .
 ```
 
 ## Thành phần
 
-### Agents (8)
+### Agents (12)
 
-| Agent | Lệnh gọi | Chức năng |
-|-------|-----------|-----------|
-| `soc-analyst` | Phân tích alert, log, SIEM queries | SOC L1-L3 |
-| `incident-commander` | IR playbooks, forensics, communication | Ứng phó sự cố |
-| `threat-analyst` | IOC processing, MITRE ATT&CK, threat briefing | Threat Intelligence |
-| `threat-modeler` | STRIDE, PASTA, LINDDUN, attack trees | Threat Modeling |
-| `risk-assessor` | Risk register, FAIR, BIA, TPRM | Quản lý rủi ro |
-| `vuln-manager` | Scan analysis, SSVC prioritization, CVE assessment | Vuln Management |
-| `grc-advisor` | Policy drafting, gap analysis, audit prep | GRC & Compliance |
-| `awareness-designer` | Training content, phishing campaigns | Security Awareness |
+| Agent | Chức năng | Model |
+|-------|-----------|-------|
+| `soc-analyst` | SOC L1-L3: triage alerts, log analysis, SIEM queries, detection rules | sonnet |
+| `incident-commander` | IR playbooks, forensics, stakeholder communications | opus |
+| `threat-analyst` | IOC processing, MITRE ATT&CK, threat briefings | sonnet |
+| `threat-modeler` | STRIDE, PASTA, LINDDUN, attack trees, DFD review | opus |
+| `risk-assessor` | Risk register, FAIR, BIA, TPRM, risk treatment | opus |
+| `vuln-manager` | Scan analysis, SSVC prioritization, CVE assessment | sonnet |
+| `grc-advisor` | Policy drafting, gap analysis, audit prep, ITSM review | opus |
+| `awareness-designer` | Training content, phishing simulation campaigns | sonnet |
+| `ciso-fintech` | CISO-level strategic advisor cho fintech Vietnam | opus |
+| `devsecops` | CI/CD security, container/K8s, IaC review, supply chain | sonnet |
+| `fraud-analyst` | Payment fraud, promotion abuse, transaction monitoring | opus |
+| `orchestrator` | Meta-agent: routes requests tới workflow/agent phù hợp | opus |
 
-### Skills (3)
+### Skills (8)
 
 | Skill | Nội dung |
 |-------|---------|
 | `incident-response` | Playbooks (ransomware, BEC, data breach), forensic procedures, report templates |
 | `risk-assessment` | FAIR methodology, 5x5 matrix, BIA, TPRM questionnaire, treatment framework |
-| `compliance-frameworks` | ISO 27001:2022, NIST CSF 2.0, CIS v8, Vietnamese regulations (NĐ 13/2023, Luật ANM 2018) |
+| `compliance-frameworks` | ISO 27001:2022, NIST CSF 2.0, CIS v8, PCI-DSS v4.0, Vietnamese regulations |
+| `vietnam-regulations` | Luật ANM 2018, NĐ 13/2023, NĐ 85/2016, NĐ 53/2022, TT 09/2020-NHNN, TT 12/2022-BTTTT |
+| `payment-fraud` | Fraud detection rules, promotion abuse, card fraud, ATO, collusion patterns |
+| `itsm-reference` | ITIL 4, ISO 20000, service management security review |
+| `document-drafting` | Templates cho policies, SOPs, reports, compliance documents |
+| `security-maturity` | Security maturity assessment, capability mapping, roadmap planning |
 
-### Commands (9)
+### Commands (14)
 
 | Command | Mô tả |
 |---------|-------|
+| `/secops:run` | **Unified entry point** — chạy workflow hoặc mô tả tự nhiên |
+| `/secops:setup-profile` | Tạo/cập nhật company profile từ org documents |
+| `/secops:generate-workflows` | Tạo workflows từ process documents nội bộ |
+| `/secops:config` | Xem/sửa config (context_dir, workflows_dir, references_dir) |
 | `/secops:incident` | Khởi tạo quy trình ứng phó sự cố |
 | `/secops:risk-assess` | Đánh giá rủi ro an ninh mạng |
 | `/secops:threat-model` | Phiên threat modeling |
@@ -57,22 +69,29 @@ claude --plugin-dir ./secops
 | `/secops:phishing-campaign` | Thiết kế phishing simulation |
 | `/secops:vuln-report` | Phân tích vulnerability scan |
 | `/secops:policy-draft` | Soạn thảo chính sách bảo mật |
-| `/secops:config` | Xem/sửa config (context_dir, workflows_dir) |
+| `/secops:ciso-consult` | Tư vấn bảo mật cấp CISO cho fintech |
+| `/secops:devsecops-review` | Review bảo mật CI/CD, K8s, container |
 
-### Hooks (4)
+### Hooks (6)
 
 | Hook | Event | Chức năng |
 |------|-------|----------|
 | Secret detection | PreToolUse (Write/Edit) | Block nếu phát hiện credentials |
-| Pre-commit security | PreToolUse (git commit) | Scan secrets trước commit |
-| Data classification | PostToolUse (Write/Edit) | Nhắc phân loại dữ liệu |
-| Session audit log | Stop | Ghi log session cho audit trail |
+| Pre-commit security | PreToolUse (git commit) | Scan secrets, private keys, .env trước commit |
+| Block --no-verify | PreToolUse (git*) | Chặn --no-verify, force push lên main/master |
+| Data classification | PostToolUse (Write/Edit) | Nhắc phân loại dữ liệu khi có từ khóa nhạy cảm |
+| Session audit log | Stop | Ghi session summary cho audit trail |
+| Batch security check | Stop | Batch scan tất cả files đã thay đổi trong session |
 
-### Rules (1)
+### Rules (5)
 
 | Rule | Áp dụng |
 |------|---------|
-| `cybersecurity.md` | Data handling, output standards, severity classification, regulatory compliance |
+| `cybersecurity.md` | Index — tham chiếu các rules bên dưới |
+| `data-handling.md` | Data classification, PII/credentials handling |
+| `output-standards.md` | Severity ratings, TLP marking, bilingual output |
+| `incident-response.md` | IR procedures, MITRE ATT&CK mapping, regulatory implications |
+| `tool-safety.md` | Scanning authorization, safe command execution |
 
 ## Yêu cầu
 
@@ -82,7 +101,9 @@ claude --plugin-dir ./secops
 ## Tùy chỉnh
 
 ### Thêm context tổ chức
+
 Tạo file `CLAUDE.md` trong project và thêm thông tin:
+
 ```markdown
 # Security Context
 - Organization: [Tên tổ chức]
@@ -93,10 +114,13 @@ Tạo file `CLAUDE.md` trong project và thêm thông tin:
 ```
 
 ### Thêm agent mới
+
 Tạo file `.md` trong `agents/` theo format frontmatter YAML.
 
 ### Disable hook cụ thể
+
 Trong `.claude/settings.json`:
+
 ```json
 {
   "hooks": {
