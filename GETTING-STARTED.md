@@ -21,7 +21,10 @@ Bước 7: Verify & test                        (5 phút)
 
 ## Folder `context/` và `workflows/` nằm ở đâu?
 
-Plugin hỗ trợ 2 cách cài đặt. **Dù cài cách nào, folder `context/` và `workflows/` luôn nằm trong project của bạn** (working directory), KHÔNG nằm trong plugin directory.
+Plugin đọc/ghi `context/` và `workflows/` từ **base directory**, xác định theo thứ tự:
+
+1. **`SECOPS_HOME`** (biến môi trường) — nếu được set
+2. **Working directory** (default) — nếu không set `SECOPS_HOME`
 
 ### Cách 1: Clone repo + `--plugin-dir` (recommended cho dev)
 
@@ -40,37 +43,67 @@ my-project/                     ← working directory (cũng là plugin dir)
 └── ...
 ```
 
-### Cách 2: Cài global (recommended cho daily use)
+### Cách 2: Cài global — dùng working directory (default)
 
 ```text
-~/.claude/plugins/cache/.../secops/    ← plugin dir (tự quản lý, KHÔNG sửa)
-├── agents/                            ← plugin code (agents, skills, commands, hooks)
-├── skills/
-├── commands/
-└── ...
-
-C:\Projects\my-app\                    ← working directory (project của bạn)
+C:\Projects\my-app\                    ← working directory = base directory
 ├── context/                           ➕ Tự tạo bởi /secops:setup-profile
 │   ├── company-profile.yaml
 │   ├── org-docs/
-│   │   └── (bạn đặt tài liệu tổ chức vào đây)
 │   └── process-docs/
-│       └── (bạn đặt SOPs/playbooks vào đây)
 ├── workflows/                         ➕ Tự tạo bởi /secops:setup-profile
 │   ├── defaults/                      ➕ Copy 10 default workflows từ plugin
-│   ├── soc/                           ➕ Custom workflows (từ /secops:generate-workflows)
-│   ├── ir/
 │   └── ...
 ├── src/
 └── ...
 ```
 
-Khi cài global, lần đầu chạy `/secops:setup-profile` trong project, plugin sẽ **tự tạo** cả `context/` và `workflows/` với cấu trúc đầy đủ:
+### Cách 3: Cài global — dùng `SECOPS_HOME` (recommended cho daily use)
+
+Khi muốn **dùng chung 1 bộ context/workflows cho nhiều projects**, set biến `SECOPS_HOME`:
+
+```bash
+# Windows (PowerShell)
+$env:SECOPS_HOME = "C:\SecOps-Data"
+claude
+
+# Linux/macOS
+export SECOPS_HOME=~/secops-data
+claude
+
+# Hoặc set permanent trong .bashrc / .zshrc / System Environment Variables
+```
+
+```text
+C:\SecOps-Data\                        ← SECOPS_HOME = base directory (dùng chung)
+├── context/
+│   ├── company-profile.yaml           ← profile tổ chức
+│   ├── org-docs/
+│   │   └── (tài liệu tổ chức)
+│   └── process-docs/
+│       └── (SOPs/playbooks)
+├── workflows/
+│   ├── defaults/                      ← 10 default workflows
+│   ├── soc/                           ← custom workflows
+│   ├── ir/
+│   └── ...
+
+C:\Projects\my-app\                    ← working directory (project A)
+├── src/
+└── ...
+
+C:\Projects\another-app\               ← working directory (project B)
+├── src/
+└── ...                                ← cả 2 projects dùng chung SecOps-Data
+```
+
+Khi lần đầu chạy `/secops:setup-profile`, plugin sẽ **tự tạo** cả `context/` và `workflows/` trong base directory:
+
 - `context/` — folder trống, bạn thêm tài liệu tổ chức vào
 - `workflows/defaults/` — copy 10 default workflows từ plugin, sẵn sàng dùng ngay
 - `workflows/<category>/` — folder trống cho custom workflows
 
-> **Tip**: Thêm `context/` vào `.gitignore` của project vì chứa thông tin nhạy cảm. Folder `workflows/` có thể commit vì chỉ chứa workflow templates.
+> **Tip**: Thêm `context/` vào `.gitignore` nếu base directory nằm trong project. Folder `workflows/` có thể commit vì chỉ chứa workflow templates.
 
 ---
 
@@ -465,12 +498,16 @@ Hook phải block và hiện thông báo `[SECURITY]`.
 | `/secops:setup-profile` | Tạo/cập nhật company profile từ org docs |
 | `/secops:generate-workflows` | Tạo workflows từ process docs |
 
-## Hook Profiles
+## Environment Variables
+
+| Biến | Mục đích | Giá trị |
+| --- | --- | --- |
+| `SECOPS_HOME` | Chỉ định folder chứa `context/` và `workflows/` | Path tới folder (default: working directory) |
+| `SECOPS_PROFILE` | Mức độ nghiêm ngặt của hooks | `dev` / `standard` (default) / `strict` |
 
 ```bash
-SECOPS_PROFILE=dev claude --plugin-dir .       # Nhẹ — chỉ check secrets
-SECOPS_PROFILE=standard claude --plugin-dir .  # Mặc định — tất cả checks
-SECOPS_PROFILE=strict claude --plugin-dir .    # Nghiêm ngặt — block cả warnings
+# Ví dụ kết hợp
+SECOPS_HOME=~/secops-data SECOPS_PROFILE=strict claude
 ```
 
 ## Cần hỗ trợ?

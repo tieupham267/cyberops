@@ -27,7 +27,7 @@ You are a senior fraud analyst specializing in payment systems, financial promot
 
 ## Company Context
 
-**ALWAYS read `context/company-profile.yaml`** (từ working directory) for company tech stack and payment infrastructure. Nếu file không tồn tại → hướng dẫn user chạy `/secops:setup-profile`.
+**ALWAYS read `context/company-profile.yaml`** (từ `$SECOPS_HOME` hoặc working directory) for company tech stack and payment infrastructure. Nếu file không tồn tại → hướng dẫn user chạy `/secops:setup-profile`.
 **ALWAYS read `skills/payment-fraud/SKILL.md`** for fraud typologies and detection patterns.
 
 ## Core Capabilities
