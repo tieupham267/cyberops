@@ -2,36 +2,36 @@
 # test-structure.sh — Layer 1: Structural Integrity
 # Validates plugin structure, frontmatter, YAML schemas, internal references
 source "$(dirname "$0")/helpers.sh"
-cd "$PROJECT_DIR"
+cd "$PLUGIN_DIR"
 
 echo "  [1.1] Core directories"
 for dir in agents skills commands hooks hooks/scripts rules workflows; do
-  assert_dir_exists "$PROJECT_DIR/$dir"
+  assert_dir_exists "$PLUGIN_DIR/$dir"
 done
 
 echo "  [1.2] Core files"
-assert_file_exists "$PROJECT_DIR/CLAUDE.md"
-assert_file_exists "$PROJECT_DIR/hooks/hooks.json"
-assert_file_exists "$PROJECT_DIR/rules/cybersecurity.md"
-assert_file_exists "$PROJECT_DIR/workflows/SCHEMA.md"
+assert_file_exists "$PLUGIN_DIR/CLAUDE.md"
+assert_file_exists "$PLUGIN_DIR/hooks/hooks.json"
+assert_file_exists "$PLUGIN_DIR/rules/cybersecurity.md"
+assert_file_exists "$PLUGIN_DIR/workflows/SCHEMA.md"
 
 echo "  [1.3] hooks.json is valid JSON"
-assert_valid_json "$PROJECT_DIR/hooks/hooks.json"
+assert_valid_json "$PLUGIN_DIR/hooks/hooks.json"
 
 echo "  [1.4] Agent frontmatter"
 for agent_file in agents/*.md; do
-  assert_frontmatter "$PROJECT_DIR/$agent_file"
-  assert_frontmatter_field "$PROJECT_DIR/$agent_file" "name"
-  assert_frontmatter_field "$PROJECT_DIR/$agent_file" "description"
-  assert_frontmatter_field "$PROJECT_DIR/$agent_file" "tools"
-  assert_frontmatter_field "$PROJECT_DIR/$agent_file" "model"
+  assert_frontmatter "$PLUGIN_DIR/$agent_file"
+  assert_frontmatter_field "$PLUGIN_DIR/$agent_file" "name"
+  assert_frontmatter_field "$PLUGIN_DIR/$agent_file" "description"
+  assert_frontmatter_field "$PLUGIN_DIR/$agent_file" "tools"
+  assert_frontmatter_field "$PLUGIN_DIR/$agent_file" "model"
 done
 
 echo "  [1.5] Skill frontmatter"
 for skill_file in skills/*/SKILL.md; do
-  assert_frontmatter "$PROJECT_DIR/$skill_file"
-  assert_frontmatter_field "$PROJECT_DIR/$skill_file" "name"
-  assert_frontmatter_field "$PROJECT_DIR/$skill_file" "description"
+  assert_frontmatter "$PLUGIN_DIR/$skill_file"
+  assert_frontmatter_field "$PLUGIN_DIR/$skill_file" "name"
+  assert_frontmatter_field "$PLUGIN_DIR/$skill_file" "description"
 done
 
 echo "  [1.6] Workflow YAML syntax"
@@ -110,14 +110,14 @@ echo "  [1.9] Hook scripts exist for hooks.json entries"
 # Extract script paths from hooks.json
 hook_scripts=$(grep -oE 'hooks/scripts/[a-z_-]+\.sh' hooks/hooks.json 2>/dev/null | sort -u)
 for hs in $hook_scripts; do
-  assert_file_exists "$PROJECT_DIR/$hs"
+  assert_file_exists "$PLUGIN_DIR/$hs"
 done
 
 echo "  [1.10] Rules index references"
 for rule_file in rules/data-handling.md rules/output-standards.md rules/incident-response.md rules/tool-safety.md; do
-  assert_file_exists "$PROJECT_DIR/$rule_file"
+  assert_file_exists "$PLUGIN_DIR/$rule_file"
   fname=$(basename "$rule_file")
-  assert_contains "$PROJECT_DIR/rules/cybersecurity.md" "$fname" "Rules index references $fname"
+  assert_contains "$PLUGIN_DIR/rules/cybersecurity.md" "$fname" "Rules index references $fname"
 done
 
 layer_summary

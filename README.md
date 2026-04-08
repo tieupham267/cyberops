@@ -18,7 +18,7 @@ Plugin toàn diện cho team Cyber Security. Biến Claude Code thành trợ lý
 ```bash
 git clone https://github.com/tieupham267/secops.git
 cd secops
-claude --plugin-dir .
+claude --plugin-dir ./secops-plugin
 ```
 
 ## Thành phần

@@ -4,7 +4,7 @@
 # templates, and rules enforcement markers.
 # NOTE: This tests the *definitions* not actual LLM output (which requires running the plugin).
 source "$(dirname "$0")/helpers.sh"
-cd "$PROJECT_DIR"
+cd "$PLUGIN_DIR"
 
 echo "  [3.1] Agents define output format sections"
 
@@ -101,7 +101,7 @@ echo "  [3.4] Bilingual support"
 # Check agents have Vietnamese content
 for agent_file in agents/soc-analyst.md agents/grc-advisor.md agents/ciso-fintech.md; do
   if [ -f "$agent_file" ]; then
-    assert_contains "$PROJECT_DIR/$agent_file" "tiếng Việt|Vietnamese|Việt Nam|song ngữ" \
+    assert_contains "$PLUGIN_DIR/$agent_file" "tiếng Việt|Vietnamese|Việt Nam|song ngữ" \
       "$(basename $agent_file) has Vietnamese context"
   fi
 done
