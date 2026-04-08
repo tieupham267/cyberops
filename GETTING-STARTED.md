@@ -35,7 +35,8 @@ Sau khi hoàn thành, plugin sẽ được tailored cho tổ chức của bạn 
 **Cách 1 — Cài global** *(recommended cho daily use)*
 
 ```text
-/plugin install github:tieupham267/secops
+/plugin marketplace add https://github.com/tieupham267/secops
+/plugin install secops-toolkit@secops
 ```
 
 Plugin tự load ở mọi project. Data (context, workflows, references) sẽ được khởi tạo ở Bước 2.
