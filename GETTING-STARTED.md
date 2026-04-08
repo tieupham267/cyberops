@@ -1,138 +1,58 @@
 # SecOps Plugin — Getting Started
 
-Hướng dẫn cài đặt và setup plugin secops cho team cybersecurity.
-Sau khi hoàn thành, plugin sẽ được tailored cho tổ chức của bạn.
+Hướng dẫn cài đặt và cấu hình plugin **secops** cho team cybersecurity.
 
-## Tổng quan
-
-```
-Bước 1: Cài đặt plugin                      (5 phút)
-Bước 2: Setup company profile               (15 phút)
-Bước 3: Setup org structure                  (10 phút)
-Bước 4: Setup workflows                      (10 phút)
-Bước 5: Cập nhật regulations                 (5 phút)
-Bước 6: Cài Office Document Skills (tùy chọn)(10 phút)
-Bước 7: Verify & test                        (5 phút)
-                                              ─────────
-                                      Total:  ~60 phút
-```
+Sau khi hoàn thành, plugin sẽ được tailored cho tổ chức của bạn — tất cả agents sẽ tự động đọc tech stack, org structure, quy trình nội bộ, và quy định applicable để tạo output chính xác.
 
 ---
 
-## Folder `context/` và `workflows/` nằm ở đâu?
+## Tổng quan các bước
 
-Plugin xác định vị trí `context/` và `workflows/` theo thứ tự:
-
-1. **`~/.claude/secops.yaml`** (global config) — nếu có khai báo paths
-2. **Working directory** (default) — dùng `./context/`, `./workflows/`
-
-### Cách 1: Clone repo + `--plugin-dir` (recommended cho dev)
-
-```text
-secops/                         ← working directory (cũng là plugin dir)
-├── context/                    ✅ Có sẵn khi clone
-│   ├── company-profile.yaml
-│   ├── org-docs/
-│   └── process-docs/
-├── workflows/                  ✅ Có sẵn khi clone
-│   ├── defaults/               ✅ 10 default workflows
-│   ├── soc/
-│   ├── ir/
-│   └── ...
-├── agents/
-└── ...
-```
-
-### Cách 2: Cài global — dùng working directory (default)
-
-Không cần config. `context/` và `workflows/` nằm trong project hiện tại:
-
-```text
-C:\Projects\my-app\                    ← working directory
-├── context/                           ➕ Tự tạo bởi /secops:setup-profile
-│   ├── company-profile.yaml
-│   ├── org-docs/
-│   └── process-docs/
-├── workflows/                         ➕ Tự tạo bởi /secops:setup-profile
-│   ├── defaults/                      ➕ Copy 10 default workflows từ plugin
-│   └── ...
-├── src/
-└── ...
-```
-
-### Cách 3: Cài global — dùng folder riêng (recommended cho daily use)
-
-Khi muốn **dùng chung 1 bộ context/workflows cho nhiều projects**, chạy `/secops:setup-profile` lần đầu và chọn "folder riêng". Plugin sẽ lưu paths vào `~/.claude/secops.yaml`:
-
-```yaml
-# ~/.claude/secops.yaml (tự tạo khi setup)
-# Windows: C:\Users\<username>\.claude\secops.yaml
-context_dir: C:\SecOps-Data\context
-workflows_dir: C:\SecOps-Data\workflows
-references_dir: C:\SecOps-Data\references
-```
-
-```text
-C:\SecOps-Data\                        ← folder riêng (dùng chung)
-├── context/
-│   ├── company-profile.yaml           ← profile tổ chức
-│   ├── org-docs/
-│   │   └── (tài liệu tổ chức)
-│   └── process-docs/
-│       └── (SOPs/playbooks)
-├── workflows/
-│   ├── defaults/                      ← 10 default workflows
-│   ├── soc/                           ← custom workflows
-│   └── ...
-├── references/
-│   ├── regulations/                   ← luật, NĐ, TT bổ sung/cập nhật
-│   ├── standards/                     ← ISO, PCI, NIST bổ sung
-│   └── policies/                      ← ISMS, chính sách nội bộ công ty
-
-C:\Projects\my-app\                    ← project A — dùng chung SecOps-Data
-C:\Projects\another-app\               ← project B — dùng chung SecOps-Data
-```
-
-> **Tip**: Thêm `context/` vào `.gitignore` nếu nằm trong project. Có thể sửa `~/.claude/secops.yaml` bất kỳ lúc nào để đổi paths. Xóa file để quay về dùng working directory.
+| Bước | Nội dung | Thời gian |
+| --- | --- | --- |
+| 1 | Cài đặt plugin | 5 phút |
+| 2 | Khởi tạo data (context, workflows, references) | 5 phút |
+| 3 | Setup company profile | 15 phút |
+| 4 | Setup org structure & escalation | 10 phút |
+| 5 | Setup workflows từ quy trình nội bộ | 10 phút |
+| 6 | Thêm tài liệu tham chiếu (regulations, policies) | 10 phút |
+| 7 | Cài Office Document Skills *(tùy chọn)* | 10 phút |
+| 8 | Verify & test | 5 phút |
+| | **Tổng** | **~70 phút** |
 
 ---
 
 ## Bước 1: Cài đặt plugin
 
-### Yêu cầu
+### Yêu cầu hệ thống
 
-- VS Code với extension **Claude Code** (tìm `anthropic.claude-code` trên marketplace)
-- Hoặc Claude Code CLI (`npm install -g @anthropic-ai/claude-code`)
-- Windows: Git Bash (cài cùng Git for Windows) — cần cho hook scripts
+- **Claude Code** — VS Code extension (`anthropic.claude-code`) hoặc CLI (`npm install -g @anthropic-ai/claude-code`)
+- **Windows**: Git Bash (cài cùng Git for Windows) — cần cho hook scripts
+- **Subscription**: Claude Pro hoặc Max
 
 ### Cài đặt
 
-```bash
-# Cách 1: Cài global (recommended — dùng được ở mọi project)
-/plugin install github:tieupham267/secops
+**Cách 1 — Cài global** *(recommended cho daily use)*
 
-# Cách 2: Clone repo + plugin-dir (recommended cho dev/contribute)
+```text
+/plugin install github:tieupham267/secops
+```
+
+Plugin tự load ở mọi project. Data (context, workflows, references) sẽ được khởi tạo ở Bước 2.
+
+**Cách 2 — Clone repo** *(recommended cho dev/contribute)*
+
+```bash
 git clone https://github.com/tieupham267/secops.git
 cd secops
-```
-
-### Khởi động
-
-```bash
-# Nếu cài global: mở bất kỳ project nào, plugin tự load
-claude
-
-# Nếu dùng --plugin-dir:
 claude --plugin-dir .
-
-# Hoặc trong VS Code: mở folder secops → mở Claude Code panel → tự load
 ```
 
-### Verify cài đặt thành công
+Data đã có sẵn trong repo, có thể bỏ qua Bước 2.
 
-Trong Claude Code, gõ:
+### Verify cài đặt
 
-```
+```text
 /secops:run --list
 ```
 
@@ -140,63 +60,146 @@ Nếu thấy danh sách workflows → cài đặt thành công.
 
 ---
 
-## Bước 2: Setup Company Profile
+## Bước 2: Khởi tạo data
 
-Company profile chứa thông tin tech stack, security tools, compliance — tất cả agents sẽ tự động đọc để tailored output.
+> **Bỏ qua bước này** nếu đã clone repo (Cách 2 ở Bước 1) — data có sẵn.
 
-### Cách 1: Tự động từ org documents (recommended)
+Plugin lưu data vào 3 folders: `context/`, `workflows/`, `references/`. Bạn chọn vị trí lưu khi chạy lần đầu:
 
-1. Đặt các tài liệu tổ chức vào `context/org-docs/`:
-
+```text
+/secops:setup-profile
 ```
-context/org-docs/
-├── tech-stack.md          # Danh sách công nghệ: servers, databases, tools
-├── security-tools.md      # SIEM, EDR, firewall, scanner đang dùng
-├── org-chart.md (hoặc .png)  # Sơ đồ tổ chức, phòng ban
-├── hr-teams.md            # Danh sách team security, headcount
-├── compliance-status.md   # Chứng chỉ đã có, audit schedule
-├── network-diagram.md     # Sơ đồ mạng (hoặc screenshot)
-└── ...                    # Bất kỳ doc nào mô tả tổ chức
+
+Plugin sẽ hỏi:
+
+```text
+Bạn muốn lưu data ở đâu?
+
+1. Trong project hiện tại (./context, ./workflows, ./references) — mặc định
+2. Chỉ định folder riêng (dùng chung cho nhiều projects)
+
+Chọn [1/2]:
 ```
+
+### Option 1: Trong project hiện tại (default)
+
+Không cần config. Folders được tạo trong working directory:
+
+```text
+my-project/
+├── context/                    ➕ Tạo mới
+│   ├── company-profile.yaml
+│   ├── org-docs/
+│   └── process-docs/
+├── workflows/                  ➕ Tạo mới + copy 10 default workflows
+│   ├── defaults/
+│   └── ...
+├── references/                 ➕ Tạo mới
+│   ├── regulations/
+│   ├── standards/
+│   └── policies/
+└── (project files)
+```
+
+### Option 2: Folder riêng (dùng chung nhiều projects)
+
+Paths được lưu vào global config `~/.claude/secops.yaml`. Mọi session sau tự đọc file này:
+
+```yaml
+# ~/.claude/secops.yaml
+# Windows: C:\Users\<username>\.claude\secops.yaml
+context_dir: C:\SecOps-Data\context
+workflows_dir: C:\SecOps-Data\workflows
+references_dir: C:\SecOps-Data\references
+```
+
+```text
+C:\SecOps-Data\                     ← folder riêng (dùng chung)
+├── context/
+│   ├── company-profile.yaml
+│   ├── org-docs/
+│   └── process-docs/
+├── workflows/
+│   ├── defaults/
+│   └── ...
+├── references/
+│   ├── regulations/
+│   ├── standards/
+│   └── policies/
+
+C:\Projects\app-a\                  ← project A  ┐
+C:\Projects\app-b\                  ← project B  ├─ dùng chung SecOps-Data
+C:\Projects\app-c\                  ← project C  ┘
+```
+
+### Thay đổi paths sau này
+
+Dùng `/secops:config` bất kỳ lúc nào:
+
+```text
+/secops:config                                          # Xem config hiện tại
+/secops:config context_dir C:\new-path\context           # Đổi context
+/secops:config workflows_dir C:\new-path\workflows       # Đổi workflows
+/secops:config references_dir C:\new-path\references     # Đổi references
+/secops:config show-paths                                # Xem resolved paths + file status
+/secops:config reset                                     # Xóa config, quay về working dir
+```
+
+---
+
+## Bước 3: Setup Company Profile
+
+Company profile chứa thông tin tech stack, security tools, compliance requirements. Tất cả agents tự động đọc để tailored output.
+
+### Cách 1: Tự động từ org documents *(recommended)*
+
+Đặt tài liệu tổ chức vào `context/org-docs/`:
+
+| File ví dụ | Nội dung |
+| --- | --- |
+| `tech-stack.md` | Danh sách công nghệ: servers, databases, tools |
+| `security-tools.md` | SIEM, EDR, firewall, scanner đang dùng |
+| `org-chart.md` (hoặc `.png`) | Sơ đồ tổ chức, phòng ban |
+| `hr-teams.md` | Danh sách team security, headcount |
+| `compliance-status.md` | Chứng chỉ đã có, audit schedule |
+| `network-diagram.md` | Sơ đồ mạng (hoặc screenshot) |
 
 > Không cần format chuẩn — viết tự nhiên, AI sẽ extract thông tin.
 > **Quan trọng**: Redact credentials/secrets trước khi đặt vào.
 
-2. Chạy:
+Chạy:
 
-```
+```text
 /secops:setup-profile
 ```
 
-3. Review kết quả trong `context/company-profile.yaml` → chỉnh sửa nếu cần.
+Plugin hiển thị **diff** so sánh profile hiện tại vs mới → confirm → lưu vào `context/company-profile.yaml`.
 
 ### Cách 2: Điền trực tiếp
 
-Mở `context/company-profile.yaml` và điền các fields. Ưu tiên điền:
+Mở `context/company-profile.yaml` và điền các fields. Ưu tiên:
 
 - `company` — tên, ngành, sản phẩm
 - `infrastructure` — cloud/on-prem, compute, OS
 - `cicd` — platform, source control
 - `security` — SIEM, EDR, firewall, identity
-- `compliance` — frameworks, certifications, VN regulations
+- `compliance` — frameworks, certifications
 
-Xem comments trong file để biết giá trị hợp lệ cho mỗi field.
+### Cách 3: Nhờ Claude điền qua Q&A
 
-### Cách 3: Nhờ Claude điền
-
-```
+```text
 Đọc file context/company-profile.yaml, tôi sẽ trả lời câu hỏi để bạn điền giúp.
 ```
 
 ---
 
-## Bước 3: Setup Org Structure
+## Bước 4: Setup Org Structure & Escalation
 
 Org mapping giúp workflows gán action items đúng phòng ban + đúng người.
 
-### Điền org_mapping trong company-profile.yaml
+### Điền `org_mapping`
 
-Mở `context/company-profile.yaml`, tìm section `org_mapping` và điền:
+Mở `context/company-profile.yaml`, tìm section `org_mapping`:
 
 ```yaml
 org_mapping:
@@ -209,10 +212,10 @@ org_mapping:
   devops:
     department: "Phòng DevOps"
     lead: "Lê Văn C"
-  # ... điền các phòng ban khác
+  # ... thêm các phòng ban khác
 ```
 
-### Điền escalation matrix
+### Điền `escalation`
 
 ```yaml
 escalation:
@@ -224,31 +227,31 @@ escalation:
     notify: ["CISO", "IT Director"]
     channel: "Slack #security-alerts"
     sla: "1 giờ"
-  # ...
+  # ... thêm các mức severity khác
 ```
 
-> Để trống nếu chưa có → workflows sẽ dùng tên generic và flag "(chưa xác định phòng ban)".
+> Để trống nếu chưa có → workflows dùng tên generic và flag "(chưa xác định phòng ban)".
 
 ---
 
-## Bước 4: Setup Workflows
+## Bước 5: Setup Workflows
 
 ### Default workflows (sẵn sàng dùng ngay)
 
-Plugin đi kèm 10 default workflows cho các quy trình phổ biến. Dùng ngay mà không cần setup thêm:
+Plugin đi kèm 10 default workflows:
 
-| Default Workflow | Dùng khi |
+| Workflow | Mục đích |
 | --- | --- |
-| incident-response-default | Ứng phó sự cố (NIST 800-61) |
-| data-breach-notification-default | Thông báo vi phạm DLCN (NĐ 13/2023, 72h) |
-| vuln-management-default | Xử lý lỗ hổng bảo mật |
-| access-review-default | Rà soát quyền truy cập |
-| change-management-default | Quản lý thay đổi |
-| vendor-risk-default | Đánh giá rủi ro vendor |
-| bcdr-drill-default | Diễn tập BCP/DRP |
-| security-awareness-default | Đào tạo nhận thức ATTT |
-| risk-assessment-default | Đánh giá rủi ro CNTT |
-| fraud-investigation-default | Điều tra gian lận |
+| `incident-response-default` | Ứng phó sự cố (NIST 800-61) |
+| `data-breach-notification-default` | Thông báo vi phạm DLCN (NĐ 13/2023, 72h) |
+| `vuln-management-default` | Xử lý lỗ hổng bảo mật |
+| `access-review-default` | Rà soát quyền truy cập |
+| `change-management-default` | Quản lý thay đổi |
+| `vendor-risk-default` | Đánh giá rủi ro vendor |
+| `bcdr-drill-default` | Diễn tập BCP/DRP |
+| `security-awareness-default` | Đào tạo nhận thức ATTT |
+| `risk-assessment-default` | Đánh giá rủi ro CNTT |
+| `fraud-investigation-default` | Điều tra gian lận |
 
 ### Tạo custom workflows từ quy trình nội bộ
 
@@ -256,116 +259,124 @@ Nếu tổ chức đã có SOPs/playbooks/runbooks:
 
 1. Đặt files vào `context/process-docs/`:
 
-```
-context/process-docs/
-├── incident-response-plan.md
-├── change-management-sop.md
-├── access-review-process.md
-└── ...
-```
+   | File ví dụ | Workflow sẽ tạo |
+   | --- | --- |
+   | `incident-response-plan.md` | `workflows/ir/` |
+   | `change-management-sop.md` | `workflows/grc/` |
+   | `access-review-process.md` | `workflows/grc/` |
+   | `phishing-response.md` | `workflows/soc/` |
 
 2. Chạy:
 
-```
-/secops:generate-workflows
-```
+   ```text
+   /secops:generate-workflows
+   ```
 
-3. Review preview → confirm → custom workflows được tạo trong `workflows/`
+3. Plugin hiển thị preview + **diff** cho workflows đã tồn tại → confirm → tạo/cập nhật
 
 > Custom workflows tự động **override** default workflows cùng loại.
-> Default workflows vẫn dùng cho quy trình chưa có custom.
+
+### Cập nhật khi quy trình thay đổi
+
+1. Sửa/thêm files trong `context/process-docs/`
+2. Chạy lại `/secops:generate-workflows`
+3. Review diff → confirm
 
 ---
 
-## Bước 5: Cập nhật regulations
+## Bước 6: Thêm tài liệu tham chiếu
 
-Plugin đi kèm knowledge base quy định Việt Nam trong `skills/vietnam-regulations/`:
+Plugin đi kèm knowledge base trong `skills/` (bundled). Folder `references/` cho phép bạn **bổ sung hoặc cập nhật** mà không sửa plugin.
 
-| Văn bản | File | Có sẵn |
+### Cấu trúc `references/`
+
+| Folder | Nội dung | Ví dụ |
 | --- | --- | --- |
-| Luật An ninh mạng 2018 | `luat/anm-2018.md` | ✅ |
-| Luật ATTT mạng 2015 | `luat/attt-2015.md` | ✅ |
-| NĐ 13/2023 (PDPA) | `nghi-dinh/nd-13-2023.md` | ✅ |
-| NĐ 85/2016 (Cấp độ ATTT) | `nghi-dinh/nd-85-2016.md` | ✅ |
-| NĐ 53/2022 (Hướng dẫn Luật ANM) | `nghi-dinh/nd-53-2022.md` | ✅ |
-| TT 09/2020/TT-NHNN (Ngân hàng) | `thong-tu/tt-09-2020-nhnn.md` | ✅ |
-| TT 12/2022/TT-BTTTT (Cấp độ) | `thong-tu/tt-12-2022-btttt.md` | ✅ |
+| `references/regulations/` | Luật, NĐ, TT bổ sung/cập nhật | TT mới NHNN, NĐ sửa đổi |
+| `references/standards/` | ISO, PCI, NIST controls bổ sung | PCI-DSS v4.0, ISO 27001:2022 controls |
+| `references/policies/` | Chính sách nội bộ công ty | ISMS policy, acceptable use, access control |
 
-### Thêm quy định ngành
+### Resolution order
 
-Nếu tổ chức chịu thêm quy định khác (ngân hàng, bảo hiểm, y tế), tạo file mới:
+Agents tra cứu theo thứ tự:
 
-```bash
-# Ví dụ: thêm thông tư ngân hàng mới
-# Tạo file trong thư mục phù hợp
+1. **`skills/`** (bundled) — knowledge base chuẩn đi kèm plugin
+2. **`references/`** (user) — bổ sung hoặc override
+3. **Web search** — chỉ khi cả 2 nguồn trên không đủ
+
+Nếu cùng chủ đề có trong cả `skills/` và `references/` → ưu tiên `references/` (mới hơn, cụ thể hơn).
+
+### Knowledge base bundled sẵn
+
+| Văn bản | Vị trí trong `skills/` |
+| --- | --- |
+| Luật An ninh mạng 2018 | `skills/vietnam-regulations/luat/anm-2018.md` |
+| Luật ATTT mạng 2015 | `skills/vietnam-regulations/luat/attt-2015.md` |
+| NĐ 13/2023 (PDPA) | `skills/vietnam-regulations/nghi-dinh/nd-13-2023.md` |
+| NĐ 85/2016 (Cấp độ ATTT) | `skills/vietnam-regulations/nghi-dinh/nd-85-2016.md` |
+| NĐ 53/2022 (Hướng dẫn Luật ANM) | `skills/vietnam-regulations/nghi-dinh/nd-53-2022.md` |
+| TT 09/2020/TT-NHNN (Ngân hàng) | `skills/vietnam-regulations/thong-tu/tt-09-2020-nhnn.md` |
+| TT 12/2022/TT-BTTTT (Cấp độ) | `skills/vietnam-regulations/thong-tu/tt-12-2022-btttt.md` |
+| ISO 27001, NIST CSF, CIS v8 | `skills/compliance-frameworks/SKILL.md` |
+
+### Thêm tài liệu
+
+Đặt file `.md` vào folder phù hợp trong `references/`. Ví dụ:
+
+```text
+# Thêm thông tư mới
+references/regulations/tt-20-2018-nhnn.md
+
+# Thêm ISMS policy nội bộ
+references/policies/isms-access-control.md
+references/policies/isms-incident-management.md
+
+# Thêm PCI-DSS controls chi tiết
+references/standards/pci-dss-v4-requirements.md
 ```
 
 Hoặc nhờ Claude:
 
+```text
+Thêm Thông tư 20/2018/TT-NHNN vào references/regulations/
 ```
-Thêm Thông tư 20/2018/TT-NHNN vào skills/vietnam-regulations/thong-tu/
-```
-
-### Cập nhật khi quy định thay đổi
-
-Agents đọc local files trước, chỉ web search khi không đủ. Khi quy định được sửa đổi:
-
-1. Cập nhật file tương ứng trong `skills/vietnam-regulations/`
-2. Hoặc nhờ Claude: "Cập nhật NĐ 13/2023 với nội dung sửa đổi mới nhất"
 
 ---
 
-## Bước 6: Cài đặt Office Document Skills (tùy chọn)
+## Bước 7: Cài Office Document Skills *(tùy chọn)*
 
-Nếu cần xuất tài liệu chuyên nghiệp dạng Word (.docx), PowerPoint (.pptx), hoặc Excel (.xlsx), cài thêm skills từ Anthropic official repo.
+Cần khi xuất tài liệu dạng Word (.docx), PowerPoint (.pptx), hoặc Excel (.xlsx).
 
-### Tại sao cần?
+> Bỏ qua nếu chỉ cần output Markdown.
 
-Plugin secops tạo nội dung dạng Markdown — đủ cho internal working docs. Nhưng khi cần:
-- Báo cáo đánh giá rủi ro gửi NHNN (.docx format chuẩn)
-- Slide trình bày giải pháp bảo mật cho Board (.pptx)
-- Bảng theo dõi vulnerabilities, risk register (.xlsx)
-- Policy/SOP cần template format chuẩn của công ty (.docx)
+### Khi nào cần?
 
-→ Cần Office document skills.
+- Báo cáo đánh giá rủi ro gửi NHNN (.docx)
+- Slide trình bày cho Board (.pptx)
+- Risk register, vulnerability tracker (.xlsx)
+- Policy/SOP theo template công ty (.docx)
 
 ### Cài đặt
 
-Skills này do Anthropic phát triển và maintain: [github.com/anthropics/skills](https://github.com/anthropics/skills)
-
-### Cách 1: Cài qua Plugin Marketplace (recommended)
-
 ```text
-# Bước 1: Đăng ký marketplace
+# Đăng ký marketplace
 /plugin marketplace add anthropics/skills
 
-# Bước 2: Cài document-skills plugin (bao gồm docx, pptx, xlsx, pdf)
+# Cài document-skills
 /plugin install document-skills@anthropic-agent-skills
 ```
 
-Hoặc cài qua UI:
-1. Gõ `/plugin` → chọn **Browse and install plugins**
-2. Chọn **anthropic-agent-skills**
-3. Chọn **document-skills**
-4. Chọn **Install now**
+Hoặc qua UI: `/plugin` → **Browse and install plugins** → **anthropic-agent-skills** → **document-skills** → **Install now**
 
-### Cách 2: Cài trực tiếp (nếu cách 1 không khả dụng)
+### Dependencies
 
-```bash
-claude skills add anthropics/skills/docx
-claude skills add anthropics/skills/pptx
-claude skills add anthropics/skills/xlsx
-```
+| Skill | Cài đặt |
+| --- | --- |
+| **docx** | `npm install -g docx` |
+| **pptx** | `npm install -g pptxgenjs` và `pip install "markitdown[pptx]" Pillow` |
+| **xlsx** | `pip install openpyxl pandas` |
 
-### Dependencies cần cài
-
-| Skill | Dependencies | Lệnh cài |
-| --- | --- | --- |
-| **docx** | docx-js (npm), pandoc, LibreOffice | `npm install -g docx` |
-| **pptx** | pptxgenjs (npm), markitdown, LibreOffice, Poppler | `npm install -g pptxgenjs` và `pip install "markitdown[pptx]" Pillow` |
-| **xlsx** | openpyxl, pandas (Python), LibreOffice | `pip install openpyxl pandas` |
-
-LibreOffice (dùng cho PDF conversion và formula recalculation):
+LibreOffice *(PDF conversion)*:
 
 ```bash
 # Ubuntu/Debian
@@ -377,73 +388,21 @@ brew install --cask libreoffice
 # Windows — download từ libreoffice.org
 ```
 
-Poppler (dùng cho PPTX → image conversion để QA):
+### Verify dependencies
 
 ```bash
-# Ubuntu/Debian
-sudo apt install poppler-utils
-
-# macOS
-brew install poppler
-
-# Windows — download từ github.com/oschwartz10612/poppler-windows
+node -e "require('docx'); console.log('docx OK')"
+node -e "require('pptxgenjs'); console.log('pptx OK')"
+python -c "import openpyxl; print('xlsx OK')"
 ```
 
 ### Cách hoạt động
 
-Skills này **không phải convert từ Markdown** — agent soạn thảo trực tiếp:
-
-| Skill | Cách tạo file | Kết quả |
-| --- | --- | --- |
-| **docx** | Agent viết JavaScript dùng `docx-js` → tạo .docx với headings, tables, TOC, images, headers/footers | File Word chuyên nghiệp, format đẹp |
-| **pptx** | Agent viết JavaScript dùng `pptxgenjs` → tạo slides với layout, colors, images, charts | Slide deck có design, không phải bullet text |
-| **xlsx** | Agent viết Python dùng `openpyxl` → tạo spreadsheet với formulas, formatting, charts | Excel có công thức, auto-calculate |
-
-### Sử dụng với secops plugin
-
-Sau khi cài, agents secops tự động sử dụng khi cần:
-
-```text
-# Ví dụ: Tạo báo cáo đánh giá rủi ro dạng Word
-/secops:run risk-assess
-→ Agent tạo nội dung → hỏi: "Xuất ra .docx?"
-→ Có → Agent dùng docx skill tạo file Word chuyên nghiệp
-
-# Ví dụ: Tạo slide trình bày security roadmap cho Board
-/secops:run security-roadmap
-→ Audience: Board/C-level
-→ Agent dùng pptx skill tạo slide deck
-
-# Ví dụ: Tạo bảng theo dõi action items từ công văn NHNN
-/secops:run regulatory-directive
-→ Agent dùng xlsx skill tạo tracker spreadsheet
-```
-
-### Verify cài đặt thành công
-
-```bash
-# Kiểm tra docx
-node -e "require('docx'); console.log('docx-js OK')"
-
-# Kiểm tra pptx
-node -e "require('pptxgenjs'); console.log('pptxgenjs OK')"
-
-# Kiểm tra xlsx
-python -c "import openpyxl; print('openpyxl OK')"
-
-# Kiểm tra LibreOffice
-python scripts/office/soffice.py --version 2>/dev/null || soffice --version
-```
-
-### Lưu ý
-
-- Skills này là **optional** — plugin hoạt động bình thường với Markdown output mà không cần cài
-- Agent tự quyết định khi nào dùng Office format dựa vào context (audience, document type)
-- Nếu chưa cài skill mà user yêu cầu .docx → agent sẽ output Markdown + thông báo cài skill
+Agents tự quyết định khi nào dùng Office format dựa vào context. Nếu chưa cài skill mà user yêu cầu → agent output Markdown + thông báo cài skill.
 
 ---
 
-## Bước 7: Verify & Test tổng thể
+## Bước 8: Verify & Test
 
 ### Chạy test suite
 
@@ -451,26 +410,27 @@ python scripts/office/soffice.py --version 2>/dev/null || soffice --version
 bash tests/run-all.sh
 ```
 
-Tất cả 5 layers phải pass:
-- Layer 1: Structural Integrity — cấu trúc plugin đúng
-- Layer 2: Hook Functionality — hooks chạy đúng
-- Layer 3: Output Quality — agents có đúng sections
-- Layer 4: Orchestration Flow — routing + workflows consistent
-- Layer 5: Plugin Security — không có secrets trong codebase
+5 layers phải pass:
+
+| Layer | Kiểm tra |
+| --- | --- |
+| 1 — Structural Integrity | Cấu trúc plugin, frontmatter, YAML schemas |
+| 2 — Hook Functionality | Mỗi hook script block/allow đúng |
+| 3 — Output Quality | Agents có đủ sections, bilingual |
+| 4 — Orchestration Flow | Routing, workflow uniqueness, chain consistency |
+| 5 — Plugin Security | Không secrets, không injection |
 
 ### Test thử workflow
 
-```
+```text
 /secops:run alert-triage
 ```
 
-Nếu orchestrator hỏi input → trả lời → nhận output tailored cho tech stack của bạn → setup thành công.
+Orchestrator hỏi input → trả lời → nhận output tailored cho tech stack → setup thành công.
 
 ### Test hook
 
-Tạo file test chứa secret:
-
-```
+```text
 Tạo file test.txt có nội dung: password = "MySecret123"
 ```
 
@@ -478,48 +438,63 @@ Hook phải block và hiện thông báo `[SECURITY]`.
 
 ---
 
-## Quick Reference — Các commands chính
+## Quick Reference
+
+### Commands
 
 | Command | Mục đích |
 | --- | --- |
 | `/secops:run <workflow>` | Chạy workflow cụ thể |
-| `/secops:run <mô tả>` | Mô tả bằng ngôn ngữ tự nhiên → orchestrator tự chọn workflow |
+| `/secops:run <mô tả>` | Mô tả tự nhiên → orchestrator tự chọn workflow |
 | `/secops:run --list` | Liệt kê tất cả workflows |
 | `/secops:setup-profile` | Tạo/cập nhật company profile từ org docs |
-| `/secops:generate-workflows` | Tạo workflows từ process docs |
-| `/secops:config` | Xem/sửa config (context_dir, workflows_dir) |
+| `/secops:generate-workflows` | Tạo/cập nhật workflows từ process docs |
+| `/secops:config` | Xem/sửa data paths (context, workflows, references) |
 
-## Environment Variables
+### Environment Variable
 
 | Biến | Mục đích | Giá trị |
 | --- | --- | --- |
-| `SECOPS_PROFILE` | Mức độ nghiêm ngặt của hooks | `dev` / `standard` (default) / `strict` |
+| `SECOPS_PROFILE` | Mức độ nghiêm ngặt của hooks | `dev` / `standard` *(default)* / `strict` |
 
 ```bash
 SECOPS_PROFILE=dev claude        # Nhẹ — chỉ check secrets
 SECOPS_PROFILE=strict claude     # Nghiêm ngặt — block cả warnings
 ```
 
-## Config file
+### Global Config
 
-| File | Mục đích |
-| --- | --- |
-| `~/.claude/secops.yaml` | Khai báo `context_dir`, `workflows_dir`, `references_dir` (tạo bởi `/secops:setup-profile`) |
+File `~/.claude/secops.yaml` — khai báo custom paths cho data folders:
 
-Quản lý config bằng `/secops:config`:
-
-```text
-/secops:config                                          # Xem config hiện tại
-/secops:config context_dir C:\SecOps-Data\context        # Đổi context path
-/secops:config workflows_dir C:\SecOps-Data\workflows    # Đổi workflows path
-/secops:config references_dir C:\SecOps-Data\references  # Đổi references path
-/secops:config show-paths                                # Xem resolved paths + status
-/secops:config reset                                     # Xóa config, quay về working dir
+```yaml
+context_dir: C:\SecOps-Data\context
+workflows_dir: C:\SecOps-Data\workflows
+references_dir: C:\SecOps-Data\references
 ```
 
-## Cần hỗ trợ?
+Không có file này → dùng working directory mặc định.
 
-- Xem [CLAUDE.md](CLAUDE.md) cho technical reference
-- Xem [DEVELOPMENT.md](DEVELOPMENT.md) cho hướng dẫn phát triển plugin
-- Xem `workflows/SCHEMA.md` cho format workflow YAML
-- Xem `context/org-docs/README.md` và `context/process-docs/README.md` cho hướng dẫn đặt documents
+### Data Folders
+
+| Folder | Nội dung | Cách tạo |
+| --- | --- | --- |
+| `context/company-profile.yaml` | Tech stack, org mapping, escalation | `/secops:setup-profile` |
+| `context/org-docs/` | Tài liệu tổ chức | User đặt files |
+| `context/process-docs/` | SOPs, playbooks, runbooks | User đặt files |
+| `workflows/defaults/` | 10 default workflow templates | `/secops:setup-profile` *(copy từ plugin)* |
+| `workflows/<category>/` | Custom workflows | `/secops:generate-workflows` |
+| `references/regulations/` | Luật, NĐ, TT bổ sung | User đặt files |
+| `references/standards/` | ISO, PCI, NIST bổ sung | User đặt files |
+| `references/policies/` | ISMS, chính sách nội bộ | User đặt files |
+
+---
+
+## Tài liệu liên quan
+
+| Tài liệu | Nội dung |
+| --- | --- |
+| [CLAUDE.md](CLAUDE.md) | Technical reference — architecture, design patterns, rules |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | Hướng dẫn phát triển và contribute plugin |
+| `workflows/SCHEMA.md` | Format YAML cho workflow templates |
+| `context/org-docs/README.md` | Hướng dẫn đặt tài liệu tổ chức |
+| `context/process-docs/README.md` | Hướng dẫn đặt SOPs/playbooks |
