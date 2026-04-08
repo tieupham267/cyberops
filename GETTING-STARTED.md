@@ -46,7 +46,7 @@ Plugin tự load ở mọi project. Data (context, workflows, references) sẽ �
 ```bash
 git clone https://github.com/tieupham267/secops.git
 cd secops
-claude --plugin-dir ./secops-plugin
+claude --plugin-dir .
 ```
 
 Data đã có sẵn trong repo, có thể bỏ qua Bước 2.

@@ -4,7 +4,7 @@
 # the /secops:run command are consistent and complete.
 # NOTE: Tests routing *definitions*, not actual LLM routing (which requires running the plugin).
 source "$(dirname "$0")/helpers.sh"
-cd "$PLUGIN_DIR"
+cd "$PROJECT_DIR"
 
 echo "  [4.1] Orchestrator decision matrix covers all agents"
 
@@ -73,7 +73,7 @@ done
 
 echo "  [4.6] /secops:run command references orchestrator"
 
-assert_contains "$PLUGIN_DIR/commands/run.md" "orchestrator" \
+assert_contains "$PROJECT_DIR/commands/run.md" "orchestrator" \
   "/secops:run references orchestrator agent"
 
 echo "  [4.7] /secops:run workflow table matches custom workflows"

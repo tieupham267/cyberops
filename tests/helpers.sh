@@ -4,7 +4,6 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PLUGIN_DIR="$PROJECT_DIR/secops-plugin"
 FIXTURES_DIR="$SCRIPT_DIR/fixtures"
 
 # Colors

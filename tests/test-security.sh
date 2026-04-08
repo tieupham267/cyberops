@@ -2,7 +2,7 @@
 # test-security.sh — Layer 5: Plugin Security Self-Check
 # Ensures the plugin itself doesn't violate its own security rules
 source "$(dirname "$0")/helpers.sh"
-cd "$PLUGIN_DIR"
+cd "$PROJECT_DIR"
 
 echo "  [5.1] No real secrets in codebase"
 
@@ -131,9 +131,9 @@ done
 
 echo "  [5.8] CLAUDE.md does not contain secrets"
 
-assert_not_contains "$PLUGIN_DIR/CLAUDE.md" "AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}" \
+assert_not_contains "$PROJECT_DIR/CLAUDE.md" "AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}" \
   "CLAUDE.md has no API keys"
-assert_not_contains "$PLUGIN_DIR/CLAUDE.md" "password\s*=" \
+assert_not_contains "$PROJECT_DIR/CLAUDE.md" "password\s*=" \
   "CLAUDE.md has no passwords"
 
 layer_summary

@@ -1,9 +1,9 @@
 # === Company-specific data (sensitive, not for distribution) ===
-secops-plugin/context/org-docs/*
-!secops-plugin/context/org-docs/README.md
-secops-plugin/context/process-docs/*
-!secops-plugin/context/process-docs/README.md
-secops-plugin/context/company-profile.yaml
+context/org-docs/*
+!context/org-docs/README.md
+context/process-docs/*
+!context/process-docs/README.md
+context/company-profile.yaml
 reports/
 
 # === Environment & secrets ===

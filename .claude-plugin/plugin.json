@@ -6,6 +6,22 @@
     "name": "CyberSec Team"
   },
   "license": "MIT",
+  "agents": [
+    "./agents/soc-analyst.md",
+    "./agents/incident-commander.md",
+    "./agents/threat-analyst.md",
+    "./agents/threat-modeler.md",
+    "./agents/risk-assessor.md",
+    "./agents/vuln-manager.md",
+    "./agents/grc-advisor.md",
+    "./agents/awareness-designer.md",
+    "./agents/ciso-fintech.md",
+    "./agents/devsecops.md",
+    "./agents/fraud-analyst.md",
+    "./agents/orchestrator.md"
+  ],
+  "skills": ["./skills/"],
+  "commands": ["./commands/"],
   "keywords": [
     "cybersecurity",
     "soc",
