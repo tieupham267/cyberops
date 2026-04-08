@@ -6,7 +6,7 @@ Plugin toàn diện cho team Cyber Security. Biến Claude Code thành trợ lý
 
 ### Từ GitHub
 ```bash
-/plugin install github:YOUR_USERNAME/secops
+/plugin install github:tieupham267/secops
 ```
 
 ### Từ local (dev/testing)
@@ -16,7 +16,7 @@ claude --plugin-dir ./secops
 
 ### Từ marketplace
 ```bash
-/plugin marketplace add YOUR_USERNAME/secops-marketplace
+/plugin marketplace add tieupham267/secops-marketplace
 /plugin install secops@secops-marketplace
 ```
 

@@ -103,7 +103,7 @@ git commit -m "feat: add pentest-planner agent"
 git push origin main
 
 # Team members install
-# /plugin install github:YOUR_USERNAME/secops
+# /plugin install github:tieupham267/secops
 ```
 
 ## Tips thực tế
@@ -193,11 +193,11 @@ bash tests/run-all.sh 1 2 5
 
 ```bash
 # Cách 1: Clone và dùng --plugin-dir (recommended cho dev)
-git clone https://github.com/YOUR_USERNAME/secops.git
+git clone https://github.com/tieupham267/secops.git
 claude --plugin-dir ./secops
 
 # Cách 2: Install từ GitHub (khi plugin đã stable)
-# /plugin install github:YOUR_USERNAME/secops
+# /plugin install github:tieupham267/secops
 
 # Cách 3: Copy thư mục trực tiếp
 cp -r secops/ ~/.claude/plugins/secops/

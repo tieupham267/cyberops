@@ -19,6 +19,35 @@ Bước 7: Verify & test                        (5 phút)
 
 ---
 
+## Cấu trúc thư mục — Bạn cần làm gì ở đâu?
+
+Khi cài plugin, bạn sẽ có cấu trúc như sau. Các folder đánh dấu 📝 là nơi bạn cần đặt/tạo files:
+
+```
+secops/
+├── context/                          # 📝 THƯ MỤC CỦA BẠN
+│   ├── company-profile.yaml          #    ✅ Có sẵn (template) — auto-generated hoặc tự điền (Bước 2)
+│   ├── org-docs/                     # 📝 ✅ Folder có sẵn — bạn thêm files vào đây (Bước 2)
+│   │   ├── README.md                 #    ✅ Có sẵn — hướng dẫn chi tiết
+│   │   └── (bạn tạo thêm)           #    ➕ org-chart.md, tech-stack.md, security-tools.md...
+│   └── process-docs/                 # 📝 ✅ Folder có sẵn — bạn thêm files vào đây (Bước 4)
+│       ├── README.md                 #    ✅ Có sẵn — hướng dẫn chi tiết
+│       └── (bạn tạo thêm)           #    ➕ incident-response-plan.md, change-mgmt-sop.md...
+│
+├── agents/                           #    ✅ Có sẵn — 12 agent personas
+├── workflows/                        #    ✅ Có sẵn — workflow templates (auto-generated thêm ở Bước 4)
+├── skills/                           #    ✅ Có sẵn — knowledge base
+│   └── vietnam-regulations/          #    ✅ Có sẵn — quy định VN (cập nhật ở Bước 5)
+├── commands/                         #    ✅ Có sẵn — slash commands
+├── hooks/                            #    ✅ Có sẵn — auto hooks
+├── rules/                            #    ✅ Có sẵn — security rules
+└── tests/                            #    ✅ Có sẵn — test suite
+```
+
+> **Tóm tắt**: Sau khi clone, tất cả folders đã có sẵn. Bạn chỉ cần **thêm files** vào `context/org-docs/` và `context/process-docs/` — không cần tạo folder mới. Xem `README.md` trong mỗi folder để biết nên đặt files gì.
+
+---
+
 ## Bước 1: Cài đặt plugin
 
 ### Yêu cầu
@@ -31,7 +60,7 @@ Bước 7: Verify & test                        (5 phút)
 
 ```bash
 # Cách 1: Clone repo (recommended)
-git clone https://github.com/YOUR_ORG/secops.git
+git clone https://github.com/tieupham267/secops.git
 cd secops
 
 # Cách 2: Download zip
