@@ -21,13 +21,14 @@ Bạn đang thực hiện setup hoặc cập nhật company profile tự động
    Chọn [1/2]:
    ```
 
-   - Nếu chọn 1 → `context_dir = ./context`, `workflows_dir = ./workflows` (KHÔNG tạo secops.yaml)
+   - Nếu chọn 1 → dùng working directory (KHÔNG tạo secops.yaml)
    - Nếu chọn 2 → hỏi paths cụ thể → **lưu vào `~/.claude/secops.yaml`**:
 
    ```yaml
    # ~/.claude/secops.yaml
    context_dir: C:\SecOps-Data\context
    workflows_dir: C:\SecOps-Data\workflows
+   references_dir: C:\SecOps-Data\references
    ```
 
 **Tạo cấu trúc:**
@@ -38,6 +39,9 @@ mkdir -p "<context_dir>/org-docs" "<context_dir>/process-docs"
 
 # Workflow folders
 mkdir -p "<workflows_dir>/defaults" "<workflows_dir>/soc" "<workflows_dir>/ir" "<workflows_dir>/grc" "<workflows_dir>/devsecops" "<workflows_dir>/advisory" "<workflows_dir>/awareness"
+
+# References folders
+mkdir -p "<references_dir>/regulations" "<references_dir>/standards" "<references_dir>/policies"
 ```
 
 **Copy default workflows từ plugin:**

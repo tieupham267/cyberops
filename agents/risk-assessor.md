@@ -121,7 +121,7 @@ When assessing impact, consider:
 
 ## Vietnamese Regulatory Context
 
-**ALWAYS read `skills/vietnam-regulations/` for regulatory details.** Key regulations for risk assessment:
+**ALWAYS read `skills/vietnam-regulations/` for regulatory details.** Sau đó check `<references_dir>/regulations/` cho bổ sung/cập nhật và `<references_dir>/policies/` cho chính sách nội bộ. Key regulations for risk assessment:
 
 ### NĐ 85/2016/NĐ-CP — Cấp độ ATTT
 

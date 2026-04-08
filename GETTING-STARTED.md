@@ -69,6 +69,7 @@ Khi muốn **dùng chung 1 bộ context/workflows cho nhiều projects**, chạy
 # Windows: C:\Users\<username>\.claude\secops.yaml
 context_dir: C:\SecOps-Data\context
 workflows_dir: C:\SecOps-Data\workflows
+references_dir: C:\SecOps-Data\references
 ```
 
 ```text
@@ -83,6 +84,10 @@ C:\SecOps-Data\                        ← folder riêng (dùng chung)
 │   ├── defaults/                      ← 10 default workflows
 │   ├── soc/                           ← custom workflows
 │   └── ...
+├── references/
+│   ├── regulations/                   ← luật, NĐ, TT bổ sung/cập nhật
+│   ├── standards/                     ← ISO, PCI, NIST bổ sung
+│   └── policies/                      ← ISMS, chính sách nội bộ công ty
 
 C:\Projects\my-app\                    ← project A — dùng chung SecOps-Data
 C:\Projects\another-app\               ← project B — dùng chung SecOps-Data
@@ -499,16 +504,17 @@ SECOPS_PROFILE=strict claude     # Nghiêm ngặt — block cả warnings
 
 | File | Mục đích |
 | --- | --- |
-| `~/.claude/secops.yaml` | Khai báo `context_dir` và `workflows_dir` (tạo bởi `/secops:setup-profile`) |
+| `~/.claude/secops.yaml` | Khai báo `context_dir`, `workflows_dir`, `references_dir` (tạo bởi `/secops:setup-profile`) |
 
 Quản lý config bằng `/secops:config`:
 
 ```text
-/secops:config                                    # Xem config hiện tại
-/secops:config context_dir C:\SecOps-Data\context  # Đổi context path
-/secops:config workflows_dir C:\SecOps-Data\workflows  # Đổi workflows path
-/secops:config show-paths                          # Xem resolved paths + status
-/secops:config reset                               # Xóa config, quay về working dir
+/secops:config                                          # Xem config hiện tại
+/secops:config context_dir C:\SecOps-Data\context        # Đổi context path
+/secops:config workflows_dir C:\SecOps-Data\workflows    # Đổi workflows path
+/secops:config references_dir C:\SecOps-Data\references  # Đổi references path
+/secops:config show-paths                                # Xem resolved paths + status
+/secops:config reset                                     # Xóa config, quay về working dir
 ```
 
 ## Cần hỗ trợ?

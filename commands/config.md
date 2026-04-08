@@ -13,10 +13,11 @@ Bạn đang quản lý cấu hình plugin secops. Config được lưu tại `~/
 
 File: ~/.claude/secops.yaml
 
-| Setting       | Value                        |
-|---------------|------------------------------|
-| context_dir   | C:\SecOps-Data\context       |
-| workflows_dir | C:\SecOps-Data\workflows     |
+| Setting        | Value                        |
+|----------------|------------------------------|
+| context_dir    | C:\SecOps-Data\context       |
+| workflows_dir  | C:\SecOps-Data\workflows     |
+| references_dir | C:\SecOps-Data\references    |
 
 Dùng /secops:config <key> <value> để thay đổi.
 Dùng /secops:config reset để xóa config và quay về working directory.
@@ -29,8 +30,9 @@ Nếu file không tồn tại:
 
 Chưa có config file (~/.claude/secops.yaml).
 Đang dùng working directory mặc định:
-  context_dir:   ./context
-  workflows_dir: ./workflows
+  context_dir:    ./context
+  workflows_dir:  ./workflows
+  references_dir: ./references
 
 Dùng /secops:config context_dir <path> để chỉ định folder riêng.
 Hoặc chạy /secops:setup-profile để setup tự động.
@@ -58,6 +60,16 @@ Hoặc chạy /secops:setup-profile để setup tự động.
 6. Ghi lại file
 7. Hiển thị: `✓ workflows_dir đã cập nhật: <path>`
 
+### `references_dir <path>` → Đổi references directory
+
+1. Kiểm tra `<path>` là absolute path hợp lệ
+2. Nếu folder chưa tồn tại → hỏi: "Folder chưa tồn tại. Tạo mới? [Y/n]"
+   - Nếu Y → tạo folder + subfolders (`regulations/`, `standards/`, `policies/`)
+3. Đọc `~/.claude/secops.yaml` hiện tại (hoặc tạo mới nếu chưa có)
+4. Cập nhật `references_dir: <path>`
+5. Ghi lại file
+6. Hiển thị: `✓ references_dir đã cập nhật: <path>`
+
 ### `reset` → Xóa config, quay về working directory
 
 1. Hỏi xác nhận: "Xóa ~/.claude/secops.yaml? Plugin sẽ dùng working directory mặc định. [Y/n]"
@@ -75,13 +87,17 @@ Hiển thị paths thực tế mà agents đang sử dụng (sau khi resolve):
 
 Config file: ~/.claude/secops.yaml (found / not found)
 
-context_dir:   C:\SecOps-Data\context    ← from secops.yaml
-workflows_dir: C:\SecOps-Data\workflows  ← from secops.yaml
+context_dir:    C:\SecOps-Data\context     ← from secops.yaml
+workflows_dir:  C:\SecOps-Data\workflows  ← from secops.yaml
+references_dir: C:\SecOps-Data\references ← from secops.yaml
 
 Files found:
   ✓ company-profile.yaml
   ✓ workflows/defaults/ (10 files)
+  ✓ references/regulations/ (3 files)
+  ✓ references/policies/ (5 files)
   ✗ context/org-docs/ (empty)
+  ✗ references/standards/ (empty)
 ```
 
 ## Validation

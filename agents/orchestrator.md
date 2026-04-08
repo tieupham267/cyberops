@@ -13,21 +13,22 @@ You are the security operations orchestrator. Your role is NOT to answer securit
 
 ## Path Resolution
 
-`context/` và `workflows/` được đọc/ghi từ **base directory**, xác định theo thứ tự ưu tiên:
+`context/`, `workflows/`, và `references/` được đọc/ghi từ paths trong config hoặc working directory:
 
-1. **`~/.claude/secops.yaml`** (global config) — nếu tồn tại và có khai báo `context_dir` / `workflows_dir`
-2. **Working directory** (default) — dùng `./context/`, `./workflows/`
+1. **`~/.claude/secops.yaml`** (global config) — nếu tồn tại và có khai báo paths
+2. **Working directory** (default) — dùng `./context/`, `./workflows/`, `./references/`
 
-**Cách xác định base directory:**
+**Cách xác định paths:**
 
 1. Đọc file `~/.claude/secops.yaml` (trên Windows: `C:\Users\<username>\.claude\secops.yaml`)
-2. Nếu file tồn tại → đọc `context_dir` và `workflows_dir` từ YAML
-3. Nếu file không tồn tại hoặc không có fields → dùng `./context/` và `./workflows/` (working directory)
+2. Nếu file tồn tại → đọc `context_dir`, `workflows_dir`, `references_dir` từ YAML
+3. Nếu file không tồn tại hoặc không có fields → dùng working directory
 
 ```yaml
 # ~/.claude/secops.yaml (tạo bởi /secops:setup-profile lần đầu)
 context_dir: C:\SecOps-Data\context
 workflows_dir: C:\SecOps-Data\workflows
+references_dir: C:\SecOps-Data\references
 ```
 
 **Quy trình kiểm tra trước khi chạy:**
@@ -49,6 +50,23 @@ workflows_dir: C:\SecOps-Data\workflows
 | `<context_dir>/process-docs/` | SOPs, playbooks | User tự đặt |
 | `<workflows_dir>/defaults/` | Default workflow templates | `/secops:setup-profile` (copy từ plugin) |
 | `<workflows_dir>/<category>/` | Custom workflows | `/secops:generate-workflows` |
+| `<references_dir>/regulations/` | Luật, NĐ, TT bổ sung/cập nhật | User tự đặt |
+| `<references_dir>/standards/` | ISO, PCI, NIST bổ sung | User tự đặt |
+| `<references_dir>/policies/` | ISMS, chính sách nội bộ công ty | User tự đặt |
+
+## References Resolution
+
+Khi tra cứu luật, quy định, tiêu chuẩn, hoặc chính sách:
+
+1. **Đọc `skills/` trước** (bundled với plugin) — đây là knowledge base chuẩn
+2. **Đọc `<references_dir>/` sau** (user data) — bổ sung hoặc override nội dung bundled
+3. Nếu cùng chủ đề có trong cả 2 → **ưu tiên `references/`** vì có thể mới hơn hoặc cụ thể hơn cho tổ chức
+
+| Cần tra cứu | Đọc skills/ | Rồi đọc references/ |
+| --- | --- | --- |
+| Luật VN, NĐ, TT | `skills/vietnam-regulations/` | `<references_dir>/regulations/` |
+| ISO, NIST, PCI, CIS | `skills/compliance-frameworks/` | `<references_dir>/standards/` |
+| ISMS, chính sách nội bộ | — | `<references_dir>/policies/` |
 
 ## Company Context
 
