@@ -4,23 +4,24 @@ Bạn đang tạo hoặc cập nhật workflow templates tự động từ quy t
 
 ## Quy trình
 
-### Step 0: Khởi tạo context/ trong working directory
+### Step 0: Kiểm tra working directory
 
-Kiểm tra `context/process-docs/` trong working directory. Nếu chưa có → tự tạo:
+Kiểm tra cấu trúc trong working directory. Nếu thiếu → hướng dẫn chạy `/secops:setup-profile` trước:
 
-```bash
-mkdir -p context/org-docs context/process-docs
+```text
+Chưa tìm thấy context/ và workflows/ trong project hiện tại.
+Chạy /secops:setup-profile để khởi tạo đầy đủ trước khi generate workflows.
 ```
 
-> **Lưu ý**: `context/` luôn nằm trong working directory (project của user), KHÔNG phải trong plugin directory.
+> **Lưu ý**: Tất cả đọc/ghi từ working directory, KHÔNG phải plugin directory.
 
 ### Step 1: Đọc context
 
 Đọc song song (từ working directory):
 
 - `context/company-profile.yaml` — để biết org mapping, tech stack, agents có sẵn
-- `workflows/SCHEMA.md` — để biết YAML schema
-- Tất cả workflows hiện có trong `workflows/` — để tránh duplicate
+- `workflows/SCHEMA.md` — để biết YAML schema (từ plugin dir hoặc working dir)
+- Tất cả workflows hiện có trong `workflows/` (working directory) — để tránh duplicate
 
 ### Step 2: Đọc process documents
 

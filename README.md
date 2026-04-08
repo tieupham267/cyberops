@@ -4,6 +4,8 @@ Plugin toàn diện cho team Cyber Security. Biến Claude Code thành trợ lý
 
 ## Cài đặt
 
+> Hướng dẫn chi tiết từng bước: xem [GETTING-STARTED.md](GETTING-STARTED.md)
+
 ### Từ GitHub
 ```bash
 /plugin install github:tieupham267/secops

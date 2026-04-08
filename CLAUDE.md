@@ -44,7 +44,7 @@ This is **secops**, a Claude Code plugin that turns Claude into a cybersecurity 
 The plugin follows the Claude Code plugin specification (`plugin.json` at root):
 
 - **`agents/`** — 12 agent personas (Markdown with YAML frontmatter): `soc-analyst`, `incident-commander`, `threat-analyst`, `threat-modeler`, `risk-assessor`, `vuln-manager`, `grc-advisor`, `awareness-designer`, `ciso-fintech`, `devsecops`, `fraud-analyst`, `orchestrator`.
-- **`workflows/`** — YAML workflow templates organized by category (`soc/`, `ir/`, `grc/`, `devsecops/`, `advisory/`, `awareness/`). Orchestrator reads these for deterministic execution. See `workflows/SCHEMA.md` for format.
+- **`workflows/`** — YAML workflow templates organized by category (`soc/`, `ir/`, `grc/`, `devsecops/`, `advisory/`, `awareness/`). **Luôn đọc từ working directory**, tương tự `context/`. Khi cài global, `/secops:setup-profile` copy defaults và tạo folder structure trong project. Orchestrator reads these for deterministic execution. See `workflows/SCHEMA.md` for format.
 - **`skills/`** — 8 knowledge-base skills that agents reference for detailed methodology (each in `<name>/SKILL.md`): `incident-response`, `compliance-frameworks`, `risk-assessment`, `vietnam-regulations`, `payment-fraud`, `itsm-reference`, `document-drafting`, `security-maturity`.
 - **`context/`** — Company context. **Luôn đọc từ working directory**, KHÔNG từ plugin directory. Khi cài global, `/secops:setup-profile` tự tạo `context/` trong project của user.
   - `company-profile.yaml` — tech stack, security tools, org mapping, escalation matrix. All agents read automatically.

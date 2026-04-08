@@ -4,17 +4,29 @@ Bạn đang thực hiện setup hoặc cập nhật company profile tự động
 
 ## Quy trình
 
-### Step 0: Khởi tạo context/ trong working directory
+### Step 0: Khởi tạo project structure trong working directory
 
-Kiểm tra `context/` trong working directory hiện tại. Nếu chưa có → tự tạo cấu trúc:
+Kiểm tra và tạo cấu trúc cần thiết trong working directory hiện tại:
 
 ```bash
+# Context folders
 mkdir -p context/org-docs context/process-docs
+
+# Workflow folders
+mkdir -p workflows/defaults workflows/soc workflows/ir workflows/grc workflows/devsecops workflows/advisory workflows/awareness
 ```
 
-Nếu `context/company-profile.yaml` chưa có → tạo file template trống (copy từ plugin hoặc tạo mới với các fields cơ bản).
+**Copy default workflows từ plugin:**
 
-> **Lưu ý**: `context/` luôn nằm trong working directory (project của user), KHÔNG phải trong plugin directory.
+Nếu `workflows/defaults/` trong working directory trống hoặc chưa có files:
+
+1. Tìm plugin directory (nơi chứa file `plugin.json` của secops)
+2. Copy tất cả files từ `<plugin-dir>/workflows/defaults/*.yaml` vào `./workflows/defaults/`
+3. Nếu không tìm được plugin dir → tạo danh sách 10 default workflows trống với comment `# TODO: copy from plugin`
+
+Nếu `context/company-profile.yaml` chưa có → tạo file template trống với các fields cơ bản.
+
+> **Lưu ý**: Tất cả files luôn nằm trong working directory (project của user), KHÔNG phải trong plugin directory. Default workflows được copy 1 lần, sau đó user quản lý bản copy trong project.
 
 ### Step 1: Đọc tất cả org documents
 

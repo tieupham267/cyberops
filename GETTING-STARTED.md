@@ -19,9 +19,9 @@ Bước 7: Verify & test                        (5 phút)
 
 ---
 
-## Folder `context/` nằm ở đâu?
+## Folder `context/` và `workflows/` nằm ở đâu?
 
-Plugin hỗ trợ 2 cách cài đặt. **Dù cài cách nào, folder `context/` luôn nằm trong project của bạn** (working directory), KHÔNG nằm trong plugin directory.
+Plugin hỗ trợ 2 cách cài đặt. **Dù cài cách nào, folder `context/` và `workflows/` luôn nằm trong project của bạn** (working directory), KHÔNG nằm trong plugin directory.
 
 ### Cách 1: Clone repo + `--plugin-dir` (recommended cho dev)
 
@@ -31,8 +31,12 @@ my-project/                     ← working directory (cũng là plugin dir)
 │   ├── company-profile.yaml
 │   ├── org-docs/
 │   └── process-docs/
+├── workflows/                  ✅ Có sẵn khi clone
+│   ├── defaults/               ✅ 10 default workflows
+│   ├── soc/
+│   ├── ir/
+│   └── ...
 ├── agents/
-├── workflows/
 └── ...
 ```
 
@@ -40,8 +44,9 @@ my-project/                     ← working directory (cũng là plugin dir)
 
 ```text
 ~/.claude/plugins/cache/.../secops/    ← plugin dir (tự quản lý, KHÔNG sửa)
-├── agents/
-├── workflows/
+├── agents/                            ← plugin code (agents, skills, commands, hooks)
+├── skills/
+├── commands/
 └── ...
 
 C:\Projects\my-app\                    ← working directory (project của bạn)
@@ -51,13 +56,21 @@ C:\Projects\my-app\                    ← working directory (project của bạ
 │   │   └── (bạn đặt tài liệu tổ chức vào đây)
 │   └── process-docs/
 │       └── (bạn đặt SOPs/playbooks vào đây)
+├── workflows/                         ➕ Tự tạo bởi /secops:setup-profile
+│   ├── defaults/                      ➕ Copy 10 default workflows từ plugin
+│   ├── soc/                           ➕ Custom workflows (từ /secops:generate-workflows)
+│   ├── ir/
+│   └── ...
 ├── src/
 └── ...
 ```
 
-Khi cài global, lần đầu chạy `/secops:setup-profile` trong project, plugin sẽ **tự tạo** folder `context/` với cấu trúc đầy đủ. Bạn chỉ cần thêm tài liệu tổ chức vào.
+Khi cài global, lần đầu chạy `/secops:setup-profile` trong project, plugin sẽ **tự tạo** cả `context/` và `workflows/` với cấu trúc đầy đủ:
+- `context/` — folder trống, bạn thêm tài liệu tổ chức vào
+- `workflows/defaults/` — copy 10 default workflows từ plugin, sẵn sàng dùng ngay
+- `workflows/<category>/` — folder trống cho custom workflows
 
-> **Tip**: Thêm `context/` vào `.gitignore` của project vì chứa thông tin nhạy cảm về tổ chức.
+> **Tip**: Thêm `context/` vào `.gitignore` của project vì chứa thông tin nhạy cảm. Folder `workflows/` có thể commit vì chỉ chứa workflow templates.
 
 ---
 
