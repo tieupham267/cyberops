@@ -71,7 +71,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Analyze this prompt for security context. If it mentions incidents, breaches, vulnerabilities, risks, or compliance, respond with JSON: {\"additionalContext\": \"[SECURITY CONTEXT] Remember to follow severity classification (CRITICAL/HIGH/MEDIUM/LOW), include MITRE ATT&CK mapping where relevant, and reference Vietnamese regulations if compliance is involved.\"}. If not security-related, respond with empty JSON: {}",
+            "prompt": "You MUST respond with ONLY valid JSON, no other text. If the user prompt describes a security incident, breach, vulnerability, risk issue, or compliance concern (not just a command containing the word 'security'), respond exactly: {\"additionalContext\": \"[SECURITY CONTEXT] Follow severity classification (CRITICAL/HIGH/MEDIUM/LOW), include MITRE ATT&CK mapping where relevant, and reference Vietnamese regulations if compliance is involved.\"}. Otherwise respond exactly: {}",
             "description": "Tự động inject security context khi phát hiện prompt liên quan đến security"
           }
         ]

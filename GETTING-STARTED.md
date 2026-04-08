@@ -36,7 +36,7 @@ Sau khi hoàn thành, plugin sẽ được tailored cho tổ chức của bạn 
 
 ```text
 /plugin marketplace add https://github.com/tieupham267/secops
-/plugin install secops-toolkit@secops
+/plugin install secops@secops
 ```
 
 Plugin tự load ở mọi project. Data (context, workflows, references) sẽ được khởi tạo ở Bước 2.
@@ -50,6 +50,52 @@ claude --plugin-dir .
 ```
 
 Data đã có sẵn trong repo, có thể bỏ qua Bước 2.
+
+### Nâng cấp từ secops-toolkit (v1)
+
+Nếu đã cài phiên bản cũ với tên `secops-toolkit`, cần gỡ và cài lại.
+
+Gỡ phiên bản cũ (chọn đúng scope đã cài):
+
+```text
+# Nếu cài ở user scope (global)
+/plugin uninstall secops-toolkit@secops --scope user
+
+# Nếu cài ở project scope
+/plugin uninstall secops-toolkit@secops --scope project
+```
+
+Cài lại với tên mới:
+
+```text
+/plugin install secops@secops
+```
+
+Data (context, workflows, references) không bị ảnh hưởng — chỉ đổi tên plugin. Commands đổi từ `/secops-toolkit:*` thành `/secops:*`.
+
+### Update plugin
+
+```text
+/plugin update secops@secops
+```
+
+Plugin sẽ pull phiên bản mới nhất từ GitHub. Data không bị ảnh hưởng.
+
+### Gỡ cài đặt
+
+```text
+# Chọn đúng scope đã cài
+/plugin uninstall secops@secops --scope user
+/plugin uninstall secops@secops --scope project
+```
+
+Gỡ plugin khỏi Claude Code. Data tại `context/`, `workflows/`, `references/` vẫn được giữ nguyên — xóa thủ công nếu muốn.
+
+Gỡ marketplace (nếu không dùng nữa):
+
+```text
+/plugin marketplace remove secops
+```
 
 ### Verify cài đặt
 
@@ -357,7 +403,7 @@ Cần khi xuất tài liệu dạng Word (.docx), PowerPoint (.pptx), hoặc Exc
 - Risk register, vulnerability tracker (.xlsx)
 - Policy/SOP theo template công ty (.docx)
 
-### Cài đặt
+### Cài Office Document Skills
 
 ```text
 # Đăng ký marketplace

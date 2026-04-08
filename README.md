@@ -10,7 +10,7 @@ Plugin toàn diện cho team Cyber Security. Biến Claude Code thành trợ lý
 
 ```text
 /plugin marketplace add https://github.com/tieupham267/secops
-/plugin install secops-toolkit@secops
+/plugin install secops@secops
 ```
 
 ### Từ local (dev/testing)
@@ -92,6 +92,40 @@ claude --plugin-dir .
 | `output-standards.md` | Severity ratings, TLP marking, bilingual output |
 | `incident-response.md` | IR procedures, MITRE ATT&CK mapping, regulatory implications |
 | `tool-safety.md` | Scanning authorization, safe command execution |
+
+### Nâng cấp từ secops-toolkit (v1)
+
+Gỡ phiên bản cũ (chọn đúng scope đã cài):
+
+```text
+# Nếu cài ở user scope (global)
+/plugin uninstall secops-toolkit@secops --scope user
+
+# Nếu cài ở project scope
+/plugin uninstall secops-toolkit@secops --scope project
+```
+
+Cài lại với tên mới:
+
+```text
+/plugin install secops@secops
+```
+
+### Update
+
+```text
+/plugin update secops@secops
+```
+
+### Gỡ cài đặt
+
+```text
+# Chọn đúng scope đã cài
+/plugin uninstall secops@secops --scope user
+/plugin uninstall secops@secops --scope project
+```
+
+> Data (context, workflows, references) không bị ảnh hưởng khi update hoặc gỡ plugin.
 
 ## Yêu cầu
 
