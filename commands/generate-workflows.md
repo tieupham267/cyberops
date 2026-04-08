@@ -111,36 +111,69 @@ Với mỗi workflow vừa generate, kiểm tra `workflows/defaults/`:
 - Nếu custom workflow có cùng `name` (trừ `-default` suffix) hoặc trùng `keywords` ≥ 50% → tự thêm `overrides: <default-name>`
 - Ví dụ: custom `incident-response` từ process doc → `overrides: incident-response-default`
 
-### Step 5: Hiển thị preview
+### Step 5: Hiển thị preview và diff
 
-Với mỗi workflow sẽ tạo, hiển thị:
+Với mỗi workflow, hiển thị tóm tắt + diff nếu là update:
 
-```
-## Workflows sẽ tạo
+```text
+## Workflows sẽ tạo/cập nhật
 
-### 1. workflows/ir/data-breach-response.yaml
+### 1. [MỚI] workflows/ir/data-breach-response.yaml
 - Source: data-breach-playbook.md
 - Category: ir
 - Chain: incident-commander → soc-analyst → grc-advisor → ciso-fintech
 - Inputs: 5 fields (incident_type, affected_data, discovery_time, ...)
-- Status: MỚI
 - Overrides: data-breach-notification-default ← default sẽ bị bỏ qua
 
-### 2. workflows/grc/access-review.yaml
+### 2. [MỚI] workflows/grc/access-review.yaml
 - Source: access-review-process.md
 - Category: grc
 - Agent: grc-advisor (single)
 - Inputs: 3 fields
-- Status: MỚI
 - Overrides: access-review-default ← default sẽ bị bỏ qua
 
-### 3. workflows/ir/incident-response.yaml
+### 3. [MERGE] workflows/ir/incident-response.yaml
 - Source: incident-response-plan.md
-- Status: ĐÃ CÓ — sẽ MERGE (bổ sung steps từ process doc)
-
----
-Confirm? (Create all / Select / Edit / Cancel)
 ```
+
+Với workflow **MERGE** (đã tồn tại), hiển thị diff chi tiết:
+
+```diff
+--- workflows/ir/incident-response.yaml (hiện tại)
++++ workflows/ir/incident-response.yaml (sau khi merge)
+
+ chain:
+   - agent: incident-commander
+     task: >
+       Coordinate response...
++  - agent: grc-advisor                   # from: incident-response-plan.md
++    skills: [compliance-frameworks]
++    task: >
++      Đánh giá nghĩa vụ báo cáo theo NĐ 13/2023
+
+ input:
+   - field: incident_type
+     prompt: "Loại sự cố?"
++  - field: affected_records              # from: incident-response-plan.md
++    prompt: "Số lượng bản ghi bị ảnh hưởng?"
+
+ keywords: [incident, breach, ransomware]
++keywords: [sự cố, rò rỉ, mã hóa tống tiền]  # from: incident-response-plan.md
+```
+
+```text
+## Summary
+  + 2 workflows mới
+  ~ 1 workflow cập nhật (merge)
+  = 5 workflows giữ nguyên
+```
+
+Hỏi user: **Apply changes? (All / Select từng cái / Show full diff / Cancel)**
+
+- **All** → apply tất cả
+- **Select** → chọn từng workflow để apply/skip
+- **Show full diff** → hiển thị diff cho tất cả workflows đang merge
+- **Cancel** → hủy
 
 ### Step 6: Write workflows
 

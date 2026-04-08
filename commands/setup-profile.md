@@ -88,33 +88,56 @@ Từ nội dung org docs, extract thông tin và map vào profile fields:
 | Phòng ban, trưởng phòng, chức năng | org_mapping.* |
 | Quy trình escalation, severity contacts | escalation.* |
 
-### Step 4: Confirm với user
+### Step 4: Hiển thị diff và confirm
 
-Hiển thị **bảng tóm tắt** những gì sẽ thay đổi trong profile:
+Hiển thị **diff chi tiết** so sánh profile hiện tại vs profile mới:
 
+```diff
+## Profile Diff
+
+--- company-profile.yaml (hiện tại)
++++ company-profile.yaml (sau khi cập nhật)
+
+ company:
+-  name: ""
++  name: "ABC Fintech"                    # from: org-chart.md
+   industry: "fintech"
+
+ security:
+-  siem: "splunk"
++  siem: "opensearch"                     # from: tech-stack.md
+   edr: "crowdstrike"
+-  pam: ""
++  pam: "cyberark"                        # from: security-tools.md
+
+ security_team:
+-  size: "3-10"
++  size: "10-30"                          # from: hr-teams.csv
+
+ org_mapping:
+   soc:
+-    department: ""
+-    lead: ""
++    department: "Phòng GSANM"            # from: org-chart.md
++    lead: "Nguyễn Văn A"                 # from: org-chart.md
 ```
-## Profile Changes Summary
 
-### New fields (sẽ được điền):
-- company.name: "ABC Fintech" (from: org-chart.md)
-- security.siem: "opensearch" (from: tech-stack.md)
-- org_mapping.soc.department: "Phòng GSANM" (from: org-chart.md)
-...
+Sau diff, hiển thị **tóm tắt thay đổi**:
 
-### Updated fields (đã có, sẽ cập nhật):
-- security_team.size: "3-10" → "10-30" (from: hr-teams.csv)
-...
-
-### Unchanged fields:
-- infrastructure.cloud_provider: [on-prem] (giữ nguyên)
-...
-
-### Still empty (không tìm thấy trong org docs):
-- security.pam: "" ← cần bổ sung thủ công hoặc thêm doc
-...
+```text
+## Summary
+  + 5 fields mới được điền
+  ~ 2 fields cập nhật giá trị
+  = 12 fields giữ nguyên
+  ○ 3 fields vẫn trống (cần bổ sung thủ công hoặc thêm doc)
 ```
 
-Hỏi user: **Confirm changes? (Yes / Edit trước / Cancel)**
+Hỏi user: **Apply changes? (Yes / Edit trước / Show full diff / Cancel)**
+
+- **Yes** → apply tất cả
+- **Edit trước** → mở file cho user chỉnh sửa trước khi lưu
+- **Show full diff** → hiển thị toàn bộ file với diff (không chỉ phần thay đổi)
+- **Cancel** → hủy, không thay đổi gì
 
 ### Step 5: Write profile
 
