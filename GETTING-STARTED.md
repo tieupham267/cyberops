@@ -19,32 +19,45 @@ Bước 7: Verify & test                        (5 phút)
 
 ---
 
-## Cấu trúc thư mục — Bạn cần làm gì ở đâu?
+## Folder `context/` nằm ở đâu?
 
-Khi cài plugin, bạn sẽ có cấu trúc như sau. Các folder đánh dấu 📝 là nơi bạn cần đặt/tạo files:
+Plugin hỗ trợ 2 cách cài đặt. **Dù cài cách nào, folder `context/` luôn nằm trong project của bạn** (working directory), KHÔNG nằm trong plugin directory.
 
-```
-secops/
-├── context/                          # 📝 THƯ MỤC CỦA BẠN
-│   ├── company-profile.yaml          #    ✅ Có sẵn (template) — auto-generated hoặc tự điền (Bước 2)
-│   ├── org-docs/                     # 📝 ✅ Folder có sẵn — bạn thêm files vào đây (Bước 2)
-│   │   ├── README.md                 #    ✅ Có sẵn — hướng dẫn chi tiết
-│   │   └── (bạn tạo thêm)           #    ➕ org-chart.md, tech-stack.md, security-tools.md...
-│   └── process-docs/                 # 📝 ✅ Folder có sẵn — bạn thêm files vào đây (Bước 4)
-│       ├── README.md                 #    ✅ Có sẵn — hướng dẫn chi tiết
-│       └── (bạn tạo thêm)           #    ➕ incident-response-plan.md, change-mgmt-sop.md...
-│
-├── agents/                           #    ✅ Có sẵn — 12 agent personas
-├── workflows/                        #    ✅ Có sẵn — workflow templates (auto-generated thêm ở Bước 4)
-├── skills/                           #    ✅ Có sẵn — knowledge base
-│   └── vietnam-regulations/          #    ✅ Có sẵn — quy định VN (cập nhật ở Bước 5)
-├── commands/                         #    ✅ Có sẵn — slash commands
-├── hooks/                            #    ✅ Có sẵn — auto hooks
-├── rules/                            #    ✅ Có sẵn — security rules
-└── tests/                            #    ✅ Có sẵn — test suite
+### Cách 1: Clone repo + `--plugin-dir` (recommended cho dev)
+
+```text
+my-project/                     ← working directory (cũng là plugin dir)
+├── context/                    ✅ Có sẵn khi clone
+│   ├── company-profile.yaml
+│   ├── org-docs/
+│   └── process-docs/
+├── agents/
+├── workflows/
+└── ...
 ```
 
-> **Tóm tắt**: Sau khi clone, tất cả folders đã có sẵn. Bạn chỉ cần **thêm files** vào `context/org-docs/` và `context/process-docs/` — không cần tạo folder mới. Xem `README.md` trong mỗi folder để biết nên đặt files gì.
+### Cách 2: Cài global (recommended cho daily use)
+
+```text
+~/.claude/plugins/cache/.../secops/    ← plugin dir (tự quản lý, KHÔNG sửa)
+├── agents/
+├── workflows/
+└── ...
+
+C:\Projects\my-app\                    ← working directory (project của bạn)
+├── context/                           ➕ Tự tạo bởi /secops:setup-profile
+│   ├── company-profile.yaml
+│   ├── org-docs/
+│   │   └── (bạn đặt tài liệu tổ chức vào đây)
+│   └── process-docs/
+│       └── (bạn đặt SOPs/playbooks vào đây)
+├── src/
+└── ...
+```
+
+Khi cài global, lần đầu chạy `/secops:setup-profile` trong project, plugin sẽ **tự tạo** folder `context/` với cấu trúc đầy đủ. Bạn chỉ cần thêm tài liệu tổ chức vào.
+
+> **Tip**: Thêm `context/` vào `.gitignore` của project vì chứa thông tin nhạy cảm về tổ chức.
 
 ---
 
@@ -59,19 +72,21 @@ secops/
 ### Cài đặt
 
 ```bash
-# Cách 1: Clone repo (recommended)
-git clone https://github.com/tieupham267/secops.git
-cd secops
+# Cách 1: Cài global (recommended — dùng được ở mọi project)
+/plugin install github:tieupham267/secops
 
-# Cách 2: Download zip
-unzip secops-plugin.zip
+# Cách 2: Clone repo + plugin-dir (recommended cho dev/contribute)
+git clone https://github.com/tieupham267/secops.git
 cd secops
 ```
 
 ### Khởi động
 
 ```bash
-# Chạy Claude Code với plugin
+# Nếu cài global: mở bất kỳ project nào, plugin tự load
+claude
+
+# Nếu dùng --plugin-dir:
 claude --plugin-dir .
 
 # Hoặc trong VS Code: mở folder secops → mở Claude Code panel → tự load

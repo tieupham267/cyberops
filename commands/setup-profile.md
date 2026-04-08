@@ -4,11 +4,23 @@ Bạn đang thực hiện setup hoặc cập nhật company profile tự động
 
 ## Quy trình
 
+### Step 0: Khởi tạo context/ trong working directory
+
+Kiểm tra `context/` trong working directory hiện tại. Nếu chưa có → tự tạo cấu trúc:
+
+```bash
+mkdir -p context/org-docs context/process-docs
+```
+
+Nếu `context/company-profile.yaml` chưa có → tạo file template trống (copy từ plugin hoặc tạo mới với các fields cơ bản).
+
+> **Lưu ý**: `context/` luôn nằm trong working directory (project của user), KHÔNG phải trong plugin directory.
+
 ### Step 1: Đọc tất cả org documents
 
-Đọc mọi file trong `context/org-docs/` — hỗ trợ `.md`, `.txt`, `.csv`, `.json`, `.yaml`, `.pdf`, `.png`, `.jpg`.
+Đọc mọi file trong `context/org-docs/` (từ working directory) — hỗ trợ `.md`, `.txt`, `.csv`, `.json`, `.yaml`, `.pdf`, `.png`, `.jpg`.
 
-```
+```text
 Glob: context/org-docs/**/*
 ```
 
