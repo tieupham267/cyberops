@@ -1,20 +1,19 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "secops",
+  "version": "2.0.0",
   "description": "Cybersecurity team plugins for Claude Code — SOC, IR, threat modeling, risk management, GRC, and more",
   "owner": {
     "name": "CyberSec Team",
     "email": "security@your-org.vn"
   },
-  "metadata": {
-    "version": "2.0.0"
-  },
   "plugins": [
     {
       "name": "secops",
       "description": "Complete cybersecurity team toolkit — 12 agents, 8 skills, hybrid orchestration, hooks, and rules. Aligned to ISO 27001, NIST CSF, MITRE ATT&CK, PCI DSS, and Vietnamese regulations.",
-      "source": "github",
-      "repo": "tieupham267/secops",
-      "version": "2.0.0"
+      "version": "2.0.0",
+      "source": "./.claude-plugin",
+      "category": "security"
     }
   ]
 }
