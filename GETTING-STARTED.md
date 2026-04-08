@@ -482,6 +482,7 @@ Hook phải block và hiện thông báo `[SECURITY]`.
 | `/secops:run --list` | Liệt kê tất cả workflows |
 | `/secops:setup-profile` | Tạo/cập nhật company profile từ org docs |
 | `/secops:generate-workflows` | Tạo workflows từ process docs |
+| `/secops:config` | Xem/sửa config (context_dir, workflows_dir) |
 
 ## Environment Variables
 
@@ -499,6 +500,16 @@ SECOPS_PROFILE=strict claude     # Nghiêm ngặt — block cả warnings
 | File | Mục đích |
 | --- | --- |
 | `~/.claude/secops.yaml` | Khai báo `context_dir` và `workflows_dir` (tạo bởi `/secops:setup-profile`) |
+
+Quản lý config bằng `/secops:config`:
+
+```text
+/secops:config                                    # Xem config hiện tại
+/secops:config context_dir C:\SecOps-Data\context  # Đổi context path
+/secops:config workflows_dir C:\SecOps-Data\workflows  # Đổi workflows path
+/secops:config show-paths                          # Xem resolved paths + status
+/secops:config reset                               # Xóa config, quay về working dir
+```
 
 ## Cần hỗ trợ?
 

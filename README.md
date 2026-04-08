@@ -45,7 +45,7 @@ claude --plugin-dir ./secops
 | `risk-assessment` | FAIR methodology, 5x5 matrix, BIA, TPRM questionnaire, treatment framework |
 | `compliance-frameworks` | ISO 27001:2022, NIST CSF 2.0, CIS v8, Vietnamese regulations (NĐ 13/2023, Luật ANM 2018) |
 
-### Commands (8)
+### Commands (9)
 
 | Command | Mô tả |
 |---------|-------|
@@ -57,6 +57,7 @@ claude --plugin-dir ./secops
 | `/secops:phishing-campaign` | Thiết kế phishing simulation |
 | `/secops:vuln-report` | Phân tích vulnerability scan |
 | `/secops:policy-draft` | Soạn thảo chính sách bảo mật |
+| `/secops:config` | Xem/sửa config (context_dir, workflows_dir) |
 
 ### Hooks (4)
 
