@@ -44,9 +44,9 @@ This is **secops**, a Claude Code plugin that turns Claude into a cybersecurity 
 The plugin follows the Claude Code plugin specification (`plugin.json` at root):
 
 - **`agents/`** — 12 agent personas (Markdown with YAML frontmatter): `soc-analyst`, `incident-commander`, `threat-analyst`, `threat-modeler`, `risk-assessor`, `vuln-manager`, `grc-advisor`, `awareness-designer`, `ciso-fintech`, `devsecops`, `fraud-analyst`, `orchestrator`.
-- **`workflows/`** — YAML workflow templates organized by category. **Đọc từ base directory** (`$SECOPS_HOME` hoặc working directory). Khi cài global, `/secops:setup-profile` copy defaults và tạo folder structure. Orchestrator reads these for deterministic execution. See `workflows/SCHEMA.md` for format.
+- **`workflows/`** — YAML workflow templates organized by category. **Đọc từ `~/.claude/secops.yaml` paths hoặc working directory**. Khi cài global, `/secops:setup-profile` copy defaults và tạo folder structure. Orchestrator reads these for deterministic execution. See `workflows/SCHEMA.md` for format.
 - **`skills/`** — 8 knowledge-base skills that agents reference for detailed methodology (each in `<name>/SKILL.md`): `incident-response`, `compliance-frameworks`, `risk-assessment`, `vietnam-regulations`, `payment-fraud`, `itsm-reference`, `document-drafting`, `security-maturity`.
-- **`context/`** — Company context. **Đọc từ base directory** (`$SECOPS_HOME` nếu set, hoặc working directory). KHÔNG từ plugin directory. `/secops:setup-profile` tự tạo structure.
+- **`context/`** — Company context. **Đọc từ `~/.claude/secops.yaml` paths hoặc working directory**. KHÔNG từ plugin directory. `/secops:setup-profile` tự tạo structure.
   - `company-profile.yaml` — tech stack, security tools, org mapping, escalation matrix. All agents read automatically.
   - `org-docs/` — raw org documents (org chart, asset lists, team info). `/secops:setup-profile` reads and populates profile.
   - `process-docs/` — SOPs, playbooks, runbooks. `/secops:generate-workflows` reads and creates workflow YAMLs.
@@ -114,14 +114,16 @@ claude --plugin-dir ./secops
 
 When adding skills, decide: is this broadly useful (curated) or org-specific (custom)?
 
-### Environment Variables
+### Global Config & Environment Variables
 
-| Variable | Purpose | Values |
-| --- | --- | --- |
-| `SECOPS_HOME` | Base directory cho `context/` và `workflows/` | Path (default: working directory) |
-| `SECOPS_PROFILE` | Hook strictness level | `dev` / `standard` (default) / `strict` |
+**`~/.claude/secops.yaml`** — Global config cho custom paths. Tạo bởi `/secops:setup-profile` khi user chọn folder riêng:
 
-**`SECOPS_HOME`** — Cho phép dùng chung 1 bộ context/workflows cho nhiều projects. Khi set, tất cả agents đọc/ghi `context/` và `workflows/` từ `$SECOPS_HOME/` thay vì working directory.
+```yaml
+context_dir: C:\SecOps-Data\context
+workflows_dir: C:\SecOps-Data\workflows
+```
+
+Resolution order: `~/.claude/secops.yaml` → working directory (default).
 
 **`SECOPS_PROFILE`** — Control hook strictness:
 
@@ -132,9 +134,6 @@ When adding skills, decide: is this broadly useful (curated) or org-specific (cu
 | `strict` | All checks + block on warnings | Production environments, audits |
 
 ```bash
-# Example: custom data dir + dev mode
-SECOPS_HOME=~/secops-data SECOPS_PROFILE=dev claude
-
 # Example: strict mode for audit preparation
 SECOPS_PROFILE=strict claude --plugin-dir .
 ```

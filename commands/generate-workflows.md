@@ -4,15 +4,11 @@ Bạn đang tạo hoặc cập nhật workflow templates tự động từ quy t
 
 ## Quy trình
 
-### Step 0: Xác định base directory
+### Step 0: Xác định paths
 
-Xác định base directory theo thứ tự ưu tiên: `SECOPS_HOME` → working directory.
+Đọc `~/.claude/secops.yaml` để lấy `context_dir` và `workflows_dir`. Nếu không có → dùng `./context/` và `./workflows/` (working directory).
 
-```bash
-BASE_DIR="${SECOPS_HOME:-.}"
-```
-
-Kiểm tra `$BASE_DIR/context/` và `$BASE_DIR/workflows/`. Nếu thiếu → hướng dẫn chạy `/secops:setup-profile` trước:
+Kiểm tra `<context_dir>` và `<workflows_dir>` tồn tại. Nếu thiếu → hướng dẫn chạy `/secops:setup-profile` trước:
 
 ```text
 Chưa tìm thấy context/ và workflows/.
@@ -21,15 +17,15 @@ Chạy /secops:setup-profile để khởi tạo đầy đủ trước khi genera
 
 ### Step 1: Đọc context
 
-Đọc song song (từ `$BASE_DIR`):
+Đọc song song:
 
-- `$BASE_DIR/context/company-profile.yaml` — để biết org mapping, tech stack, agents có sẵn
+- `<context_dir>/company-profile.yaml` — để biết org mapping, tech stack, agents có sẵn
 - `workflows/SCHEMA.md` — để biết YAML schema (từ plugin dir)
-- Tất cả workflows hiện có trong `$BASE_DIR/workflows/` — để tránh duplicate
+- Tất cả workflows hiện có trong `<workflows_dir>/` — để tránh duplicate
 
 ### Step 2: Đọc process documents
 
-Đọc mọi file trong `$BASE_DIR/context/process-docs/` (trừ README.md).
+Đọc mọi file trong `<context_dir>/process-docs/` (trừ README.md).
 
 Với mỗi file, extract:
 

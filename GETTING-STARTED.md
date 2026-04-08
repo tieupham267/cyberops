@@ -21,15 +21,15 @@ Bước 7: Verify & test                        (5 phút)
 
 ## Folder `context/` và `workflows/` nằm ở đâu?
 
-Plugin đọc/ghi `context/` và `workflows/` từ **base directory**, xác định theo thứ tự:
+Plugin xác định vị trí `context/` và `workflows/` theo thứ tự:
 
-1. **`SECOPS_HOME`** (biến môi trường) — nếu được set
-2. **Working directory** (default) — nếu không set `SECOPS_HOME`
+1. **`~/.claude/secops.yaml`** (global config) — nếu có khai báo paths
+2. **Working directory** (default) — dùng `./context/`, `./workflows/`
 
 ### Cách 1: Clone repo + `--plugin-dir` (recommended cho dev)
 
 ```text
-my-project/                     ← working directory (cũng là plugin dir)
+secops/                         ← working directory (cũng là plugin dir)
 ├── context/                    ✅ Có sẵn khi clone
 │   ├── company-profile.yaml
 │   ├── org-docs/
@@ -45,8 +45,10 @@ my-project/                     ← working directory (cũng là plugin dir)
 
 ### Cách 2: Cài global — dùng working directory (default)
 
+Không cần config. `context/` và `workflows/` nằm trong project hiện tại:
+
 ```text
-C:\Projects\my-app\                    ← working directory = base directory
+C:\Projects\my-app\                    ← working directory
 ├── context/                           ➕ Tự tạo bởi /secops:setup-profile
 │   ├── company-profile.yaml
 │   ├── org-docs/
@@ -58,24 +60,19 @@ C:\Projects\my-app\                    ← working directory = base directory
 └── ...
 ```
 
-### Cách 3: Cài global — dùng `SECOPS_HOME` (recommended cho daily use)
+### Cách 3: Cài global — dùng folder riêng (recommended cho daily use)
 
-Khi muốn **dùng chung 1 bộ context/workflows cho nhiều projects**, set biến `SECOPS_HOME`:
+Khi muốn **dùng chung 1 bộ context/workflows cho nhiều projects**, chạy `/secops:setup-profile` lần đầu và chọn "folder riêng". Plugin sẽ lưu paths vào `~/.claude/secops.yaml`:
 
-```bash
-# Windows (PowerShell)
-$env:SECOPS_HOME = "C:\SecOps-Data"
-claude
-
-# Linux/macOS
-export SECOPS_HOME=~/secops-data
-claude
-
-# Hoặc set permanent trong .bashrc / .zshrc / System Environment Variables
+```yaml
+# ~/.claude/secops.yaml (tự tạo khi setup)
+# Windows: C:\Users\<username>\.claude\secops.yaml
+context_dir: C:\SecOps-Data\context
+workflows_dir: C:\SecOps-Data\workflows
 ```
 
 ```text
-C:\SecOps-Data\                        ← SECOPS_HOME = base directory (dùng chung)
+C:\SecOps-Data\                        ← folder riêng (dùng chung)
 ├── context/
 │   ├── company-profile.yaml           ← profile tổ chức
 │   ├── org-docs/
@@ -85,25 +82,13 @@ C:\SecOps-Data\                        ← SECOPS_HOME = base directory (dùng c
 ├── workflows/
 │   ├── defaults/                      ← 10 default workflows
 │   ├── soc/                           ← custom workflows
-│   ├── ir/
 │   └── ...
 
-C:\Projects\my-app\                    ← working directory (project A)
-├── src/
-└── ...
-
-C:\Projects\another-app\               ← working directory (project B)
-├── src/
-└── ...                                ← cả 2 projects dùng chung SecOps-Data
+C:\Projects\my-app\                    ← project A — dùng chung SecOps-Data
+C:\Projects\another-app\               ← project B — dùng chung SecOps-Data
 ```
 
-Khi lần đầu chạy `/secops:setup-profile`, plugin sẽ **tự tạo** cả `context/` và `workflows/` trong base directory:
-
-- `context/` — folder trống, bạn thêm tài liệu tổ chức vào
-- `workflows/defaults/` — copy 10 default workflows từ plugin, sẵn sàng dùng ngay
-- `workflows/<category>/` — folder trống cho custom workflows
-
-> **Tip**: Thêm `context/` vào `.gitignore` nếu base directory nằm trong project. Folder `workflows/` có thể commit vì chỉ chứa workflow templates.
+> **Tip**: Thêm `context/` vào `.gitignore` nếu nằm trong project. Có thể sửa `~/.claude/secops.yaml` bất kỳ lúc nào để đổi paths. Xóa file để quay về dùng working directory.
 
 ---
 
@@ -502,13 +487,18 @@ Hook phải block và hiện thông báo `[SECURITY]`.
 
 | Biến | Mục đích | Giá trị |
 | --- | --- | --- |
-| `SECOPS_HOME` | Chỉ định folder chứa `context/` và `workflows/` | Path tới folder (default: working directory) |
 | `SECOPS_PROFILE` | Mức độ nghiêm ngặt của hooks | `dev` / `standard` (default) / `strict` |
 
 ```bash
-# Ví dụ kết hợp
-SECOPS_HOME=~/secops-data SECOPS_PROFILE=strict claude
+SECOPS_PROFILE=dev claude        # Nhẹ — chỉ check secrets
+SECOPS_PROFILE=strict claude     # Nghiêm ngặt — block cả warnings
 ```
+
+## Config file
+
+| File | Mục đích |
+| --- | --- |
+| `~/.claude/secops.yaml` | Khai báo `context_dir` và `workflows_dir` (tạo bởi `/secops:setup-profile`) |
 
 ## Cần hỗ trợ?
 

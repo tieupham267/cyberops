@@ -4,45 +4,62 @@ Bạn đang thực hiện setup hoặc cập nhật company profile tự động
 
 ## Quy trình
 
-### Step 0: Xác định base directory và khởi tạo structure
+### Step 0: Xác định paths và khởi tạo structure
 
-**Xác định base directory:**
+**Xác định context_dir và workflows_dir:**
 
-```bash
-# Nếu SECOPS_HOME được set và là folder tồn tại → dùng SECOPS_HOME
-# Nếu không → dùng working directory hiện tại (.)
-BASE_DIR="${SECOPS_HOME:-.}"
-```
+1. Đọc `~/.claude/secops.yaml` (trên Windows: `C:\Users\<username>\.claude\secops.yaml`)
+2. Nếu file tồn tại và có `context_dir` / `workflows_dir` → dùng paths đã khai báo
+3. Nếu file không tồn tại → **hỏi user**:
 
-**Tạo cấu trúc trong base directory:**
+   ```text
+   Bạn muốn lưu context và workflows ở đâu?
+   
+   1. Trong project hiện tại (./context, ./workflows) — mặc định
+   2. Chỉ định folder riêng (dùng chung cho nhiều projects)
+   
+   Chọn [1/2]:
+   ```
+
+   - Nếu chọn 1 → `context_dir = ./context`, `workflows_dir = ./workflows` (KHÔNG tạo secops.yaml)
+   - Nếu chọn 2 → hỏi paths cụ thể → **lưu vào `~/.claude/secops.yaml`**:
+
+   ```yaml
+   # ~/.claude/secops.yaml
+   context_dir: C:\SecOps-Data\context
+   workflows_dir: C:\SecOps-Data\workflows
+   ```
+
+**Tạo cấu trúc:**
 
 ```bash
 # Context folders
-mkdir -p "$BASE_DIR/context/org-docs" "$BASE_DIR/context/process-docs"
+mkdir -p "<context_dir>/org-docs" "<context_dir>/process-docs"
 
 # Workflow folders
-mkdir -p "$BASE_DIR/workflows/defaults" "$BASE_DIR/workflows/soc" "$BASE_DIR/workflows/ir" "$BASE_DIR/workflows/grc" "$BASE_DIR/workflows/devsecops" "$BASE_DIR/workflows/advisory" "$BASE_DIR/workflows/awareness"
+mkdir -p "<workflows_dir>/defaults" "<workflows_dir>/soc" "<workflows_dir>/ir" "<workflows_dir>/grc" "<workflows_dir>/devsecops" "<workflows_dir>/advisory" "<workflows_dir>/awareness"
 ```
 
 **Copy default workflows từ plugin:**
 
-Nếu `$BASE_DIR/workflows/defaults/` trống hoặc chưa có files:
+Nếu `<workflows_dir>/defaults/` trống hoặc chưa có files:
 
 1. Tìm plugin directory (nơi chứa file `plugin.json` của secops)
-2. Copy tất cả files từ `<plugin-dir>/workflows/defaults/*.yaml` vào `$BASE_DIR/workflows/defaults/`
+2. Copy tất cả files từ `<plugin-dir>/workflows/defaults/*.yaml` vào `<workflows_dir>/defaults/`
 3. Nếu không tìm được plugin dir → tạo danh sách 10 default workflows trống với comment `# TODO: copy from plugin`
 
-Nếu `$BASE_DIR/context/company-profile.yaml` chưa có → tạo file template trống với các fields cơ bản.
+Nếu `<context_dir>/company-profile.yaml` chưa có → tạo file template trống với các fields cơ bản.
 
-> **Lưu ý**: Nếu dùng `SECOPS_HOME`, thông báo cho user biết đang dùng path nào:
-> `Đang sử dụng SECOPS_HOME=$SECOPS_HOME`
+> **Thông báo cho user** paths đang sử dụng:
+> `Context: <context_dir>`
+> `Workflows: <workflows_dir>`
 
 ### Step 1: Đọc tất cả org documents
 
-Đọc mọi file trong `$BASE_DIR/context/org-docs/` — hỗ trợ `.md`, `.txt`, `.csv`, `.json`, `.yaml`, `.pdf`, `.png`, `.jpg`.
+Đọc mọi file trong `<context_dir>/org-docs/` — hỗ trợ `.md`, `.txt`, `.csv`, `.json`, `.yaml`, `.pdf`, `.png`, `.jpg`.
 
 ```text
-Glob: $BASE_DIR/context/org-docs/**/*
+Glob: <context_dir>/org-docs/**/*
 ```
 
 Với mỗi file:
@@ -52,7 +69,7 @@ Với mỗi file:
 
 ### Step 2: Đọc company-profile.yaml hiện tại
 
-Đọc `$BASE_DIR/context/company-profile.yaml` để biết fields nào đã có, fields nào còn trống.
+Đọc `<context_dir>/company-profile.yaml` để biết fields nào đã có, fields nào còn trống.
 
 ### Step 3: Extract & Map
 
@@ -101,7 +118,7 @@ Hỏi user: **Confirm changes? (Yes / Edit trước / Cancel)**
 
 ### Step 5: Write profile
 
-Nếu confirmed → ghi vào `$BASE_DIR/context/company-profile.yaml`, giữ nguyên format và comments.
+Nếu confirmed → ghi vào `<context_dir>/company-profile.yaml`, giữ nguyên format và comments.
 
 ### Step 6: Validate
 
