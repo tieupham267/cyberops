@@ -319,10 +319,10 @@ Plugin có thể đánh giá cách sắp xếp tài liệu và đề xuất cả
 
 ```text
 Projects (đang active):  3 files — incident đang xử lý, audit prep
-Areas (ongoing):         12 files — policies, SOPs
+Areas (ongoing):         15 files — policies, SOPs, audit evidence, vendor assessments
   ⚠️ 3 files chưa review > 12 tháng
 Resources (tham khảo):   8 files — regulations, frameworks
-Archive (nên archive):   5 files — completed, superseded
+Archive (không còn sử dụng): 2 files — superseded, deprecated
 ```
 
 ### Tra cứu tài liệu tham chiếu

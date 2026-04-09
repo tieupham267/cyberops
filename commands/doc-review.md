@@ -50,9 +50,9 @@ Map mỗi file vào 1 trong 4 categories:
 | PARA | Định nghĩa | Ví dụ SecOps |
 | --- | --- | --- |
 | **Projects** | Có deadline, đang active, cần hành động | Incident đang xử lý, audit prep Q2, migration plan |
-| **Areas** | Trách nhiệm ongoing, không có deadline | ISMS maintenance, SOC operations, vulnerability mgmt |
-| **Resources** | Tài liệu tham khảo, knowledge base | Frameworks (ISO, NIST), regulations, training materials |
-| **Archive** | Hoàn thành hoặc không còn active | Old audit reports, closed incidents, deprecated policies |
+| **Areas** | Trách nhiệm ongoing, không có deadline | ISMS maintenance, SOC operations, vulnerability mgmt, pentest reports (audit evidence), vendor assessments, regulatory correspondence |
+| **Resources** | Tài liệu tham khảo, knowledge base | Frameworks (ISO, NIST), training materials, templates |
+| **Archive** | Không còn giá trị sử dụng cho area nào | Deprecated policies đã thay thế, superseded documents, incidents đã close + không cần cho audit |
 
 **Output:**
 
@@ -68,6 +68,9 @@ Map mỗi file vào 1 trong 4 categories:
   🔄 access-control-policy.docx — ISMS, review cycle: annual
   🔄 incident-response-sop.docx — SOC Operations
   🔄 vulnerability-management-process.md — Vuln Mgmt
+  🔄 audit-report-2023.pdf — VAPT & Audit (PCI-DSS evidence, retest reference)
+  🔄 vendor-risk-assessment-2024.xlsx — Risk Management (ongoing vendor risk)
+  🔄 cong-van-nhnn-2024.pdf — Risk Management (SBV audit reference)
   ⚠️ change-management.pdf — Chưa review > 12 tháng
 
 ### Resources (tham khảo)
@@ -75,16 +78,15 @@ Map mỗi file vào 1 trong 4 categories:
   📚 iso27001-controls.xlsx — Framework
   📚 nist-csf-mapping.md — Framework
 
-### Archive (nên archive)
-  📦 audit-report-2023.pdf — Completed, > 1 năm
+### Archive (không còn giá trị sử dụng)
   📦 old-network-diagram-v1.png — Superseded by v3
-  📦 incident-2024-001-postmortem.md — Closed
+  📦 access-policy-v1.docx — Deprecated, replaced by v2
+  📦 incident-2023-005-postmortem.md — Closed, lessons learned đã extract
 
 ### Đề xuất
   1. ⚠️ 3 files trong Areas chưa review > 12 tháng → cần review/update
-  2. 📦 5 files nên chuyển sang Archive (> 1 năm, không active)
-  3. 🔄 2 SOPs thiếu version control → thêm version + review date
-  4. ❌ 0 Projects có deadline tracking → nên thêm deadline metadata
+  2. 🔄 2 SOPs thiếu version control → thêm version + review date
+  3. ❌ 0 Projects có deadline tracking → nên thêm deadline metadata
 ```
 
 ---

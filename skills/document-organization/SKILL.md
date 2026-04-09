@@ -24,24 +24,27 @@ Phương pháp của Tiago Forte. Phân loại tài liệu theo **mức độ ac
 | Category | Định nghĩa | Đặc điểm | Ví dụ SecOps |
 | --- | --- | --- | --- |
 | **Projects** | Mục tiêu cụ thể + deadline | Active, time-bound, có deliverable rõ ràng | Incident đang xử lý, audit prep Q2, SIEM migration |
-| **Areas** | Trách nhiệm ongoing | Không deadline, cần maintain liên tục | ISMS maintenance, SOC operations, vuln mgmt, policy review |
-| **Resources** | Tài liệu tham khảo | Knowledge base, không cần action | Frameworks (ISO, NIST), regulations, training materials, templates |
-| **Archive** | Hoàn thành / không active | Giữ để tham khảo, không cần truy cập thường xuyên | Old audits, closed incidents, deprecated policies, retired SOPs |
+| **Areas** | Trách nhiệm ongoing | Không deadline, cần maintain liên tục | ISMS maintenance, SOC operations, vuln mgmt, policy review, pentest reports (cần cho retest/audit), vendor assessments, regulatory correspondence |
+| **Resources** | Tài liệu tham khảo | Knowledge base, không cần action | Frameworks (ISO, NIST), training materials, templates, public regulations |
+| **Archive** | Không còn giá trị sử dụng | Không cần cho compliance, audit, hay reference ongoing | Deprecated policies đã thay thế, incidents đã close + lessons learned đã extract, superseded documents |
 
 ### Quy tắc phân loại
 
 1. **Có deadline + đang active?** → Projects
 2. **Không deadline nhưng phải maintain?** → Areas
-3. **Chỉ để tham khảo?** → Resources
-4. **Đã xong / không dùng nữa?** → Archive
+3. **Chỉ để tham khảo, không cần action?** → Resources
+4. **Không còn giá trị sử dụng cho bất kỳ area nào?** → Archive
+
+**Lưu ý quan trọng cho SecOps:** "Hoàn thành" ≠ "Archive". Một pentest report đã hoàn thành vẫn thuộc **Areas** nếu cần cho: audit evidence hàng năm, retest reference, compliance proof. Chỉ archive khi document thực sự không còn phục vụ area nào.
 
 ### Quy tắc di chuyển (lifecycle)
 
 ```text
 Resources → Areas    (khi bắt đầu áp dụng framework vào tổ chức)
 Areas → Projects     (khi có task cụ thể + deadline)
-Projects → Archive   (khi hoàn thành)
-Areas → Archive      (khi trách nhiệm thay đổi)
+Projects → Areas     (khi project hoàn thành nhưng output cần cho ongoing area)
+Projects → Archive   (khi hoàn thành VÀ output không phục vụ area nào)
+Areas → Archive      (khi trách nhiệm thay đổi VÀ documents không còn compliance value)
 ```
 
 ### PARA cho SecOps — Best Practices
@@ -56,6 +59,11 @@ Areas → Archive      (khi trách nhiệm thay đổi)
 - Tổ chức theo function (SOC, GRC, IR, DevSecOps) hoặc theo document type (policies, SOPs)
 - Mỗi file có owner + review schedule
 - Flag files chưa review > review cycle (thường 12 tháng)
+- Bao gồm output từ completed projects nếu phục vụ ongoing compliance:
+  - Pentest/audit reports → Areas (VAPT & Audit) — cần cho retest, PCI-DSS evidence
+  - Vendor risk assessments → Areas (Risk Management) — vendor risk là ongoing
+  - Regulatory correspondence (công văn NHNN) → Areas (Risk Management) — cần cho SBV audit
+  - CVE alerts đã xử lý → Areas (SOC) — threat intel reference, audit evidence
 
 **Resources:**
 - Tổ chức theo topic (regulations, frameworks, vendor docs, training)
@@ -66,6 +74,10 @@ Areas → Archive      (khi trách nhiệm thay đổi)
 - Tổ chức theo năm hoặc theo project name
 - Read-only — không sửa
 - Retention policy: giữ bao lâu? (compliance requirement)
+- Chỉ archive khi document không còn phục vụ area nào:
+  - Policy v1 đã thay bằng v2 → archive v1
+  - Incident đã close + lessons learned đã extract + không cần cho audit → archive
+  - Network diagram v1 đã supersede bởi v3 → archive v1
 
 ---
 
