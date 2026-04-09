@@ -189,7 +189,7 @@ Mọi tài liệu chính thức phải có header:
 | Field | Value |
 | --- | --- |
 | **Tên tài liệu** | [Tên] |
-| **Mã tài liệu** | [NEEDS INPUT: mã tài liệu theo quy ước tổ chức] |
+| **Mã tài liệu** | [Tạo theo quy ước bên dưới] |
 | **Phiên bản** | [x.y] |
 | **Phân loại** | [PUBLIC / INTERNAL / CONFIDENTIAL / RESTRICTED] |
 | **Người soạn** | [Tên] |
@@ -197,3 +197,26 @@ Mọi tài liệu chính thức phải có header:
 | **Ngày hiệu lực** | [NEEDS INPUT: ngày] |
 | **Ngày rà soát tiếp theo** | [NEEDS INPUT: ngày] |
 ```
+
+### Quy ước đặt mã tài liệu
+
+**Đọc `company-profile.yaml` → section `document_convention`** trước khi tạo mã.
+
+**Nếu có `naming_pattern`**: áp dụng pattern, thay placeholders bằng giá trị từ `type_codes` và `domain_codes`. Ví dụ:
+- Pattern `{TYPE}-{DOMAIN}-{SEQ}` + policy + information_security → `POL-SEC-001`
+- Pattern `CS.{TYPE}.{SEQ}` + procedure → `CS.QT.001`
+
+**Nếu `naming_pattern` trống nhưng có `examples`**: infer pattern từ examples rồi áp dụng.
+
+**Nếu cả hai trống**: dùng scheme mặc định `[TYPE]-[DOMAIN]-[SEQ]` với codes:
+
+| TYPE | Code | DOMAIN | Code |
+| --- | --- | --- | --- |
+| Policy | POL | Information Security | SEC |
+| Standard | STD | Access Control | ACC |
+| Procedure | SOP | Incident Response | INC |
+| Guideline | GDL | Change Management | CHG |
+| Record | REC | Network Security | NET |
+| Template | TPL | Data Protection | DAT |
+| Report | RPT | Business Continuity | BCP |
+|  |  | HR Security | HR |

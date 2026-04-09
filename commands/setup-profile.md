@@ -305,6 +305,7 @@ Tôi sẽ hỏi một số câu để tạo company profile. Bỏ qua câu nào 
 5. Frameworks/certifications đang áp dụng? (ISO 27001, PCI-DSS...)
 6. Team security gồm mấy người, roles gì?
 7. Có escalation matrix không? (ai nhận alert CRITICAL, HIGH...)
+8. Quy ước đặt mã tài liệu? (ví dụ: POL-SEC-001, CS.QT.01, hoặc chưa có)
 ```
 
 **Nếu profile đã có data** — chỉ hỏi fields trống:

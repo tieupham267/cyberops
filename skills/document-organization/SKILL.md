@@ -203,34 +203,26 @@ Draft → Review → Approved → Published → In Use → Review Due → Update
 
 ## Document Numbering Convention
 
-### Recommended scheme
+Khi review document numbering, **đọc `company-profile.yaml` → `document_convention`** trước. Nếu tổ chức đã có convention → đánh giá tài liệu theo convention đó, không theo scheme mặc định.
+
+### Kiểm tra khi review
+
+- Tài liệu có đánh mã theo convention không?
+- Mã có nhất quán across documents không?
+- Có tài liệu nào thiếu mã không?
+- Có trùng mã không?
+
+### Default scheme (khi chưa có company convention)
 
 ```text
 [TYPE]-[DOMAIN]-[SEQ]
 
-TYPE:
-  POL = Policy
-  STD = Standard
-  SOP = Procedure/SOP
-  GDL = Guideline
-  REC = Record
-  TPL = Template
-  RPT = Report
-
-DOMAIN:
-  SEC = Information Security
-  ACC = Access Control
-  INC = Incident Response
-  CHG = Change Management
-  NET = Network Security
-  DAT = Data Protection
-  BCP = Business Continuity
-  HR  = Human Resources Security
+TYPE:   POL, STD, SOP, GDL, REC, TPL, RPT
+DOMAIN: SEC, ACC, INC, CHG, NET, DAT, BCP, HR
 
 Ví dụ:
   POL-SEC-001 = Information Security Policy
   SOP-INC-003 = Incident Containment Procedure
-  STD-ACC-002 = Multi-Factor Authentication Standard
 ```
 
 ---
