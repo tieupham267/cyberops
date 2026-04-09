@@ -1,116 +1,186 @@
-# SecOps Plugin — Development Workflow
+# SecOps Plugin — Development Guide
 
-Workflow phát triển plugin **secops** với VS Code + Claude Code.
+Hướng dẫn phát triển và contribute plugin **secops**.
 
-## 1. Setup ban đầu
+---
 
-Giải nén plugin, mở VS Code, và khởi động Claude Code:
+## Setup môi trường dev
+
+### Clone và chạy
 
 ```bash
-# Giải nén plugin
-unzip secops-plugin.zip
+git clone https://github.com/tieupham267/secops.git
 cd secops
-
-# Khởi tạo git repo
-git init
-git add .
-git commit -m "feat: secops plugin v1.0.0"
-
-# Mở VS Code
-code .
-```
-
-Trong VS Code, cài extension **Claude Code** từ marketplace (tìm `anthropic.claude-code`). Click biểu tượng Spark ở sidebar trái để mở Claude Code panel.
-
-## 2. Chạy plugin ở chế độ dev
-
-Dùng flag `--plugin-dir` để load plugin mà không cần cài chính thức — rất tiện cho development.
-
-Trong terminal VS Code:
-
-```bash
 claude --plugin-dir .
 ```
 
-Mỗi khi sửa file, chạy `/reload-plugins` để hot-reload mà không cần restart session.
+### Hot-reload khi phát triển
 
-## 3. Workflow phát triển hàng ngày
+Mỗi khi sửa file agent, skill, command, hoặc hook → chạy `/reload-plugins` trong Claude Code để load lại mà không cần restart session.
 
-Khi đã ở trong Claude Code (trong VS Code), bạn có thể nhờ Claude phát triển chính plugin này. Ví dụ:
-
-**Thêm agent mới:**
+### Dev loop
 
 ```text
-Đọc file agents/soc-analyst.md để hiểu cấu trúc,
-sau đó tạo agent mới tên "pentest-planner" cho planning penetration test
+Sửa file → /reload-plugins → test → sửa tiếp → hài lòng → commit
 ```
 
-**Cải thiện agent hiện có:**
+---
+
+## Cấu trúc plugin
 
 ```text
-Đọc agents/threat-modeler.md và bổ sung thêm section về
-threat modeling cho cloud-native applications (Kubernetes, serverless)
+secops/
+├── plugin.json                 # Plugin manifest
+├── agents/                     # 12 agent personas (.md + YAML frontmatter)
+├── skills/                     # 8 knowledge-base skills (SKILL.md)
+├── commands/                   # Slash commands (.md)
+├── workflows/                  # YAML workflow templates
+│   ├── defaults/               # 10 default workflows
+│   ├── soc/ ir/ grc/           # Category-specific
+│   └── SCHEMA.md               # YAML schema reference
+├── hooks/
+│   ├── hooks.json              # Hook definitions (matchers)
+│   └── scripts/                # Hook shell scripts
+├── rules/                      # Security rules (.md)
+│   └── cybersecurity.md        # Index file
+├── context/                    # Company data (gitignored except READMEs)
+│   ├── company-profile.yaml
+│   ├── org-docs/
+│   └── process-docs/
+├── references/                 # User reference docs
+│   ├── regulations/
+│   ├── standards/
+│   └── policies/
+└── tests/                      # 5-layer test suite
 ```
 
-**Thêm skill mới:**
+---
 
-```text
-Tạo skill mới trong skills/detection-engineering/SKILL.md
-về viết Sigma rules, YARA rules, và Snort rules
+## Phát triển components
+
+### Thêm agent
+
+Tạo `agents/<name>.md` với YAML frontmatter:
+
+```yaml
+---
+name: pentest-planner
+description: >
+  Plans and coordinates penetration testing engagements.
+tools: Read Glob Grep Bash Write Edit
+model: opus
+---
+
+(Agent instructions in Markdown)
 ```
 
-**Thêm command mới:**
+Cập nhật orchestrator decision matrix nếu cần routing tự động.
 
-```text
-Tạo command /secops:daily-brief trong commands/daily-brief.md
-để tạo bản tóm tắt tình hình an ninh mạng hàng ngày
+### Thêm skill
+
+Tạo `skills/<name>/SKILL.md` với YAML frontmatter:
+
+```yaml
+---
+name: detection-engineering
+description: Sigma rules, YARA rules, Snort rules
+---
+
+(Skill content in Markdown)
 ```
 
-**Test hook:**
+### Thêm workflow
 
-```text
-Tạo file test.md có chứa "password = MySecret123"
-rồi xem hook check-secrets.sh có block không
+Tạo `workflows/<category>/<name>.yaml` theo `workflows/SCHEMA.md`:
+
+```yaml
+name: daily-security-brief
+title: Bản tin an ninh mạng hàng ngày
+description: >
+  Tạo bản tóm tắt tình hình an ninh mạng.
+category: soc
+agent: soc-analyst
+# ... (xem SCHEMA.md cho full format)
 ```
 
-## 4. Dùng `@` để reference files
+Orchestrator tự phát hiện workflows mới — không cần đăng ký thêm.
 
-Khi gõ `@` theo sau tên file, Claude Code đọc nội dung file đó và có thể trả lời hoặc chỉnh sửa. Ví dụ:
+### Thêm command
 
-```text
-@agents/soc-analyst.md thêm section về cloud log analysis cho AWS CloudTrail
-@hooks/hooks.json thêm hook mới chặn git push lên branch main
-@skills/compliance-frameworks/SKILL.md cập nhật thêm PCI-DSS v4.0 controls
+Tạo `commands/<name>.md`:
+
+```markdown
+# /secops:<name> — Mô tả ngắn
+
+(Instructions cho Claude khi user gọi command)
 ```
 
-## 5. Validate plugin
+### Thêm hook
+
+1. Thêm entry trong `hooks/hooks.json`:
+
+   ```json
+   {
+     "event": "PreToolUse",
+     "matcher": "Write|Edit",
+     "command": "bash hooks/scripts/my-hook.sh"
+   }
+   ```
+
+1. Tạo script trong `hooks/scripts/my-hook.sh`
+
+1. Test: `claude --plugin-dir .` → trigger hook event
+
+### Thêm rule
+
+Tạo `rules/<domain>.md` và thêm reference trong `rules/cybersecurity.md`.
+
+---
+
+## Testing
+
+### Chạy test suite
 
 ```bash
-# Kiểm tra cấu trúc
-claude plugin validate .
-
-# Xem tất cả components đã load
-/agents         # list agents
-/secops:incident   # test command
+bash tests/run-all.sh          # Tất cả 5 layers
+bash tests/run-all.sh 1        # Layer cụ thể
+bash tests/run-all.sh 1 2 5    # Nhiều layers
 ```
 
-## 6. Push và distribute
+| Layer | Kiểm tra |
+| --- | --- |
+| 1 — Structural Integrity | Plugin structure, frontmatter, YAML schemas, internal refs |
+| 2 — Hook Functionality | Mỗi hook script với known inputs (block/allow) |
+| 3 — Output Quality | Agent definitions có đủ sections, bilingual |
+| 4 — Orchestration Flow | Routing coverage, workflow uniqueness, chain consistency |
+| 5 — Plugin Security | Không secrets, không command injection, profile safety |
 
-```bash
-# Commit changes
-git add .
-git commit -m "feat: add pentest-planner agent"
-git push origin main
+### Khi nào phải chạy tests
 
-# Team members install
-# /plugin install github:tieupham267/secops
+- Sau khi thêm/sửa agent, workflow, hook, hoặc rule
+- Sau khi sửa hook scripts
+- Trước khi commit
+
+### Test thủ công
+
+```text
+# Test hook chặn secrets
+Tạo file test.txt có nội dung: password = "MySecret123"
+
+# Test workflow routing
+/secops:run alert-triage
+
+# Test command
+/secops:config show-paths
 ```
 
-## Tips thực tế
+---
 
-### Dùng worktree cho parallel development
+## Tips phát triển
 
-Flag `-w` khởi động Claude Code trong isolated worktree riêng — mỗi worktree có file và branch độc lập, tránh xung đột khi nhiều instance cùng chạy.
+### Worktree cho parallel development
+
+Flag `-w` chạy Claude Code trong isolated worktree — mỗi worktree có files và branch riêng:
 
 ```bash
 # Session 1: phát triển agent mới
@@ -120,85 +190,61 @@ claude -w --plugin-dir .
 claude -w --plugin-dir .
 ```
 
-### Dùng `CLAUDE.md` cho context
+### Reference files với `@`
 
-File `CLAUDE.md` ở root plugin giúp Claude Code hiểu project structure và conventions. Xem [CLAUDE.md](CLAUDE.md) để biết chi tiết.
+```text
+@agents/soc-analyst.md thêm section về cloud log analysis
+@hooks/hooks.json thêm hook mới chặn git push lên main
+@skills/compliance-frameworks/SKILL.md cập nhật PCI-DSS v4.0
+```
 
-### Hook profiles
-
-Dùng biến `SECOPS_PROFILE` để điều chỉnh mức độ nghiêm ngặt của hooks:
+### Hook profiles khi dev
 
 ```bash
 # Dev mode — chỉ check secrets, bỏ qua warnings
 SECOPS_PROFILE=dev claude --plugin-dir .
 
-# Standard (mặc định) — tất cả checks
-claude --plugin-dir .
-
-# Strict — tất cả checks + block warnings (cho audit/production)
+# Strict — test full hook coverage
 SECOPS_PROFILE=strict claude --plugin-dir .
 ```
 
 ### Custom skills cho team members
 
-Team members có thể thêm skills riêng vào `~/.claude/skills/` mà không cần sửa plugin:
+Skills cá nhân đặt trong `~/.claude/skills/` — override skills cùng tên trong plugin:
 
 ```bash
-# Tạo skill cá nhân
 mkdir -p ~/.claude/skills/my-custom-detection/
 # Viết SKILL.md với YAML frontmatter
 ```
 
-Skills trong `~/.claude/skills/` sẽ override skills cùng tên trong plugin nếu có xung đột.
+---
 
-### Vòng lặp dev
+## Distribution
 
-Mở VS Code → mở folder `secops` → chạy `claude --plugin-dir .` trong terminal → nhờ Claude chỉnh sửa/thêm files → `/reload-plugins` để test → commit + push khi hài lòng.
+### Cài cho team members
 
-## 7. Testing
+```text
+# Cách 1: Từ marketplace (recommended cho end users)
+/plugin marketplace add https://github.com/tieupham267/secops
+/plugin install secops@secops
 
-Chạy test suite để validate plugin:
-
-```bash
-# Chạy tất cả 5 layers
-bash tests/run-all.sh
-
-# Chạy layer cụ thể
-bash tests/run-all.sh 1        # Structural integrity
-bash tests/run-all.sh 2        # Hook functionality
-bash tests/run-all.sh 3        # Output quality
-bash tests/run-all.sh 4        # Orchestration flow
-bash tests/run-all.sh 5        # Plugin security
-
-# Kết hợp nhiều layers
-bash tests/run-all.sh 1 2 5
-```
-
-**Luôn chạy tests sau khi:**
-
-- Thêm/sửa agent, workflow, hook, hoặc rule
-- Sửa hook scripts
-- Thêm workflow mới (kiểm tra references đúng)
-- Trước khi commit
-
-## 8. Distribution & Installation
-
-### Lưu ý quan trọng khi distribute
-
-- **Rules** (`rules/`) KHÔNG tự động distribute khi install plugin — cần copy thủ công hoặc dùng `--plugin-dir`.
-- **Hook scripts** yêu cầu `bash` + standard Unix tools (`grep`, `stat`, `git`). Trên Windows cần Git Bash hoặc WSL.
-- Document biến môi trường cần thiết (`SECOPS_PROFILE`) cho team.
-
-### Cài đặt cho team
-
-```bash
-# Cách 1: Clone và dùng --plugin-dir (recommended cho dev)
+# Cách 2: Clone + plugin-dir (recommended cho dev)
 git clone https://github.com/tieupham267/secops.git
 claude --plugin-dir ./secops
-
-# Cách 2: Install từ GitHub (khi plugin đã stable)
-# /plugin install github:tieupham267/secops
-
-# Cách 3: Copy thư mục trực tiếp
-cp -r secops/ ~/.claude/plugins/secops/
 ```
+
+### Lưu ý khi distribute
+
+- **Hook scripts** yêu cầu `bash` + standard Unix tools (`grep`, `stat`, `git`). Windows cần Git Bash hoặc WSL.
+- Document `SECOPS_PROFILE` env var cho team.
+- Sau khi cài, team members chạy `/secops:setup-profile` để khởi tạo data.
+
+---
+
+## Tài liệu liên quan
+
+| Tài liệu | Nội dung |
+| --- | --- |
+| [GETTING-STARTED.md](GETTING-STARTED.md) | Hướng dẫn cài đặt và setup cho end users |
+| [CLAUDE.md](CLAUDE.md) | Technical reference — architecture, design patterns, rules |
+| `workflows/SCHEMA.md` | YAML schema cho workflow templates |
