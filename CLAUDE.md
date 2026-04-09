@@ -45,7 +45,7 @@ The plugin follows the Claude Code plugin specification (`plugin.json` at root):
 
 - **`agents/`** — 12 agent personas (Markdown with YAML frontmatter): `soc-analyst`, `incident-commander`, `threat-analyst`, `threat-modeler`, `risk-assessor`, `vuln-manager`, `grc-advisor`, `awareness-designer`, `ciso-fintech`, `devsecops`, `fraud-analyst`, `orchestrator`.
 - **`workflows/`** — YAML workflow templates organized by category. **Đọc từ `~/.claude/secops.yaml` paths hoặc working directory**. Khi cài global, `/secops:setup-profile` copy defaults và tạo folder structure. Orchestrator reads these for deterministic execution. See `workflows/SCHEMA.md` for format.
-- **`skills/`** — 8 knowledge-base skills that agents reference for detailed methodology (each in `<name>/SKILL.md`): `incident-response`, `compliance-frameworks`, `risk-assessment`, `vietnam-regulations`, `payment-fraud`, `itsm-reference`, `document-drafting`, `security-maturity`.
+- **`skills/`** — 9 knowledge-base skills that agents reference for detailed methodology (each in `<name>/SKILL.md`): `incident-response`, `compliance-frameworks`, `risk-assessment`, `vietnam-regulations`, `payment-fraud`, `itsm-reference`, `document-drafting`, `document-organization`, `security-maturity`.
 - **`context/`** — Company context. **Đọc từ `~/.claude/secops.yaml` paths hoặc working directory**. KHÔNG từ plugin directory. `/secops:setup-profile` tự tạo structure.
   - `company-profile.yaml` — tech stack, security tools, org mapping, escalation matrix. All agents read automatically.
   - `org-docs/` — raw org documents (org chart, asset lists, team info). `/secops:setup-profile` reads and populates profile.

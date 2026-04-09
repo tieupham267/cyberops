@@ -1,5 +1,7 @@
 # /secops:doc-review — Review và đề xuất tổ chức tài liệu
 
+**ALWAYS read `skills/document-organization/SKILL.md`** trước khi thực hiện review. Skill này chứa methodology chi tiết cho PARA, ISO 27001, Security-focused, gap analysis checklist, và scoring criteria.
+
 Bạn đang review cách tổ chức tài liệu của user và đề xuất cải thiện theo framework đã chọn.
 
 ## Quy trình

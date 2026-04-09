@@ -70,7 +70,7 @@ claude --plugin-dir .
 | `fraud-analyst` | Payment fraud, promotion abuse, transaction monitoring | opus |
 | `orchestrator` | Meta-agent: routes requests tới workflow/agent phù hợp | opus |
 
-### Skills (8)
+### Skills (9)
 
 | Skill | Nội dung |
 | --- | --- |
@@ -81,6 +81,7 @@ claude --plugin-dir .
 | `payment-fraud` | Fraud detection rules, promotion abuse, card fraud, ATO, collusion patterns |
 | `itsm-reference` | ITIL 4, ISO 20000, service management security review |
 | `document-drafting` | Templates cho policies, SOPs, reports, compliance documents |
+| `document-organization` | PARA (Second Brain), ISO 27001 doc hierarchy, lifecycle management, gap analysis |
 | `security-maturity` | Security maturity assessment, capability mapping, roadmap planning |
 
 ### Commands (14)
