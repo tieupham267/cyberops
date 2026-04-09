@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash hooks/scripts/check-secrets.sh \"$TOOL_INPUT_FILE_PATH\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/hooks/scripts/check-secrets.sh \"$TOOL_INPUT_FILE_PATH\"",
             "timeout": 10,
             "description": "Block nếu phát hiện secrets/credentials trong file output"
           }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash hooks/scripts/pre-commit-security.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/hooks/scripts/pre-commit-security.sh",
             "timeout": 30,
             "description": "Security check trước mỗi commit: scan secrets, validate classification headers"
           }
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash hooks/scripts/block-no-verify.sh \"$TOOL_INPUT_COMMAND\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/hooks/scripts/block-no-verify.sh \"$TOOL_INPUT_COMMAND\"",
             "timeout": 5,
             "description": "Chặn --no-verify, --no-gpg-sign, và force push lên main/master"
           }
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash hooks/scripts/post-write-classify.sh \"$TOOL_INPUT_FILE_PATH\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/hooks/scripts/post-write-classify.sh \"$TOOL_INPUT_FILE_PATH\"",
             "timeout": 5,
             "description": "Nhắc nhở data classification cho file mới tạo nếu chứa từ khóa nhạy cảm"
           }
@@ -53,13 +53,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash hooks/scripts/session-summary.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/hooks/scripts/session-summary.sh",
             "timeout": 10,
             "description": "Lưu session summary cho audit trail khi kết thúc session"
           },
           {
             "type": "command",
-            "command": "bash hooks/scripts/batch-security-check.sh",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}\"/hooks/scripts/batch-security-check.sh",
             "timeout": 30,
             "description": "Batch security scan tất cả files đã thay đổi trong session"
           }
