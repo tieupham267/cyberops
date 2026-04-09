@@ -1,0 +1,84 @@
+name: doc-organization-review
+title: Rà soát tổ chức tài liệu định kỳ
+description: >
+  Đánh giá cấu trúc, completeness, và maturity hệ thống tài liệu bảo mật.
+  Dùng PARA, ISO 27001 document hierarchy, hoặc Security-focused taxonomy.
+  Phát hiện gaps, outdated docs, thiếu metadata, duplicate. Output: maturity score
+  + action plan. Chạy quarterly hoặc trước audit.
+category: grc
+
+agent: grc-advisor
+skills:
+  - document-organization
+  - compliance-frameworks
+
+input:
+  - field: framework
+    prompt: "Review theo framework nào?"
+    type: choice
+    options:
+      - "PARA (Second Brain: Projects / Areas / Resources / Archive)"
+      - "ISO 27001 Document Hierarchy (Policies → Standards → Procedures → Guidelines → Records)"
+      - "Security-focused (Governance / Operations / Technical / Compliance / Evidence)"
+      - "Custom — mô tả sau"
+    required: true
+  - field: scope
+    prompt: "Scope review? (toàn bộ tài liệu, 1 domain, hoặc 1 folder cụ thể)"
+    type: text
+    required: true
+    default: "Toàn bộ tài liệu"
+  - field: previous_review
+    prompt: "Có kết quả review lần trước không? (trỏ đến file để so sánh tiến độ)"
+    type: file
+    required: false
+  - field: compliance_target
+    prompt: "Compliance target? (nếu có — để kiểm tra document coverage)"
+    type: choice
+    options:
+      - "ISO 27001:2022"
+      - "NIST CSF 2.0"
+      - "NĐ 13/2023 + Luật ANM 2018"
+      - "PCI-DSS v4.0"
+      - "Nhiều frameworks"
+      - "Không áp dụng"
+    required: false
+    default: "Không áp dụng"
+
+output:
+  format: doc-organization-review-report
+  sections:
+    - document-inventory
+    - framework-mapping
+    - gap-analysis
+    - outdated-documents
+    - metadata-quality
+    - duplicate-conflicts
+    - maturity-score
+    - trend-comparison
+    - action-plan
+  language: vi
+
+keywords:
+  - document organization
+  - tổ chức tài liệu
+  - doc review
+  - rà soát tài liệu
+  - document maturity
+  - document structure
+  - review hệ thống tài liệu
+  - document inventory
+  - kiểm kê tài liệu
+  - PARA
+  - second brain
+triggers:
+  - "rà soát tổ chức tài liệu"
+  - "review document structure"
+  - "đánh giá hệ thống tài liệu"
+  - "document organization review"
+  - "kiểm kê tài liệu"
+  - "doc organization"
+priority: 3
+
+tags: [grc, document-organization, periodic-review, maturity]
+version: "1.0.0"
+author: secops-team
