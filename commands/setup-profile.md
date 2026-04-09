@@ -6,13 +6,15 @@ Bạn đang thực hiện scan, phân loại tài liệu, và tạo/cập nhật
 
 ### Step 0: Đọc config hiện tại
 
-Đọc `~/.claude/secops.yaml`. Nếu đã có `sources` và `mapping` → hiển thị:
+Đọc `~/.claude/secops.yaml`. Trạng thái hiện tại dựa trên **config + mapping**, KHÔNG dựa trên nội dung folder.
+
+**Nếu đã có `sources` và `mapping`** → hiển thị:
 
 ```text
-Config hiện tại:
-  Sources: D:\Company-Docs, \\server\shared\security
+Trạng thái hiện tại (từ secops.yaml):
+  Sources: D:\Company-Docs, \\server\shared\security (scanned: 2026-03-15)
   Mapping: 12 org_docs, 8 process_docs, 5 regulations, 3 policies
-  Profile: company-profile.yaml (last updated: 2026-03-15)
+  Profile: company-profile.yaml — 15/20 fields đã điền
 
 Bạn muốn:
 1. Rescan sources (cập nhật mapping)
@@ -21,7 +23,20 @@ Bạn muốn:
 4. Setup mới từ đầu
 ```
 
-Nếu chưa có config → chuyển sang Step 1.
+**Nếu có config nhưng chưa có `sources`/`mapping`** (chỉ có output paths) → hiển thị:
+
+```text
+Trạng thái hiện tại:
+  Output paths: Đã cấu hình ✓
+  Sources: Chưa trỏ tới folder tài liệu nào
+  Profile: Chưa điền
+
+Tiếp tục trỏ tới folder(s) chứa tài liệu để scan?
+```
+
+→ Chuyển sang Step 2 (hỏi source paths).
+
+**Nếu chưa có config** → chuyển sang Step 1.
 
 ### Step 1: Hỏi output paths (chỉ lần đầu)
 
