@@ -23,18 +23,30 @@ Bạn muốn:
 4. Setup mới từ đầu
 ```
 
-**Nếu có config nhưng chưa có `sources`/`mapping`** (chỉ có output paths) → hiển thị:
+**Nếu có config nhưng chưa có `sources`/`mapping`** (chỉ có output paths) → đọc profile, đếm fields đã điền/trống, hiển thị:
 
 ```text
-Trạng thái hiện tại:
+Trạng thái hiện tại (từ secops.yaml):
   Output paths: Đã cấu hình ✓
   Sources: Chưa trỏ tới folder tài liệu nào
-  Profile: Chưa điền
+  Profile: 22/37 fields đã điền, 15 fields còn trống
 
-Tiếp tục trỏ tới folder(s) chứa tài liệu để scan?
+Fields còn trống:
+  org_mapping: department names, leads (0/6)
+  escalation: severity contacts, SLAs (0/4)
+  security: scanner, vulnerability_mgmt (2/5 trống)
+
+Bạn muốn:
+1. Trỏ tới folder(s) tài liệu để scan và extract thêm
+2. Điền tiếp fields trống qua Q&A
+3. Xem profile hiện tại
 ```
 
-→ Chuyển sang Step 2 (hỏi source paths).
+→ Option 1: chuyển sang Step 2 (hỏi source paths)
+→ Option 2: chuyển sang Step 9 (Q&A), chỉ hỏi fields trống
+→ Option 3: hiển thị profile → hỏi lại
+
+**Mọi thay đổi đều hiển thị diff trước khi apply** (Step 7).
 
 **Nếu chưa có config** → chuyển sang Step 1.
 
@@ -240,11 +252,15 @@ Hỏi user: **Apply? (Yes / Edit / Show full diff / Cancel)**
    - Tech stack consistent?
    - Flag gaps
 
-### Step 9: Q&A fallback (khi không có source docs)
+### Step 9: Q&A fallback
 
-Chỉ chạy khi user gõ `skip` ở Step 2 hoặc sources không có files liên quan.
+Chạy khi:
 
-Hỏi lần lượt để điền profile:
+- User gõ `skip` ở Step 2 (lần đầu, chưa có gì)
+- Sources không có files liên quan
+- User chọn "Điền tiếp fields trống qua Q&A" ở Step 0
+
+**Nếu profile trống** — hỏi tất cả:
 
 ```text
 Tôi sẽ hỏi một số câu để tạo company profile. Bỏ qua câu nào chưa biết.
@@ -258,7 +274,21 @@ Tôi sẽ hỏi một số câu để tạo company profile. Bỏ qua câu nào 
 7. Có escalation matrix không? (ai nhận alert CRITICAL, HIGH...)
 ```
 
-Từ câu trả lời → populate profile → hiển thị diff → confirm (giống Step 6-7).
+**Nếu profile đã có data** — chỉ hỏi fields trống:
+
+```text
+Profile đã có 22 fields. Còn 15 fields trống, tôi sẽ hỏi từng nhóm:
+
+## org_mapping (chưa có)
+Liệt kê các phòng ban liên quan đến security và trưởng phòng:
+  Ví dụ: SOC → Phòng GSANM, lead: Nguyễn Văn A
+
+## escalation (chưa có)
+Quy trình escalation theo severity:
+  Ví dụ: CRITICAL → notify CISO + CTO, SLA 15 phút
+```
+
+Từ câu trả lời → populate profile → **hiển thị diff** → confirm (Step 7).
 
 ## Lưu ý
 
