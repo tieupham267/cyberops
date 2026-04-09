@@ -123,7 +123,11 @@ Chấp nhận:
 
 Với mỗi source path:
 
-1. **Scan cấu trúc folder** — Glob tất cả files (`.md`, `.txt`, `.docx`, `.pdf`, `.xlsx`, `.csv`, `.yaml`, `.json`, `.png`, `.jpg`)
+1. **Scan tất cả files** — chạy 2 glob patterns để đảm bảo không miss files ở root:
+   - `<source>/*.{md,txt,docx,pdf,xlsx,csv,yaml,json,png,jpg}` (files tại root)
+   - `<source>/**/*.{md,txt,docx,pdf,xlsx,csv,yaml,json,png,jpg}` (files trong subfolders)
+   - Merge kết quả, deduplicate
+   - Nếu tổng > 200 files: thông báo user "Tìm thấy N files, scan có thể mất thời gian"
 2. **Đọc folder names + file names** — dùng tên folder/file để phân loại sơ bộ
 3. **Đọc nội dung** từng file (summary/first page cho files lớn)
 4. **Phân loại** mỗi file vào categories:
@@ -144,7 +148,8 @@ Với mỗi source path:
 ```text
 ## Scan Results
 
-Sources: 2 folders, 47 files found
+Sources: 2 folders
+Total files found: 47 (root: 3, subfolders: 44)
 
 ### org_docs (8 files)
   D:\Company-Docs\IT\org-chart.xlsx
