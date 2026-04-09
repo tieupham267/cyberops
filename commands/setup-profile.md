@@ -4,26 +4,41 @@ Bạn đang thực hiện scan, phân loại tài liệu, và tạo/cập nhật
 
 ## Quy trình
 
-### Step 0: Đọc config hiện tại
+### Step 0: Đọc config và profile — BẮT BUỘC trước khi làm bất cứ gì
 
-Đọc `~/.claude/secops.yaml`. Trạng thái hiện tại dựa trên **config + mapping**, KHÔNG dựa trên nội dung folder.
+**Hành động bắt buộc theo thứ tự:**
 
-**Nếu đã có `sources` và `mapping`** → hiển thị:
+1. Đọc file `~/.claude/secops.yaml` bằng Read tool
+2. Kiểm tra file có key `sources:` không (không phải `output:` — đó là output paths)
+3. Kiểm tra file có key `mapping:` không
+4. Đọc file company-profile.yaml (path từ `output.profile` trong secops.yaml)
+5. Đếm bao nhiêu fields đã có giá trị, bao nhiêu fields trống/rỗng
+
+**Sau khi đọc xong, branch theo điều kiện:**
+
+---
+
+**Case A: Có `sources:` VÀ `mapping:`** → hiển thị và hỏi:
 
 ```text
 Trạng thái hiện tại (từ secops.yaml):
-  Sources: D:\Company-Docs, \\server\shared\security (scanned: 2026-03-15)
+  Sources: D:\Company-Docs (scanned: 2026-03-15)
   Mapping: 12 org_docs, 8 process_docs, 5 regulations, 3 policies
-  Profile: company-profile.yaml — 15/20 fields đã điền
+  Profile: 15/20 fields đã điền, 5 fields trống
 
 Bạn muốn:
 1. Rescan sources (cập nhật mapping)
 2. Thêm source mới
 3. Build/update profile từ mapping hiện tại
-4. Setup mới từ đầu
+4. Điền tiếp fields trống qua Q&A
+5. Setup mới từ đầu
 ```
 
-**Nếu có config nhưng chưa có `sources`/`mapping`** (chỉ có output paths) → đọc profile, đếm fields đã điền/trống, hiển thị:
+**DỪNG LẠI VÀ CHỜ USER CHỌN** trước khi tiếp tục.
+
+---
+
+**Case B: Có config nhưng KHÔNG có `sources:`/`mapping:`** → hiển thị và hỏi:
 
 ```text
 Trạng thái hiện tại (từ secops.yaml):
@@ -32,9 +47,10 @@ Trạng thái hiện tại (từ secops.yaml):
   Profile: 22/37 fields đã điền, 15 fields còn trống
 
 Fields còn trống:
-  org_mapping: department names, leads (0/6)
-  escalation: severity contacts, SLAs (0/4)
-  security: scanner, vulnerability_mgmt (2/5 trống)
+  org_mapping: department names, leads
+  escalation: severity contacts, SLAs
+  security: scanner, vulnerability_mgmt
+  ...
 
 Bạn muốn:
 1. Trỏ tới folder(s) tài liệu để scan và extract thêm
@@ -42,13 +58,23 @@ Bạn muốn:
 3. Xem profile hiện tại
 ```
 
-→ Option 1: chuyển sang Step 2 (hỏi source paths)
-→ Option 2: chuyển sang Step 9 (Q&A), chỉ hỏi fields trống
-→ Option 3: hiển thị profile → hỏi lại
+**DỪNG LẠI VÀ CHỜ USER CHỌN** trước khi tiếp tục.
 
-**Mọi thay đổi đều hiển thị diff trước khi apply** (Step 7).
+→ Option 1: chuyển sang Step 2
+→ Option 2: chuyển sang Step 9 (Q&A chỉ hỏi fields trống)
+→ Option 3: hiển thị profile rồi hỏi lại
 
-**Nếu chưa có config** → chuyển sang Step 1.
+---
+
+**Case C: Chưa có `~/.claude/secops.yaml`** → chuyển sang Step 1.
+
+---
+
+**QUAN TRỌNG:**
+
+- KHÔNG check nội dung folder (org-docs/, process-docs/...). Chỉ đọc secops.yaml + profile.
+- KHÔNG tự chạy tiếp mà không hỏi user chọn option.
+- Mọi thay đổi profile đều hiển thị **diff** trước khi apply (Step 7).
 
 ### Step 1: Hỏi output paths (chỉ lần đầu)
 
