@@ -2,6 +2,8 @@
 
 Bạn đang thực hiện scan, phân loại tài liệu, và tạo/cập nhật company profile.
 
+Plugin là **scan-based** — đọc tài liệu tại chỗ từ source folders của user, phân loại vào mapping trong `secops.yaml`. KHÔNG yêu cầu user copy files vào bất kỳ folder nào.
+
 ## Quy trình
 
 ### Step 0: Đọc config và profile — BẮT BUỘC trước khi làm bất cứ gì
@@ -72,7 +74,7 @@ Bạn muốn:
 
 **QUAN TRỌNG:**
 
-- KHÔNG check nội dung folder (org-docs/, process-docs/...). Chỉ đọc secops.yaml + profile.
+- Trạng thái dựa trên secops.yaml + profile, KHÔNG check nội dung folder.
 - KHÔNG tự chạy tiếp mà không hỏi user chọn option.
 - Mọi thay đổi profile đều hiển thị **diff** trước khi apply (Step 7).
 

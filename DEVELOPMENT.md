@@ -43,10 +43,8 @@ secops/
 │   └── scripts/                # Hook shell scripts
 ├── rules/                      # Security rules (.md)
 │   └── cybersecurity.md        # Index file
-├── context/                    # Company data (gitignored except READMEs)
-│   ├── company-profile.yaml
-│   ├── org-docs/
-│   └── process-docs/
+├── context/                    # Company data (gitignored)
+│   └── company-profile.yaml
 ├── references/                 # User reference docs
 │   ├── regulations/
 │   ├── standards/

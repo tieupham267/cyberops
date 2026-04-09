@@ -3,7 +3,7 @@ title: "[Default] Quy trình ứng phó sự cố bảo mật"
 description: >
   Quy trình ứng phó sự cố tổng quát theo NIST SP 800-61 Rev.2.
   Dùng khi tổ chức chưa có quy trình IR riêng. Sẽ bị override
-  khi có custom workflow từ process-docs.
+  khi có custom workflow từ mapping.process_docs.
 category: ir
 type: default
 

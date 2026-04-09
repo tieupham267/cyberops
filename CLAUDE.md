@@ -48,8 +48,7 @@ The plugin follows the Claude Code plugin specification (`plugin.json` at root):
 - **`skills/`** — 9 knowledge-base skills that agents reference for detailed methodology (each in `<name>/SKILL.md`): `incident-response`, `compliance-frameworks`, `risk-assessment`, `vietnam-regulations`, `payment-fraud`, `itsm-reference`, `document-drafting`, `document-organization`, `security-maturity`.
 - **`context/`** — Company context. **Đọc từ `~/.claude/secops.yaml` paths hoặc working directory**. KHÔNG từ plugin directory. `/secops:setup-profile` tự tạo structure.
   - `company-profile.yaml` — tech stack, security tools, org mapping, escalation matrix. All agents read automatically.
-  - `org-docs/` — raw org documents (org chart, asset lists, team info). `/secops:setup-profile` reads and populates profile.
-  - `process-docs/` — SOPs, playbooks, runbooks. `/secops:generate-workflows` reads and creates workflow YAMLs.
+  - Tài liệu nguồn (org chart, SOPs, playbooks...) được đọc tại chỗ qua `secops.yaml` mapping — KHÔNG copy vào context/.
 - **`references/`** — User-managed reference documents. **Đọc từ `~/.claude/secops.yaml` paths hoặc working directory**. Bổ sung/override nội dung trong `skills/`. Agents đọc `skills/` trước, rồi `references/` sau.
   - `regulations/` — luật, nghị định, thông tư bổ sung hoặc cập nhật mới hơn bundled skills.
   - `standards/` — ISO, PCI, NIST controls bổ sung.

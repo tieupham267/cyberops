@@ -1,8 +1,6 @@
 # === Company-specific data (sensitive, not for distribution) ===
-context/org-docs/*
-!context/org-docs/README.md
-context/process-docs/*
-!context/process-docs/README.md
+context/org-docs/
+context/process-docs/
 context/company-profile.yaml
 reports/
 

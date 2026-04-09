@@ -213,9 +213,9 @@ Dựa trên company profile (fintech, payment) và frameworks:
 
 | Process | Tại sao cần | Framework reference |
 | --- | --- | --- |
-| Data Classification | Required by NĐ 13/2023, ISO 27001 A.5.12 | Tạo file trong process-docs/ |
-| Secure SDLC | Required by TT 09/2020 Điều 22-24 | Tạo file trong process-docs/ |
-| Key Management | Required by PCI DSS Req 3.5-3.7 | Tạo file trong process-docs/ |
+| Data Classification | Required by NĐ 13/2023, ISO 27001 A.5.12 | Tạo process doc trong source folder |
+| Secure SDLC | Required by TT 09/2020 Điều 22-24 | Tạo process doc trong source folder |
+| Key Management | Required by PCI DSS Req 3.5-3.7 | Tạo process doc trong source folder |
 ```
 
 ## Quy tắc quan trọng
