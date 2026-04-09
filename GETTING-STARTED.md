@@ -76,7 +76,7 @@ Data (context, workflows, references) không bị ảnh hưởng — chỉ đổ
 ### Update plugin
 
 ```text
-/plugin update secops@secops
+/plugin update secops
 ```
 
 Plugin sẽ pull phiên bản mới nhất từ GitHub. Data không bị ảnh hưởng.

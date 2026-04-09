@@ -21,31 +21,50 @@ Bạn muốn:
 4. Setup mới từ đầu
 ```
 
-Nếu chưa có config → chuyển thẳng sang Step 1.
+Nếu chưa có config → chuyển sang Step 1.
 
-### Step 1: Thu thập document sources
+### Step 1: Hỏi output paths (chỉ lần đầu)
 
-Hỏi user:
+Chỉ chạy khi chưa có config. Nếu đã có → skip sang Step 2.
 
 ```text
-Chỉ tôi tới folder(s) chứa tài liệu tổ chức của bạn.
-Có thể là nhiều folders, mỗi dòng một path.
+Plugin cần 3 thư mục để lưu dữ liệu. Tài liệu gốc của bạn KHÔNG bị di chuyển.
+
+Output paths (Enter để dùng mặc định):
+  Context  [./context]:
+  Workflows [./workflows]:
+  References [./references]:
+```
+
+Tạo cấu trúc thư mục + default workflow templates.
+
+### Step 2: Thu thập document sources
+
+Hỏi user **ngay sau Step 1** (không dừng lại):
+
+```text
+Trỏ tôi tới folder(s) chứa tài liệu tổ chức hiện có.
+Plugin sẽ scan tại chỗ — KHÔNG copy/di chuyển files.
 
 Ví dụ:
   D:\Company-Docs
   \\fileserver\IT-Department
   C:\Users\you\OneDrive\Work
 
+Nếu chưa có tài liệu, gõ "skip" — tôi sẽ hỏi Q&A để điền profile.
+
 Paths:
 ```
 
 Chấp nhận:
+
 - Absolute paths (Windows: `C:\...`, `D:\...`; Linux/Mac: `/home/...`)
 - Network paths (`\\server\share`)
 - Cloud sync paths (OneDrive, Google Drive, Dropbox)
 - Nhiều paths (mỗi dòng một path)
+- `skip` → chuyển sang **Step 8: Q&A fallback**
 
-### Step 2: Scan và phân loại tài liệu
+### Step 3: Scan và phân loại tài liệu
 
 Với mỗi source path:
 
@@ -65,7 +84,7 @@ Với mỗi source path:
 | `templates` | Template, mẫu biểu, form | incident-report-template.docx |
 | `other` | Không phân loại được rõ ràng | (hỏi user) |
 
-### Step 3: Hiển thị kết quả scan và xin confirm
+### Step 4: Hiển thị kết quả scan và xin confirm
 
 ```text
 ## Scan Results
@@ -110,11 +129,12 @@ Confirm mapping? [Yes / Edit / Rescan]
 ```
 
 **Edit mode**: User có thể:
+
 - Di chuyển file giữa categories
 - Đánh dấu `skip` cho files không liên quan
 - Thêm files thủ công
 
-### Step 4: Lưu mapping vào config
+### Step 5: Lưu mapping vào config
 
 Lưu vào `~/.claude/secops.yaml`:
 
@@ -154,7 +174,7 @@ output:
   workflows: "./workflows"
 ```
 
-### Step 5: Build company profile từ mapping
+### Step 6: Build company profile từ mapping
 
 Đọc tất cả files trong `mapping.org_docs` → extract thông tin → build profile.
 
@@ -173,7 +193,7 @@ Tương tự flow cũ nhưng đọc từ **mapping paths** thay vì folder cứn
 | Phòng ban, trưởng phòng, chức năng | org_mapping.* |
 | Quy trình escalation, severity contacts | escalation.* |
 
-### Step 6: Hiển thị diff và confirm
+### Step 7: Hiển thị diff và confirm
 
 Hiển thị **diff** so sánh profile hiện tại vs mới (giống flow cũ):
 
@@ -196,7 +216,7 @@ Hiển thị **diff** so sánh profile hiện tại vs mới (giống flow cũ):
 
 Hỏi user: **Apply? (Yes / Edit / Show full diff / Cancel)**
 
-### Step 7: Write và validate
+### Step 8: Write và validate
 
 1. Ghi `company-profile.yaml` vào `output.profile` path
 2. Validate:
@@ -204,6 +224,26 @@ Hỏi user: **Apply? (Yes / Edit / Show full diff / Cancel)**
    - Escalation matrix đủ severity levels?
    - Tech stack consistent?
    - Flag gaps
+
+### Step 9: Q&A fallback (khi không có source docs)
+
+Chỉ chạy khi user gõ `skip` ở Step 2 hoặc sources không có files liên quan.
+
+Hỏi lần lượt để điền profile:
+
+```text
+Tôi sẽ hỏi một số câu để tạo company profile. Bỏ qua câu nào chưa biết.
+
+1. Tên công ty và ngành nghề?
+2. Quy mô (số nhân viên, locations)?
+3. Cloud/infrastructure đang dùng? (AWS, Azure, on-prem...)
+4. Security tools? (SIEM, EDR, firewall, scanner...)
+5. Frameworks/certifications đang áp dụng? (ISO 27001, PCI-DSS...)
+6. Team security gồm mấy người, roles gì?
+7. Có escalation matrix không? (ai nhận alert CRITICAL, HIGH...)
+```
+
+Từ câu trả lời → populate profile → hiển thị diff → confirm (giống Step 6-7).
 
 ## Lưu ý
 
