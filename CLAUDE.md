@@ -54,6 +54,8 @@ The plugin follows the Claude Code plugin specification (`plugin.json` at root):
   - `regulations/` — luật, nghị định, thông tư bổ sung hoặc cập nhật mới hơn bundled skills.
   - `standards/` — ISO, PCI, NIST controls bổ sung.
   - `policies/` — ISMS, chính sách nội bộ công ty (không có trong skills/).
+
+> **Document Mapping**: Plugin KHÔNG bắt buộc cấu trúc folder cứng. `/secops:setup-profile` scan folders tài liệu hiện có của user, tự phân loại, và lưu mapping vào `~/.claude/secops.yaml`. Agents đọc files theo mapping, không theo folder structure. Xem chi tiết trong [commands/setup-profile.md](commands/setup-profile.md).
 - **`commands/`** — Slash commands. Legacy per-workflow commands still work. New unified entry point: `/secops:run`.
 - **`hooks/`** — `hooks.json` defines event-driven hooks (PreToolUse, PostToolUse, Stop, UserPromptSubmit). Shell scripts in `hooks/scripts/` implement them.
 - **`rules/`** — Modular rule files: `data-handling.md`, `output-standards.md`, `incident-response.md`, `tool-safety.md`. Index in `cybersecurity.md`.
@@ -120,17 +122,28 @@ When adding skills, decide: is this broadly useful (curated) or org-specific (cu
 
 ### Global Config & Environment Variables
 
-**`~/.claude/secops.yaml`** — Global config cho custom paths. Tạo bởi `/secops:setup-profile` khi user chọn folder riêng:
+**`~/.claude/secops.yaml`** — Global config chứa document sources, mapping, và output paths. Tạo bởi `/secops:setup-profile` khi scan tài liệu:
 
 ```yaml
-context_dir: C:\SecOps-Data\context
-workflows_dir: C:\SecOps-Data\workflows
-references_dir: C:\SecOps-Data\references
+sources:
+  - path: "D:\\Company-Docs"
+    scanned_at: "2026-04-09T10:30:00"
+
+mapping:
+  org_docs: [...]
+  process_docs: [...]
+  regulations: [...]
+  standards: [...]
+  policies: [...]
+
+output:
+  profile: "./context/company-profile.yaml"
+  workflows: "./workflows"
 ```
 
 Quản lý config: `/secops:config`. Xem [commands/config.md](commands/config.md).
 
-Resolution order: `~/.claude/secops.yaml` → working directory (default).
+Resolution: `~/.claude/secops.yaml` mapping → working directory (default nếu không có config).
 
 **`SECOPS_PROFILE`** — Control hook strictness:
 

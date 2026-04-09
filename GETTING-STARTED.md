@@ -107,134 +107,104 @@ Nếu thấy danh sách workflows → cài đặt thành công.
 
 ---
 
-## Bước 2: Khởi tạo data
+## Bước 2: Scan tài liệu và build profile
 
-> **Bỏ qua bước này** nếu đã clone repo (Cách 2 ở Bước 1) — data có sẵn.
+Plugin **không bắt buộc cấu trúc folder cứng**. Bạn chỉ cần chỉ tới nơi tài liệu đang lưu — plugin tự scan, phân loại, và build mapping.
 
-Plugin lưu data vào 3 folders: `context/`, `workflows/`, `references/`. Bạn chọn vị trí lưu khi chạy lần đầu:
+### Chạy setup
 
 ```text
 /secops:setup-profile
 ```
 
-Plugin sẽ hỏi:
+### Plugin sẽ hỏi folder(s) chứa tài liệu
 
 ```text
-Bạn muốn lưu data ở đâu?
+Chỉ tôi tới folder(s) chứa tài liệu tổ chức của bạn.
+Có thể nhiều folders, mỗi dòng một path.
 
-1. Trong project hiện tại (./context, ./workflows, ./references) — mặc định
-2. Chỉ định folder riêng (dùng chung cho nhiều projects)
+Ví dụ:
+  D:\Company-Docs
+  \\fileserver\IT-Department
+  C:\Users\you\OneDrive\Work
 
-Chọn [1/2]:
+Paths:
 ```
 
-### Option 1: Trong project hiện tại (default)
+### Plugin tự scan và phân loại
 
-Không cần config. Folders được tạo trong working directory:
+Plugin đọc tất cả files, phân tích nội dung, và phân loại vào categories:
+
+| Category | Nội dung | Plugin dùng để |
+| --- | --- | --- |
+| `org_docs` | Sơ đồ tổ chức, tech stack, asset inventory | Build company profile |
+| `process_docs` | SOPs, playbooks, runbooks | Generate workflows |
+| `regulations` | Luật, NĐ, TT | Tra cứu quy định |
+| `standards` | ISO, PCI, NIST controls | Gap analysis |
+| `policies` | ISMS, chính sách nội bộ | Compliance check |
+| `reports` | Audit reports, assessments | Trend analysis |
+| `templates` | Mẫu biểu, forms | Document drafting |
+
+### Hiển thị kết quả scan → confirm
 
 ```text
-my-project/
-├── context/                    ➕ Tạo mới
-│   ├── company-profile.yaml
-│   ├── org-docs/
-│   └── process-docs/
-├── workflows/                  ➕ Tạo mới + copy 10 default workflows
-│   ├── defaults/
-│   └── ...
-├── references/                 ➕ Tạo mới
-│   ├── regulations/
-│   ├── standards/
-│   └── policies/
-└── (project files)
+## Scan Results — 47 files found
+
+org_docs (8):     IT/org-chart.xlsx, IT/tech-stack.md, ...
+process_docs (12): QuyTrinh/incident-response-sop.docx, ...
+regulations (5):  PhapLy/luat-anm-2018.pdf, ...
+policies (6):     ISMS/access-control-policy.docx, ...
+standards (3):    Compliance/ISO27001/controls.xlsx, ...
+
+Confirm mapping? [Yes / Edit / Rescan]
 ```
 
-### Option 2: Folder riêng (dùng chung nhiều projects)
+Bạn có thể **Edit** để di chuyển files giữa categories hoặc skip files không liên quan.
 
-Paths được lưu vào global config `~/.claude/secops.yaml`. Mọi session sau tự đọc file này:
+### Build company profile
+
+Sau khi confirm mapping, plugin đọc `org_docs` → extract thông tin → hiển thị **diff** → confirm → lưu `company-profile.yaml`.
+
+### Mapping được lưu global
+
+Mapping lưu vào `~/.claude/secops.yaml` — mọi session sau tự đọc, không cần scan lại:
 
 ```yaml
 # ~/.claude/secops.yaml
-# Windows: C:\Users\<username>\.claude\secops.yaml
-context_dir: C:\SecOps-Data\context
-workflows_dir: C:\SecOps-Data\workflows
-references_dir: C:\SecOps-Data\references
+sources:
+  - path: "D:\\Company-Docs"
+    scanned_at: "2026-04-09T10:30:00"
+
+mapping:
+  org_docs:
+    - "D:\\Company-Docs\\IT\\org-chart.xlsx"
+    - "D:\\Company-Docs\\IT\\tech-stack.md"
+  process_docs:
+    - "D:\\Company-Docs\\QuyTrinh\\incident-response-sop.docx"
+  # ...
+
+output:
+  profile: "./context/company-profile.yaml"
+  workflows: "./workflows"
 ```
 
-```text
-C:\SecOps-Data\                     ← folder riêng (dùng chung)
-├── context/
-│   ├── company-profile.yaml
-│   ├── org-docs/
-│   └── process-docs/
-├── workflows/
-│   ├── defaults/
-│   └── ...
-├── references/
-│   ├── regulations/
-│   ├── standards/
-│   └── policies/
+### Cập nhật khi tài liệu thay đổi
 
-C:\Projects\app-a\                  ← project A  ┐
-C:\Projects\app-b\                  ← project B  ├─ dùng chung SecOps-Data
-C:\Projects\app-c\                  ← project C  ┘
+```text
+/secops:setup-profile              # Rescan + rebuild profile
+/secops:config rescan              # Chỉ rescan mapping, không rebuild
+/secops:config add-source D:\New   # Thêm folder mới
 ```
 
-### Thay đổi paths sau này
+### Cách khác: điền thủ công hoặc Q&A
 
-Dùng `/secops:config` bất kỳ lúc nào:
-
-```text
-/secops:config                                          # Xem config hiện tại
-/secops:config context_dir C:\new-path\context           # Đổi context
-/secops:config workflows_dir C:\new-path\workflows       # Đổi workflows
-/secops:config references_dir C:\new-path\references     # Đổi references
-/secops:config show-paths                                # Xem resolved paths + file status
-/secops:config reset                                     # Xóa config, quay về working dir
-```
-
----
-
-## Bước 3: Setup Company Profile
-
-Company profile chứa thông tin tech stack, security tools, compliance requirements. Tất cả agents tự động đọc để tailored output.
-
-### Cách 1: Tự động từ org documents *(recommended)*
-
-Đặt tài liệu tổ chức vào `context/org-docs/`:
-
-| File ví dụ | Nội dung |
-| --- | --- |
-| `tech-stack.md` | Danh sách công nghệ: servers, databases, tools |
-| `security-tools.md` | SIEM, EDR, firewall, scanner đang dùng |
-| `org-chart.md` (hoặc `.png`) | Sơ đồ tổ chức, phòng ban |
-| `hr-teams.md` | Danh sách team security, headcount |
-| `compliance-status.md` | Chứng chỉ đã có, audit schedule |
-| `network-diagram.md` | Sơ đồ mạng (hoặc screenshot) |
-
-> Không cần format chuẩn — viết tự nhiên, AI sẽ extract thông tin.
-> **Quan trọng**: Redact credentials/secrets trước khi đặt vào.
-
-Chạy:
+Nếu không muốn scan:
 
 ```text
-/secops:setup-profile
-```
+# Điền trực tiếp vào company-profile.yaml
+Mở context/company-profile.yaml và điền các fields
 
-Plugin hiển thị **diff** so sánh profile hiện tại vs mới → confirm → lưu vào `context/company-profile.yaml`.
-
-### Cách 2: Điền trực tiếp
-
-Mở `context/company-profile.yaml` và điền các fields. Ưu tiên:
-
-- `company` — tên, ngành, sản phẩm
-- `infrastructure` — cloud/on-prem, compute, OS
-- `cicd` — platform, source control
-- `security` — SIEM, EDR, firewall, identity
-- `compliance` — frameworks, certifications
-
-### Cách 3: Nhờ Claude điền qua Q&A
-
-```text
+# Hoặc nhờ Claude hỏi Q&A
 Đọc file context/company-profile.yaml, tôi sẽ trả lời câu hỏi để bạn điền giúp.
 ```
 
@@ -302,91 +272,73 @@ Plugin đi kèm 10 default workflows:
 
 ### Tạo custom workflows từ quy trình nội bộ
 
-Nếu tổ chức đã có SOPs/playbooks/runbooks:
+Nếu mapping đã có `process_docs` (từ Bước 2), chạy:
 
-1. Đặt files vào `context/process-docs/`:
+```text
+/secops:generate-workflows
+```
 
-   | File ví dụ | Workflow sẽ tạo |
-   | --- | --- |
-   | `incident-response-plan.md` | `workflows/ir/` |
-   | `change-management-sop.md` | `workflows/grc/` |
-   | `access-review-process.md` | `workflows/grc/` |
-   | `phishing-response.md` | `workflows/soc/` |
-
-2. Chạy:
-
-   ```text
-   /secops:generate-workflows
-   ```
-
-3. Plugin hiển thị preview + **diff** cho workflows đã tồn tại → confirm → tạo/cập nhật
+Plugin đọc tất cả files trong `mapping.process_docs`, phân tích quy trình, và tạo workflow YAML tương ứng. Hiển thị preview + **diff** → confirm → tạo/cập nhật.
 
 > Custom workflows tự động **override** default workflows cùng loại.
 
 ### Cập nhật khi quy trình thay đổi
 
-1. Sửa/thêm files trong `context/process-docs/`
+1. Sửa/thêm process docs vào source folders (hoặc chạy `/secops:config rescan`)
 2. Chạy lại `/secops:generate-workflows`
 3. Review diff → confirm
 
 ---
 
-## Bước 6: Thêm tài liệu tham chiếu
+## Bước 6: Review tổ chức tài liệu *(tùy chọn)*
 
-Plugin đi kèm knowledge base trong `skills/` (bundled). Folder `references/` cho phép bạn **bổ sung hoặc cập nhật** mà không sửa plugin.
+Plugin có thể đánh giá cách sắp xếp tài liệu và đề xuất cải thiện.
 
-### Cấu trúc `references/`
+```text
+/secops:doc-review
+```
 
-| Folder | Nội dung | Ví dụ |
-| --- | --- | --- |
-| `references/regulations/` | Luật, NĐ, TT bổ sung/cập nhật | TT mới NHNN, NĐ sửa đổi |
-| `references/standards/` | ISO, PCI, NIST controls bổ sung | PCI-DSS v4.0, ISO 27001:2022 controls |
-| `references/policies/` | Chính sách nội bộ công ty | ISMS policy, acceptable use, access control |
+### Chọn framework đánh giá
 
-### Resolution order
+| Framework | Mô tả |
+| --- | --- |
+| **PARA (Second Brain)** | Projects / Areas / Resources / Archive — phân loại theo actionability |
+| **Security-focused** | Governance / Operations / Technical / Compliance / Evidence |
+| **ISO 27001 Hierarchy** | Policies → Standards → Procedures → Guidelines → Records |
+| **Custom** | Mô tả cách bạn muốn sắp xếp |
 
-Agents tra cứu theo thứ tự:
+### Plugin sẽ phân tích
+
+- Phân loại mỗi file theo framework đã chọn
+- Phát hiện files outdated (> 12 tháng chưa review)
+- Gap analysis — tài liệu nào thiếu theo compliance requirements
+- Phát hiện duplicate/conflict
+- Đề xuất action plan có ưu tiên
+
+### Ví dụ output (PARA)
+
+```text
+Projects (đang active):  3 files — incident đang xử lý, audit prep
+Areas (ongoing):         12 files — policies, SOPs
+  ⚠️ 3 files chưa review > 12 tháng
+Resources (tham khảo):   8 files — regulations, frameworks
+Archive (nên archive):   5 files — completed, superseded
+```
+
+### Tra cứu tài liệu tham chiếu
+
+Khi agents cần tra cứu luật, quy định, tiêu chuẩn:
 
 1. **`skills/`** (bundled) — knowledge base chuẩn đi kèm plugin
-2. **`references/`** (user) — bổ sung hoặc override
+2. **`mapping`** files (`regulations`, `standards`, `policies`) — tài liệu user đã scan
 3. **Web search** — chỉ khi cả 2 nguồn trên không đủ
 
-Nếu cùng chủ đề có trong cả `skills/` và `references/` → ưu tiên `references/` (mới hơn, cụ thể hơn).
+Knowledge base bundled sẵn:
 
-### Knowledge base bundled sẵn
-
-| Văn bản | Vị trí trong `skills/` |
+| Nội dung | Skill |
 | --- | --- |
-| Luật An ninh mạng 2018 | `skills/vietnam-regulations/luat/anm-2018.md` |
-| Luật ATTT mạng 2015 | `skills/vietnam-regulations/luat/attt-2015.md` |
-| NĐ 13/2023 (PDPA) | `skills/vietnam-regulations/nghi-dinh/nd-13-2023.md` |
-| NĐ 85/2016 (Cấp độ ATTT) | `skills/vietnam-regulations/nghi-dinh/nd-85-2016.md` |
-| NĐ 53/2022 (Hướng dẫn Luật ANM) | `skills/vietnam-regulations/nghi-dinh/nd-53-2022.md` |
-| TT 09/2020/TT-NHNN (Ngân hàng) | `skills/vietnam-regulations/thong-tu/tt-09-2020-nhnn.md` |
-| TT 12/2022/TT-BTTTT (Cấp độ) | `skills/vietnam-regulations/thong-tu/tt-12-2022-btttt.md` |
-| ISO 27001, NIST CSF, CIS v8 | `skills/compliance-frameworks/SKILL.md` |
-
-### Thêm tài liệu
-
-Đặt file `.md` vào folder phù hợp trong `references/`. Ví dụ:
-
-```text
-# Thêm thông tư mới
-references/regulations/tt-20-2018-nhnn.md
-
-# Thêm ISMS policy nội bộ
-references/policies/isms-access-control.md
-references/policies/isms-incident-management.md
-
-# Thêm PCI-DSS controls chi tiết
-references/standards/pci-dss-v4-requirements.md
-```
-
-Hoặc nhờ Claude:
-
-```text
-Thêm Thông tư 20/2018/TT-NHNN vào references/regulations/
-```
+| Luật ANM 2018, NĐ 13/2023, NĐ 85/2016, TT 09/2020 | `skills/vietnam-regulations/` |
+| ISO 27001, NIST CSF, CIS v8 | `skills/compliance-frameworks/` |
 
 ---
 
@@ -494,9 +446,10 @@ Hook phải block và hiện thông báo `[SECURITY]`.
 | `/secops:run <workflow>` | Chạy workflow cụ thể |
 | `/secops:run <mô tả>` | Mô tả tự nhiên → orchestrator tự chọn workflow |
 | `/secops:run --list` | Liệt kê tất cả workflows |
-| `/secops:setup-profile` | Tạo/cập nhật company profile từ org docs |
+| `/secops:setup-profile` | Scan tài liệu, build mapping + company profile |
 | `/secops:generate-workflows` | Tạo/cập nhật workflows từ process docs |
-| `/secops:config` | Xem/sửa data paths (context, workflows, references) |
+| `/secops:doc-review` | Review tổ chức tài liệu (PARA, ISO, custom) |
+| `/secops:config` | Quản lý sources, mapping, output paths |
 
 ### Environment Variable
 
@@ -511,28 +464,33 @@ SECOPS_PROFILE=strict claude     # Nghiêm ngặt — block cả warnings
 
 ### Global Config
 
-File `~/.claude/secops.yaml` — khai báo custom paths cho data folders:
+File `~/.claude/secops.yaml` — document sources, mapping, và output paths:
 
 ```yaml
-context_dir: C:\SecOps-Data\context
-workflows_dir: C:\SecOps-Data\workflows
-references_dir: C:\SecOps-Data\references
+sources:
+  - path: "D:\\Company-Docs"
+mapping:
+  org_docs: [...]
+  process_docs: [...]
+  regulations: [...]
+output:
+  profile: "./context/company-profile.yaml"
+  workflows: "./workflows"
 ```
 
-Không có file này → dùng working directory mặc định.
+Không có file này → plugin hỏi khi chạy `/secops:setup-profile` lần đầu.
 
-### Data Folders
+### Document Mapping Categories
 
-| Folder | Nội dung | Cách tạo |
+| Category | Nội dung | Plugin dùng để |
 | --- | --- | --- |
-| `context/company-profile.yaml` | Tech stack, org mapping, escalation | `/secops:setup-profile` |
-| `context/org-docs/` | Tài liệu tổ chức | User đặt files |
-| `context/process-docs/` | SOPs, playbooks, runbooks | User đặt files |
-| `workflows/defaults/` | 10 default workflow templates | `/secops:setup-profile` *(copy từ plugin)* |
-| `workflows/<category>/` | Custom workflows | `/secops:generate-workflows` |
-| `references/regulations/` | Luật, NĐ, TT bổ sung | User đặt files |
-| `references/standards/` | ISO, PCI, NIST bổ sung | User đặt files |
-| `references/policies/` | ISMS, chính sách nội bộ | User đặt files |
+| `org_docs` | Sơ đồ, tech stack, teams | Build company profile |
+| `process_docs` | SOPs, playbooks | Generate workflows |
+| `regulations` | Luật, NĐ, TT | Tra cứu quy định |
+| `standards` | ISO, PCI, NIST | Gap analysis |
+| `policies` | ISMS, chính sách nội bộ | Compliance check |
+| `reports` | Audit, assessment | Trend analysis |
+| `templates` | Mẫu biểu | Document drafting |
 
 ---
 

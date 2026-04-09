@@ -1,83 +1,164 @@
-# /secops:setup-profile — Tạo/cập nhật company profile từ org documents
+# /secops:setup-profile — Scan tài liệu tổ chức và build company profile
 
-Bạn đang thực hiện setup hoặc cập nhật company profile tự động.
+Bạn đang thực hiện scan, phân loại tài liệu, và tạo/cập nhật company profile.
 
 ## Quy trình
 
-### Step 0: Xác định paths và khởi tạo structure
+### Step 0: Đọc config hiện tại
 
-**Xác định context_dir và workflows_dir:**
-
-1. Đọc `~/.claude/secops.yaml` (trên Windows: `C:\Users\<username>\.claude\secops.yaml`)
-2. Nếu file tồn tại và có `context_dir` / `workflows_dir` → dùng paths đã khai báo
-3. Nếu file không tồn tại → **hỏi user**:
-
-   ```text
-   Bạn muốn lưu context và workflows ở đâu?
-   
-   1. Trong project hiện tại (./context, ./workflows) — mặc định
-   2. Chỉ định folder riêng (dùng chung cho nhiều projects)
-   
-   Chọn [1/2]:
-   ```
-
-   - Nếu chọn 1 → dùng working directory (KHÔNG tạo secops.yaml)
-   - Nếu chọn 2 → hỏi paths cụ thể → **lưu vào `~/.claude/secops.yaml`**:
-
-   ```yaml
-   # ~/.claude/secops.yaml
-   context_dir: C:\SecOps-Data\context
-   workflows_dir: C:\SecOps-Data\workflows
-   references_dir: C:\SecOps-Data\references
-   ```
-
-**Tạo cấu trúc:**
-
-```bash
-# Context folders
-mkdir -p "<context_dir>/org-docs" "<context_dir>/process-docs"
-
-# Workflow folders
-mkdir -p "<workflows_dir>/defaults" "<workflows_dir>/soc" "<workflows_dir>/ir" "<workflows_dir>/grc" "<workflows_dir>/devsecops" "<workflows_dir>/advisory" "<workflows_dir>/awareness"
-
-# References folders
-mkdir -p "<references_dir>/regulations" "<references_dir>/standards" "<references_dir>/policies"
-```
-
-**Copy default workflows từ plugin:**
-
-Nếu `<workflows_dir>/defaults/` trống hoặc chưa có files:
-
-1. Tìm plugin directory (nơi chứa file `plugin.json` của secops)
-2. Copy tất cả files từ `<plugin-dir>/workflows/defaults/*.yaml` vào `<workflows_dir>/defaults/`
-3. Nếu không tìm được plugin dir → tạo danh sách 10 default workflows trống với comment `# TODO: copy from plugin`
-
-Nếu `<context_dir>/company-profile.yaml` chưa có → tạo file template trống với các fields cơ bản.
-
-> **Thông báo cho user** paths đang sử dụng:
-> `Context: <context_dir>`
-> `Workflows: <workflows_dir>`
-
-### Step 1: Đọc tất cả org documents
-
-Đọc mọi file trong `<context_dir>/org-docs/` — hỗ trợ `.md`, `.txt`, `.csv`, `.json`, `.yaml`, `.pdf`, `.png`, `.jpg`.
+Đọc `~/.claude/secops.yaml`. Nếu đã có `sources` và `mapping` → hiển thị:
 
 ```text
-Glob: <context_dir>/org-docs/**/*
+Config hiện tại:
+  Sources: D:\Company-Docs, \\server\shared\security
+  Mapping: 12 org_docs, 8 process_docs, 5 regulations, 3 policies
+  Profile: company-profile.yaml (last updated: 2026-03-15)
+
+Bạn muốn:
+1. Rescan sources (cập nhật mapping)
+2. Thêm source mới
+3. Build/update profile từ mapping hiện tại
+4. Setup mới từ đầu
 ```
 
-Với mỗi file:
-- Đọc nội dung
-- Extract thông tin liên quan đến company profile
-- Ghi chú source file cho mỗi data point
+Nếu chưa có config → chuyển thẳng sang Step 1.
 
-### Step 2: Đọc company-profile.yaml hiện tại
+### Step 1: Thu thập document sources
 
-Đọc `<context_dir>/company-profile.yaml` để biết fields nào đã có, fields nào còn trống.
+Hỏi user:
 
-### Step 3: Extract & Map
+```text
+Chỉ tôi tới folder(s) chứa tài liệu tổ chức của bạn.
+Có thể là nhiều folders, mỗi dòng một path.
 
-Từ nội dung org docs, extract thông tin và map vào profile fields:
+Ví dụ:
+  D:\Company-Docs
+  \\fileserver\IT-Department
+  C:\Users\you\OneDrive\Work
+
+Paths:
+```
+
+Chấp nhận:
+- Absolute paths (Windows: `C:\...`, `D:\...`; Linux/Mac: `/home/...`)
+- Network paths (`\\server\share`)
+- Cloud sync paths (OneDrive, Google Drive, Dropbox)
+- Nhiều paths (mỗi dòng một path)
+
+### Step 2: Scan và phân loại tài liệu
+
+Với mỗi source path:
+
+1. **Scan cấu trúc folder** — Glob tất cả files (`.md`, `.txt`, `.docx`, `.pdf`, `.xlsx`, `.csv`, `.yaml`, `.json`, `.png`, `.jpg`)
+2. **Đọc folder names + file names** — dùng tên folder/file để phân loại sơ bộ
+3. **Đọc nội dung** từng file (summary/first page cho files lớn)
+4. **Phân loại** mỗi file vào categories:
+
+| Category | Dấu hiệu nhận biết | Ví dụ |
+| --- | --- | --- |
+| `org_docs` | Sơ đồ tổ chức, danh sách team, tech stack, asset inventory, org chart | org-chart.xlsx, he-thong.md |
+| `process_docs` | SOP, playbook, runbook, quy trình, workflow, hướng dẫn xử lý | incident-response-sop.docx |
+| `regulations` | Luật, nghị định, thông tư, circular, decree, law | luat-anm-2018.pdf |
+| `standards` | ISO, NIST, PCI, CIS, framework controls | iso27001-controls.xlsx |
+| `policies` | ISMS policy, chính sách nội bộ, acceptable use, access control | access-control-policy.docx |
+| `reports` | Báo cáo đánh giá, audit report, pentest report, risk assessment | audit-2025-q4.pdf |
+| `templates` | Template, mẫu biểu, form | incident-report-template.docx |
+| `other` | Không phân loại được rõ ràng | (hỏi user) |
+
+### Step 3: Hiển thị kết quả scan và xin confirm
+
+```text
+## Scan Results
+
+Sources: 2 folders, 47 files found
+
+### org_docs (8 files)
+  D:\Company-Docs\IT\org-chart.xlsx
+  D:\Company-Docs\IT\he-thong\tech-stack.md
+  D:\Company-Docs\IT\he-thong\network-diagram.png
+  D:\Company-Docs\HR\team-security.csv
+  ...
+
+### process_docs (12 files)
+  D:\Company-Docs\QuyTrinh\incident-response-sop.docx
+  D:\Company-Docs\QuyTrinh\change-management.pdf
+  D:\Company-Docs\IT\SOPs\access-review.md
+  ...
+
+### regulations (5 files)
+  D:\Company-Docs\PhapLy\luat-anm-2018.pdf
+  D:\Company-Docs\PhapLy\nd-13-2023.pdf
+  ...
+
+### policies (6 files)
+  D:\Company-Docs\ISMS\access-control-policy.docx
+  D:\Company-Docs\ISMS\data-classification-policy.docx
+  ...
+
+### standards (3 files)
+  D:\Company-Docs\Compliance\ISO27001\controls.xlsx
+  ...
+
+### reports (8 files)
+  ...
+
+### other (5 files — cần xác nhận)
+  D:\Company-Docs\Misc\meeting-notes-2025.md → [org_docs / process_docs / skip?]
+  ...
+
+Confirm mapping? [Yes / Edit / Rescan]
+```
+
+**Edit mode**: User có thể:
+- Di chuyển file giữa categories
+- Đánh dấu `skip` cho files không liên quan
+- Thêm files thủ công
+
+### Step 4: Lưu mapping vào config
+
+Lưu vào `~/.claude/secops.yaml`:
+
+```yaml
+# ~/.claude/secops.yaml
+# Auto-generated by /secops:setup-profile
+
+sources:
+  - path: "D:\\Company-Docs"
+    scanned_at: "2026-04-09T10:30:00"
+  - path: "\\\\server\\shared\\security"
+    scanned_at: "2026-04-09T10:30:00"
+
+mapping:
+  org_docs:
+    - "D:\\Company-Docs\\IT\\org-chart.xlsx"
+    - "D:\\Company-Docs\\IT\\he-thong\\tech-stack.md"
+    - "D:\\Company-Docs\\HR\\team-security.csv"
+  process_docs:
+    - "D:\\Company-Docs\\QuyTrinh\\incident-response-sop.docx"
+    - "D:\\Company-Docs\\QuyTrinh\\change-management.pdf"
+  regulations:
+    - "D:\\Company-Docs\\PhapLy\\luat-anm-2018.pdf"
+    - "D:\\Company-Docs\\PhapLy\\nd-13-2023.pdf"
+  standards:
+    - "D:\\Company-Docs\\Compliance\\ISO27001\\controls.xlsx"
+  policies:
+    - "D:\\Company-Docs\\ISMS\\access-control-policy.docx"
+  reports:
+    - "D:\\Company-Docs\\Reports\\audit-2025-q4.pdf"
+  templates:
+    - "D:\\Company-Docs\\Templates\\incident-report-template.docx"
+
+# Output paths (where plugin writes generated files)
+output:
+  profile: "./context/company-profile.yaml"
+  workflows: "./workflows"
+```
+
+### Step 5: Build company profile từ mapping
+
+Đọc tất cả files trong `mapping.org_docs` → extract thông tin → build profile.
+
+Tương tự flow cũ nhưng đọc từ **mapping paths** thay vì folder cứng:
 
 | Thông tin tìm được | Map vào field |
 | --- | --- |
@@ -92,72 +173,43 @@ Từ nội dung org docs, extract thông tin và map vào profile fields:
 | Phòng ban, trưởng phòng, chức năng | org_mapping.* |
 | Quy trình escalation, severity contacts | escalation.* |
 
-### Step 4: Hiển thị diff và confirm
+### Step 6: Hiển thị diff và confirm
 
-Hiển thị **diff chi tiết** so sánh profile hiện tại vs profile mới:
+Hiển thị **diff** so sánh profile hiện tại vs mới (giống flow cũ):
 
 ```diff
-## Profile Diff
-
 --- company-profile.yaml (hiện tại)
 +++ company-profile.yaml (sau khi cập nhật)
 
  company:
 -  name: ""
-+  name: "ABC Fintech"                    # from: org-chart.md
-   industry: "fintech"
-
- security:
--  siem: "splunk"
-+  siem: "opensearch"                     # from: tech-stack.md
-   edr: "crowdstrike"
--  pam: ""
-+  pam: "cyberark"                        # from: security-tools.md
-
- security_team:
--  size: "3-10"
-+  size: "10-30"                          # from: hr-teams.csv
-
- org_mapping:
-   soc:
--    department: ""
--    lead: ""
-+    department: "Phòng GSANM"            # from: org-chart.md
-+    lead: "Nguyễn Văn A"                 # from: org-chart.md
++  name: "ABC Fintech"                    # from: org-chart.xlsx
 ```
-
-Sau diff, hiển thị **tóm tắt thay đổi**:
 
 ```text
 ## Summary
-  + 5 fields mới được điền
-  ~ 2 fields cập nhật giá trị
+  + 5 fields mới
+  ~ 2 fields cập nhật
   = 12 fields giữ nguyên
-  ○ 3 fields vẫn trống (cần bổ sung thủ công hoặc thêm doc)
+  ○ 3 fields vẫn trống
 ```
 
-Hỏi user: **Apply changes? (Yes / Edit trước / Show full diff / Cancel)**
+Hỏi user: **Apply? (Yes / Edit / Show full diff / Cancel)**
 
-- **Yes** → apply tất cả
-- **Edit trước** → mở file cho user chỉnh sửa trước khi lưu
-- **Show full diff** → hiển thị toàn bộ file với diff (không chỉ phần thay đổi)
-- **Cancel** → hủy, không thay đổi gì
+### Step 7: Write và validate
 
-### Step 5: Write profile
-
-Nếu confirmed → ghi vào `<context_dir>/company-profile.yaml`, giữ nguyên format và comments.
-
-### Step 6: Validate
-
-Chạy validation:
-- Tất cả org_mapping có department name?
-- Escalation matrix có đủ severity levels?
-- Tech stack consistent (ví dụ: có SIEM nhưng không có SOC team → flag)
-- Flag gaps: chức năng quan trọng chưa có team phụ trách
+1. Ghi `company-profile.yaml` vào `output.profile` path
+2. Validate:
+   - org_mapping có đủ department names?
+   - Escalation matrix đủ severity levels?
+   - Tech stack consistent?
+   - Flag gaps
 
 ## Lưu ý
 
-- **Không bao giờ ghi đè** field đã có bằng giá trị trống — chỉ update khi có data mới
-- **Preserve user edits** — nếu user đã sửa trực tiếp trong YAML, ưu tiên giá trị đó trừ khi org doc mới hơn
-- **Cite sources** — ghi chú file nào cung cấp thông tin gì để user verify
-- **Redact check** — nếu phát hiện credentials/PII thật trong org docs, cảnh báo KHÔNG đưa vào profile
+- **Đọc tại chỗ** — KHÔNG copy/move files của user. Plugin chỉ đọc từ original paths.
+- **Không ghi đè** field đã có bằng giá trị trống
+- **Preserve user edits** — ưu tiên giá trị user đã sửa trực tiếp
+- **Cite sources** — ghi rõ file nào cung cấp thông tin gì
+- **Redact check** — cảnh báo nếu phát hiện credentials/PII thật
+- **Hỗ trợ file types** — `.md`, `.txt`, `.docx`, `.pdf`, `.xlsx`, `.csv`, `.yaml`, `.json`, `.png`, `.jpg`

@@ -144,31 +144,40 @@ Custom workflows được tạo từ SOPs/playbooks nội bộ qua `/secops:gene
 
 ## Data Architecture
 
-Plugin tách biệt **code** (agents, skills, commands, hooks) và **data** (context, workflows, references):
+Plugin **không bắt buộc cấu trúc folder cứng**. Thay vào đó, `/secops:setup-profile` scan folders tài liệu hiện có của user, tự phân loại, và lưu mapping:
 
-| Folder | Nội dung | Cách tạo |
+```text
+/secops:setup-profile
+→ Chỉ tôi tới folders tài liệu: D:\Company-Docs
+→ Plugin scan 47 files → phân loại → hiển thị mapping → confirm
+→ Lưu mapping vào ~/.claude/secops.yaml
+```
+
+Plugin tự phân loại tài liệu vào các categories:
+
+| Category | Nội dung | Dùng cho |
 | --- | --- | --- |
-| `context/company-profile.yaml` | Tech stack, org mapping, escalation matrix | `/secops:setup-profile` |
-| `context/org-docs/` | Tài liệu tổ chức (sơ đồ, danh sách tools) | User đặt files |
-| `context/process-docs/` | SOPs, playbooks, runbooks | User đặt files |
-| `workflows/defaults/` | 10 default workflow templates | `/secops:setup-profile` (copy từ plugin) |
-| `workflows/<category>/` | Custom workflows | `/secops:generate-workflows` |
-| `references/regulations/` | Luật, NĐ, TT bổ sung/cập nhật | User đặt files |
-| `references/standards/` | ISO, PCI, NIST controls bổ sung | User đặt files |
-| `references/policies/` | ISMS, chính sách nội bộ công ty | User đặt files |
+| `org_docs` | Sơ đồ tổ chức, tech stack, asset inventory | Build company profile |
+| `process_docs` | SOPs, playbooks, runbooks | Generate custom workflows |
+| `regulations` | Luật, NĐ, TT | Tra cứu quy định |
+| `standards` | ISO, PCI, NIST controls | Gap analysis, audit |
+| `policies` | ISMS, chính sách nội bộ | Policy review, compliance |
+| `reports` | Audit reports, assessments | Trend analysis |
+| `templates` | Mẫu biểu, forms | Document drafting |
 
-Data nằm trong **working directory** (default) hoặc **folder riêng** (config qua `/secops:config` hoặc `~/.claude/secops.yaml`).
+Plugin cũng hỗ trợ review tổ chức tài liệu theo **PARA (Second Brain)**, **ISO 27001 hierarchy**, hoặc **custom framework** qua `/secops:doc-review`.
 
 ---
 
 ## Tùy chỉnh
 
-### Data paths
+### Document sources
 
 ```text
-/secops:config context_dir C:\SecOps-Data\context
-/secops:config workflows_dir C:\SecOps-Data\workflows
-/secops:config references_dir C:\SecOps-Data\references
+/secops:config add-source D:\New-Docs     # Thêm folder tài liệu
+/secops:config remove-source D:\Old-Docs  # Xóa folder
+/secops:config rescan                     # Rescan tất cả sources
+/secops:config show-mapping               # Xem mapping hiện tại
 ```
 
 ### Hook profiles

@@ -4,28 +4,26 @@ Bạn đang tạo hoặc cập nhật workflow templates tự động từ quy t
 
 ## Quy trình
 
-### Step 0: Xác định paths
+### Step 0: Đọc mapping
 
-Đọc `~/.claude/secops.yaml` để lấy `context_dir` và `workflows_dir`. Nếu không có → dùng `./context/` và `./workflows/` (working directory).
-
-Kiểm tra `<context_dir>` và `<workflows_dir>` tồn tại. Nếu thiếu → hướng dẫn chạy `/secops:setup-profile` trước:
+Đọc `~/.claude/secops.yaml` để lấy `mapping.process_docs` và `output.workflows`. Nếu chưa có config hoặc `process_docs` trống:
 
 ```text
-Chưa tìm thấy context/ và workflows/.
-Chạy /secops:setup-profile để khởi tạo đầy đủ trước khi generate workflows.
+Chưa có process documents trong mapping.
+Chạy /secops:setup-profile để scan tài liệu trước khi generate workflows.
 ```
 
 ### Step 1: Đọc context
 
 Đọc song song:
 
-- `<context_dir>/company-profile.yaml` — để biết org mapping, tech stack, agents có sẵn
+- Company profile (từ `output.profile` path) — để biết org mapping, tech stack, agents có sẵn
 - `workflows/SCHEMA.md` — để biết YAML schema (từ plugin dir)
-- Tất cả workflows hiện có trong `<workflows_dir>/` — để tránh duplicate
+- Tất cả workflows hiện có trong `output.workflows` path — để tránh duplicate
 
 ### Step 2: Đọc process documents
 
-Đọc mọi file trong `<context_dir>/process-docs/` (trừ README.md).
+Đọc tất cả files trong `mapping.process_docs` (từ `~/.claude/secops.yaml`).
 
 Với mỗi file, extract:
 
