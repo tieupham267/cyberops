@@ -5,7 +5,7 @@
 
 # Respect profile — skip in dev mode
 source "$(dirname "$0")/profile-gate.sh" "batch-security-check" "standard" 2>/dev/null
-[ "$SECOPS_GATE_SKIP" = "1" ] && exit 0
+[ "$CYBEROPS_GATE_SKIP" = "1" ] && exit 0
 
 LOG_DIR="${HOME}/.cybersec-audit-logs"
 mkdir -p "$LOG_DIR"
@@ -58,7 +58,7 @@ done
 cat > "$REPORT_FILE" << EOF
 === Batch Security Check Report ===
 Timestamp: $(date +"%Y-%m-%dT%H:%M:%S%z")
-Profile: ${SECOPS_PROFILE:-standard}
+Profile: ${CYBEROPS_PROFILE:-standard}
 Files checked: ${FILES_CHECKED}
 Files with issues: ${FILES_WITH_ISSUES}
 

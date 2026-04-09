@@ -85,7 +85,7 @@ for script in hooks/scripts/*.sh; do
   fi
 done
 
-echo "  [5.5] SECOPS_PROFILE=dev does not disable secrets detection"
+echo "  [5.5] CYBEROPS_PROFILE=dev does not disable secrets detection"
 
 # check-secrets.sh should NOT source profile-gate (it runs for all profiles)
 if grep -q "profile-gate" hooks/scripts/check-secrets.sh 2>/dev/null; then

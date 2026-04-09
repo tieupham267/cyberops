@@ -1,5 +1,5 @@
 #!/bin/bash
-# run-all.sh — SecOps plugin test runner
+# run-all.sh — CyberOps plugin test runner
 # Usage: bash tests/run-all.sh [layer...]
 # Examples:
 #   bash tests/run-all.sh          # Run all layers
@@ -38,7 +38,7 @@ should_run() {
 
 echo ""
 echo -e "${BLUE}${BOLD}═══════════════════════════════════════════════${NC}"
-echo -e "${BLUE}${BOLD}  SecOps Plugin Test Suite${NC}"
+echo -e "${BLUE}${BOLD}  CyberOps Plugin Test Suite${NC}"
 echo -e "${BLUE}${BOLD}═══════════════════════════════════════════════${NC}"
 echo ""
 

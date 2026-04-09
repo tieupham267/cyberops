@@ -11,7 +11,7 @@ description: >
 
 ## Mục đích
 
-Cung cấp methodology để đánh giá, tổ chức, và duy trì hệ thống tài liệu bảo mật. Dùng khi `/secops:doc-review` hoặc khi cần đánh giá document maturity.
+Cung cấp methodology để đánh giá, tổ chức, và duy trì hệ thống tài liệu bảo mật. Dùng khi `/cyberops:doc-review` hoặc khi cần đánh giá document maturity.
 
 ---
 
@@ -21,7 +21,7 @@ Phương pháp của Tiago Forte. Phân loại tài liệu theo **mức độ ac
 
 ### 4 Categories
 
-| Category | Định nghĩa | Đặc điểm | Ví dụ SecOps |
+| Category | Định nghĩa | Đặc điểm | Ví dụ CyberOps |
 | --- | --- | --- | --- |
 | **Projects** | Mục tiêu cụ thể + deadline | Active, time-bound, có deliverable rõ ràng | Incident đang xử lý, audit prep Q2, SIEM migration |
 | **Areas** | Trách nhiệm ongoing | Không deadline, cần maintain liên tục | ISMS maintenance, SOC operations, vuln mgmt, policy review, pentest reports (cần cho retest/audit), vendor assessments, regulatory correspondence |
@@ -35,7 +35,7 @@ Phương pháp của Tiago Forte. Phân loại tài liệu theo **mức độ ac
 3. **Chỉ để tham khảo, không cần action?** → Resources
 4. **Không còn giá trị sử dụng cho bất kỳ area nào?** → Archive
 
-**Lưu ý quan trọng cho SecOps:** "Hoàn thành" ≠ "Archive". Một pentest report đã hoàn thành vẫn thuộc **Areas** nếu cần cho: audit evidence hàng năm, retest reference, compliance proof. Chỉ archive khi document thực sự không còn phục vụ area nào.
+**Lưu ý quan trọng cho CyberOps:** "Hoàn thành" ≠ "Archive". Một pentest report đã hoàn thành vẫn thuộc **Areas** nếu cần cho: audit evidence hàng năm, retest reference, compliance proof. Chỉ archive khi document thực sự không còn phục vụ area nào.
 
 ### Quy tắc di chuyển (lifecycle)
 
@@ -47,7 +47,7 @@ Projects → Archive   (khi hoàn thành VÀ output không phục vụ area nào
 Areas → Archive      (khi trách nhiệm thay đổi VÀ documents không còn compliance value)
 ```
 
-### PARA cho SecOps — Best Practices
+### PARA cho CyberOps — Best Practices
 
 **Projects:**
 - Mỗi project = 1 folder riêng

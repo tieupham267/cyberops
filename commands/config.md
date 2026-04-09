@@ -1,17 +1,17 @@
-# /secops:config — Xem và quản lý cấu hình secops
+# /cyberops:config — Xem và quản lý cấu hình cyberops
 
-Bạn đang quản lý cấu hình plugin secops. Config được lưu tại `~/.claude/secops.yaml`.
+Bạn đang quản lý cấu hình plugin cyberops. Config được lưu tại `~/.claude/cyberops.yaml`.
 
 ## Xử lý theo arguments
 
 ### Không có argument → Hiển thị config hiện tại
 
-Đọc `~/.claude/secops.yaml`. Hiển thị:
+Đọc `~/.claude/cyberops.yaml`. Hiển thị:
 
 ```text
-## SecOps Config
+## CyberOps Config
 
-File: ~/.claude/secops.yaml
+File: ~/.claude/cyberops.yaml
 
 ### Sources (document folders)
   1. D:\Company-Docs          (scanned: 2026-04-09, 35 files)
@@ -30,21 +30,21 @@ File: ~/.claude/secops.yaml
   profile:   ./context/company-profile.yaml
   workflows: ./workflows
 
-Dùng /secops:config <subcommand> để quản lý.
+Dùng /cyberops:config <subcommand> để quản lý.
 ```
 
 Nếu file không tồn tại:
 
 ```text
-## SecOps Config
+## CyberOps Config
 
-Chưa có config. Chạy /secops:setup-profile để scan tài liệu và tạo config.
+Chưa có config. Chạy /cyberops:setup-profile để scan tài liệu và tạo config.
 ```
 
 ### `add-source <path>` → Thêm document source
 
 1. Kiểm tra `<path>` là path hợp lệ và tồn tại
-2. Đọc `~/.claude/secops.yaml` (hoặc tạo mới)
+2. Đọc `~/.claude/cyberops.yaml` (hoặc tạo mới)
 3. Thêm vào `sources` list
 4. Tự động scan + phân loại files trong source mới
 5. Hiển thị kết quả scan → xin confirm mapping
@@ -130,7 +130,7 @@ Liệt kê tất cả files theo category:
 
 ### `reset` → Xóa config
 
-1. Hỏi xác nhận: "Xóa ~/.claude/secops.yaml? [Y/n]"
+1. Hỏi xác nhận: "Xóa ~/.claude/cyberops.yaml? [Y/n]"
 2. Nếu Y → xóa file
 3. Hiển thị: `✓ Config đã xóa.`
 

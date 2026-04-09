@@ -1,7 +1,7 @@
 #!/bin/bash
 # test-orchestration.sh — Layer 4: Orchestration Flow
 # Validates that orchestrator routing logic, workflow templates, and
-# the /secops:run command are consistent and complete.
+# the /cyberops:run command are consistent and complete.
 # NOTE: Tests routing *definitions*, not actual LLM routing (which requires running the plugin).
 source "$(dirname "$0")/helpers.sh"
 cd "$PROJECT_DIR"
@@ -71,12 +71,12 @@ for wf_file in $(find workflows -name "*.yaml" 2>/dev/null); do
   fi
 done
 
-echo "  [4.6] /secops:run command references orchestrator"
+echo "  [4.6] /cyberops:run command references orchestrator"
 
 assert_contains "$PROJECT_DIR/commands/run.md" "orchestrator" \
-  "/secops:run references orchestrator agent"
+  "/cyberops:run references orchestrator agent"
 
-echo "  [4.7] /secops:run workflow table matches custom workflows"
+echo "  [4.7] /cyberops:run workflow table matches custom workflows"
 
 # Only check custom workflows (not defaults) against run.md
 for wf_file in $(find workflows -name "*.yaml" -not -path "*/defaults/*" 2>/dev/null); do
@@ -147,9 +147,9 @@ echo "  [4.11] Legacy commands still exist (backward compatibility)"
 
 for cmd in incident soc-triage threat-model gap-analysis vuln-report phishing-campaign policy-draft; do
   if [ -f "commands/${cmd}.md" ]; then
-    pass "Legacy command exists: /secops:${cmd}"
+    pass "Legacy command exists: /cyberops:${cmd}"
   else
-    fail "Legacy command missing: /secops:${cmd}"
+    fail "Legacy command missing: /cyberops:${cmd}"
   fi
 done
 

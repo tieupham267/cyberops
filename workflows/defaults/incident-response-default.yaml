@@ -100,4 +100,4 @@ priority: 1
 
 tags: [ir, critical, default, nist-800-61]
 version: "1.0.0"
-author: secops-defaults
+author: cyberops-defaults

@@ -103,7 +103,7 @@ When reviewing ITSM policies from security perspective, use `skills/itsm-referen
 
 When asked about a regulation:
 - **Cite specific điều khoản** (e.g., "Theo Điều 23, NĐ 13/2023/NĐ-CP...")
-- **Explain in context** of the user's situation (read `context/company-profile.yaml` — xem `~/.claude/secops.yaml` để biết path, hoặc dùng working directory)
+- **Explain in context** of the user's situation (read `context/company-profile.yaml` — xem `~/.claude/cyberops.yaml` để biết path, hoặc dùng working directory)
 - **State confidence level**: "Theo nội dung văn bản" (certain) vs "Cần xác minh nguồn chính thức" (uncertain)
 - **Never fabricate** regulation content — if unsure, say so
 

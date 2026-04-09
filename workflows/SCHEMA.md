@@ -1,6 +1,6 @@
 # Workflow Template Schema
 
-Mỗi workflow template là 1 file YAML trong `workflows/<category>/`. Orchestrator agent đọc các templates này để match với user request hoặc chạy trực tiếp qua `/secops:run`.
+Mỗi workflow template là 1 file YAML trong `workflows/<category>/`. Orchestrator agent đọc các templates này để match với user request hoặc chạy trực tiếp qua `/cyberops:run`.
 
 ## Schema Definition
 
@@ -64,7 +64,7 @@ overrides: string               # Tên default workflow mà custom workflow này
 
 ```
 1. Custom workflows (workflows/<category>/*.yaml)     ← ưu tiên cao nhất
-2. Auto-generated (từ /secops:generate-workflows)      ← ưu tiên cao
+2. Auto-generated (từ /cyberops:generate-workflows)      ← ưu tiên cao
 3. Default workflows (workflows/defaults/*.yaml)       ← fallback
 ```
 
@@ -73,5 +73,5 @@ overrides: string               # Tên default workflow mà custom workflow này
 - Default workflows nằm trong `workflows/defaults/` — dùng khi chưa có custom workflow cho task đó
 - Khi custom workflow có `overrides: <default-name>`, orchestrator bỏ qua default đó
 - Khi custom workflow có cùng `keywords`/`triggers` với default, custom luôn thắng
-- `/secops:run --list` hiển thị cả hai, đánh dấu `[default]` hoặc `[custom]` hoặc `[overridden]`
-- `/secops:generate-workflows` tự động thêm `overrides:` field khi tạo custom workflow thay thế default
+- `/cyberops:run --list` hiển thị cả hai, đánh dấu `[default]` hoặc `[custom]` hoặc `[overridden]`
+- `/cyberops:generate-workflows` tự động thêm `overrides:` field khi tạo custom workflow thay thế default

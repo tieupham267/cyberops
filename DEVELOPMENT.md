@@ -1,6 +1,6 @@
-# SecOps Plugin — Development Guide
+# CyberOps Plugin — Development Guide
 
-Hướng dẫn phát triển và contribute plugin **secops**.
+Hướng dẫn phát triển và contribute plugin **cyberops**.
 
 ---
 
@@ -9,8 +9,8 @@ Hướng dẫn phát triển và contribute plugin **secops**.
 ### Clone và chạy
 
 ```bash
-git clone https://github.com/tieupham267/secops.git
-cd secops
+git clone https://github.com/tieupham267/cyberops.git
+cd cyberops
 claude --plugin-dir .
 ```
 
@@ -29,7 +29,7 @@ Sửa file → /reload-plugins → test → sửa tiếp → hài lòng → comm
 ## Cấu trúc plugin
 
 ```text
-secops/
+cyberops/
 ├── plugin.json                 # Plugin manifest
 ├── agents/                     # 12 agent personas (.md + YAML frontmatter)
 ├── skills/                     # 8 knowledge-base skills (SKILL.md)
@@ -108,7 +108,7 @@ Orchestrator tự phát hiện workflows mới — không cần đăng ký thêm
 Tạo `commands/<name>.md`:
 
 ```markdown
-# /secops:<name> — Mô tả ngắn
+# /cyberops:<name> — Mô tả ngắn
 
 (Instructions cho Claude khi user gọi command)
 ```
@@ -166,10 +166,10 @@ bash tests/run-all.sh 1 2 5    # Nhiều layers
 Tạo file test.txt có nội dung: password = "MySecret123"
 
 # Test workflow routing
-/secops:run alert-triage
+/cyberops:run alert-triage
 
 # Test command
-/secops:config show-paths
+/cyberops:config show-paths
 ```
 
 ---
@@ -200,10 +200,10 @@ claude -w --plugin-dir .
 
 ```bash
 # Dev mode — chỉ check secrets, bỏ qua warnings
-SECOPS_PROFILE=dev claude --plugin-dir .
+CYBEROPS_PROFILE=dev claude --plugin-dir .
 
 # Strict — test full hook coverage
-SECOPS_PROFILE=strict claude --plugin-dir .
+CYBEROPS_PROFILE=strict claude --plugin-dir .
 ```
 
 ### Custom skills cho team members
@@ -223,19 +223,19 @@ mkdir -p ~/.claude/skills/my-custom-detection/
 
 ```text
 # Cách 1: Từ marketplace (recommended cho end users)
-/plugin marketplace add https://github.com/tieupham267/secops
-/plugin install secops@secops
+/plugin marketplace add https://github.com/tieupham267/cyberops
+/plugin install cyberops@cyberops
 
 # Cách 2: Clone + plugin-dir (recommended cho dev)
-git clone https://github.com/tieupham267/secops.git
-claude --plugin-dir ./secops
+git clone https://github.com/tieupham267/cyberops.git
+claude --plugin-dir ./cyberops
 ```
 
 ### Lưu ý khi distribute
 
 - **Hook scripts** yêu cầu `bash` + standard Unix tools (`grep`, `stat`, `git`). Windows cần Git Bash hoặc WSL.
-- Document `SECOPS_PROFILE` env var cho team.
-- Sau khi cài, team members chạy `/secops:setup-profile` để khởi tạo data.
+- Document `CYBEROPS_PROFILE` env var cho team.
+- Sau khi cài, team members chạy `/cyberops:setup-profile` để khởi tạo data.
 
 ---
 

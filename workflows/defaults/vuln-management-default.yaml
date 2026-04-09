@@ -53,4 +53,4 @@ priority: 2
 
 tags: [soc, vulnerability, default]
 version: "1.0.0"
-author: secops-defaults
+author: cyberops-defaults

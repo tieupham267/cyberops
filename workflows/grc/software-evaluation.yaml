@@ -4,7 +4,7 @@ description: >
   Quy trình đánh giá phần mềm mới bao gồm 3 góc: nghiệp vụ (tạo template cho
   bộ phận đề xuất), kỹ thuật IT (compatibility, license, support), và bảo mật
   (data handling, authentication, vendor security, compliance). Multi-agent chain.
-  Đọc process doc từ mapping.process_docs trong secops.yaml.
+  Đọc process doc từ mapping.process_docs trong cyberops.yaml.
 category: grc
 
 chain:
@@ -117,4 +117,4 @@ priority: 2
 
 tags: [grc, software, evaluation, cross-department]
 version: "1.0.0"
-author: secops-team
+author: cyberops-team

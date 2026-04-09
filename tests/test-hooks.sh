@@ -109,16 +109,16 @@ fi
 
 echo "  [2.7] profile-gate.sh — profile levels"
 
-# dev profile should set SECOPS_GATE_SKIP=1 for standard-level hooks
-dev_skip=$(SECOPS_PROFILE=dev bash -c 'cd "'"$PROJECT_DIR"'" && source hooks/scripts/profile-gate.sh "test" "standard"; echo $SECOPS_GATE_SKIP' 2>/dev/null) || true
+# dev profile should set CYBEROPS_GATE_SKIP=1 for standard-level hooks
+dev_skip=$(CYBEROPS_PROFILE=dev bash -c 'cd "'"$PROJECT_DIR"'" && source hooks/scripts/profile-gate.sh "test" "standard"; echo $CYBEROPS_GATE_SKIP' 2>/dev/null) || true
 if [ "$dev_skip" = "1" ]; then
   pass "Dev profile sets GATE_SKIP=1 for standard-level hook"
 else
   fail "Dev profile should set GATE_SKIP=1 for standard-level hook (got: $dev_skip)"
 fi
 
-# strict profile should set SECOPS_GATE_SKIP=0 for standard-level hooks
-strict_skip=$(SECOPS_PROFILE=strict bash -c 'cd "'"$PROJECT_DIR"'" && source hooks/scripts/profile-gate.sh "test" "standard"; echo $SECOPS_GATE_SKIP' 2>/dev/null) || true
+# strict profile should set CYBEROPS_GATE_SKIP=0 for standard-level hooks
+strict_skip=$(CYBEROPS_PROFILE=strict bash -c 'cd "'"$PROJECT_DIR"'" && source hooks/scripts/profile-gate.sh "test" "standard"; echo $CYBEROPS_GATE_SKIP' 2>/dev/null) || true
 if [ "$strict_skip" = "0" ]; then
   pass "Strict profile sets GATE_SKIP=0 for standard-level hook"
 else
@@ -126,7 +126,7 @@ else
 fi
 
 # dev profile should NOT skip dev-level hooks (critical checks)
-dev_critical=$(SECOPS_PROFILE=dev bash -c 'cd "'"$PROJECT_DIR"'" && source hooks/scripts/profile-gate.sh "test" "dev"; echo $SECOPS_GATE_SKIP' 2>/dev/null) || true
+dev_critical=$(CYBEROPS_PROFILE=dev bash -c 'cd "'"$PROJECT_DIR"'" && source hooks/scripts/profile-gate.sh "test" "dev"; echo $CYBEROPS_GATE_SKIP' 2>/dev/null) || true
 if [ "$dev_critical" = "0" ]; then
   pass "Dev profile runs dev-level hooks (critical checks)"
 else

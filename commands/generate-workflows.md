@@ -1,4 +1,4 @@
-# /secops:generate-workflows — Tạo workflows từ process documents
+# /cyberops:generate-workflows — Tạo workflows từ process documents
 
 Bạn đang tạo hoặc cập nhật workflow templates tự động từ quy trình nội bộ.
 
@@ -6,11 +6,11 @@ Bạn đang tạo hoặc cập nhật workflow templates tự động từ quy t
 
 ### Step 0: Đọc mapping
 
-Đọc `~/.claude/secops.yaml` để lấy `mapping.process_docs` và `output.workflows`. Nếu chưa có config hoặc `process_docs` trống:
+Đọc `~/.claude/cyberops.yaml` để lấy `mapping.process_docs` và `output.workflows`. Nếu chưa có config hoặc `process_docs` trống:
 
 ```text
 Chưa có process documents trong mapping.
-Chạy /secops:setup-profile để scan tài liệu trước khi generate workflows.
+Chạy /cyberops:setup-profile để scan tài liệu trước khi generate workflows.
 ```
 
 ### Step 1: Đọc context
@@ -23,7 +23,7 @@ Chạy /secops:setup-profile để scan tài liệu trước khi generate workfl
 
 ### Step 2: Đọc process documents
 
-Đọc tất cả files trong `mapping.process_docs` (từ `~/.claude/secops.yaml`).
+Đọc tất cả files trong `mapping.process_docs` (từ `~/.claude/cyberops.yaml`).
 
 Với mỗi file, extract:
 

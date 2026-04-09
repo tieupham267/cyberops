@@ -42,7 +42,7 @@ skip() {
 layer_summary() {
   echo "  ── pass: $_PASS | fail: $_FAIL | skip: $_SKIP"
   # Write counters to temp file for aggregation by run-all.sh
-  local tmp_file="/tmp/secops-test-$$-$RANDOM"
+  local tmp_file="/tmp/cyberops-test-$$-$RANDOM"
   echo "$_PASS $_FAIL $_SKIP" > "$tmp_file"
   echo "$tmp_file"
 }
@@ -148,7 +148,7 @@ assert_hook_allows() {
 TEMP_FILES=()
 make_temp() {
   local f
-  f=$(mktemp /tmp/secops-test-XXXXXX)
+  f=$(mktemp /tmp/cyberops-test-XXXXXX)
   TEMP_FILES+=("$f")
   echo "$f"
 }

@@ -1,4 +1,4 @@
-# secops — Claude Code Plugin
+# cyberops — Claude Code Plugin
 
 Plugin biến Claude Code thành trợ lý cybersecurity toàn diện. 12 agents chuyên biệt, 8 skills, 14 commands, hybrid orchestration với workflow templates, hooks bảo mật, và rules enforce standards.
 
@@ -13,40 +13,42 @@ Plugin biến Claude Code thành trợ lý cybersecurity toàn diện. 12 agents
 ### Từ GitHub *(recommended)*
 
 ```text
-/plugin marketplace add https://github.com/tieupham267/secops
-/plugin install secops@secops
+/plugin marketplace add https://github.com/tieupham267/cyberops
+/plugin install cyberops@cyberops
 ```
 
 ### Từ local (dev/testing)
 
 ```bash
-git clone https://github.com/tieupham267/secops.git
-cd secops
+git clone https://github.com/tieupham267/cyberops.git
+cd cyberops
 claude --plugin-dir .
 ```
 
 ### Sau khi cài
 
 ```text
-/secops:setup-profile          # Khởi tạo data cho tổ chức
-/secops:run --list             # Xem danh sách workflows
+/cyberops:setup-profile          # Khởi tạo data cho tổ chức
+/cyberops:run --list             # Xem danh sách workflows
 ```
 
 ### Nâng cấp / Gỡ cài đặt
 
 ```text
-/plugin update secops@secops                          # Update lên bản mới nhất
-/plugin uninstall secops@secops --scope user           # Gỡ (user scope)
-/plugin uninstall secops@secops --scope project        # Gỡ (project scope)
+/plugin update cyberops@cyberops                          # Update lên bản mới nhất
+/plugin uninstall cyberops@cyberops --scope user           # Gỡ (user scope)
+/plugin uninstall cyberops@cyberops --scope project        # Gỡ (project scope)
 ```
 
 > Data (`context/`, `workflows/`, `references/`) không bị ảnh hưởng khi update hoặc gỡ plugin.
 
-### Nâng cấp từ secops-toolkit (v1)
+### Nâng cấp từ secops (v2-v3)
 
 ```text
-/plugin uninstall secops-toolkit@secops --scope user   # Gỡ bản cũ
-/plugin install secops@secops                          # Cài bản mới
+/plugin uninstall secops@secops --scope user               # Gỡ bản cũ
+/plugin marketplace remove secops                          # Gỡ marketplace cũ
+/plugin marketplace add https://github.com/tieupham267/cyberops
+/plugin install cyberops@cyberops                          # Cài bản mới
 ```
 
 ---
@@ -88,20 +90,20 @@ claude --plugin-dir .
 
 | Command | Mô tả |
 | --- | --- |
-| `/secops:run` | **Unified entry point** — chạy workflow hoặc mô tả tự nhiên |
-| `/secops:setup-profile` | Tạo/cập nhật company profile từ org documents |
-| `/secops:generate-workflows` | Tạo workflows từ process documents nội bộ |
-| `/secops:config` | Xem/sửa config (context_dir, workflows_dir, references_dir) |
-| `/secops:incident` | Khởi tạo quy trình ứng phó sự cố |
-| `/secops:risk-assess` | Đánh giá rủi ro an ninh mạng |
-| `/secops:threat-model` | Phiên threat modeling |
-| `/secops:soc-triage` | Triage security alert |
-| `/secops:gap-analysis` | Gap analysis compliance framework |
-| `/secops:phishing-campaign` | Thiết kế phishing simulation |
-| `/secops:vuln-report` | Phân tích vulnerability scan |
-| `/secops:policy-draft` | Soạn thảo chính sách bảo mật |
-| `/secops:ciso-consult` | Tư vấn bảo mật cấp CISO cho fintech |
-| `/secops:devsecops-review` | Review bảo mật CI/CD, K8s, container |
+| `/cyberops:run` | **Unified entry point** — chạy workflow hoặc mô tả tự nhiên |
+| `/cyberops:setup-profile` | Tạo/cập nhật company profile từ org documents |
+| `/cyberops:generate-workflows` | Tạo workflows từ process documents nội bộ |
+| `/cyberops:config` | Xem/sửa config (context_dir, workflows_dir, references_dir) |
+| `/cyberops:incident` | Khởi tạo quy trình ứng phó sự cố |
+| `/cyberops:risk-assess` | Đánh giá rủi ro an ninh mạng |
+| `/cyberops:threat-model` | Phiên threat modeling |
+| `/cyberops:soc-triage` | Triage security alert |
+| `/cyberops:gap-analysis` | Gap analysis compliance framework |
+| `/cyberops:phishing-campaign` | Thiết kế phishing simulation |
+| `/cyberops:vuln-report` | Phân tích vulnerability scan |
+| `/cyberops:policy-draft` | Soạn thảo chính sách bảo mật |
+| `/cyberops:ciso-consult` | Tư vấn bảo mật cấp CISO cho fintech |
+| `/cyberops:devsecops-review` | Review bảo mật CI/CD, K8s, container |
 
 ### Hooks (6)
 
@@ -139,19 +141,19 @@ claude --plugin-dir .
 | `risk-assessment-default` | Đánh giá rủi ro CNTT |
 | `fraud-investigation-default` | Điều tra gian lận |
 
-Custom workflows được tạo từ SOPs/playbooks nội bộ qua `/secops:generate-workflows`.
+Custom workflows được tạo từ SOPs/playbooks nội bộ qua `/cyberops:generate-workflows`.
 
 ---
 
 ## Data Architecture
 
-Plugin **không bắt buộc cấu trúc folder cứng**. Thay vào đó, `/secops:setup-profile` scan folders tài liệu hiện có của user, tự phân loại, và lưu mapping:
+Plugin **không bắt buộc cấu trúc folder cứng**. Thay vào đó, `/cyberops:setup-profile` scan folders tài liệu hiện có của user, tự phân loại, và lưu mapping:
 
 ```text
-/secops:setup-profile
+/cyberops:setup-profile
 → Chỉ tôi tới folders tài liệu: D:\Company-Docs
 → Plugin scan 47 files → phân loại → hiển thị mapping → confirm
-→ Lưu mapping vào ~/.claude/secops.yaml
+→ Lưu mapping vào ~/.claude/cyberops.yaml
 ```
 
 Plugin tự phân loại tài liệu vào các categories:
@@ -166,7 +168,7 @@ Plugin tự phân loại tài liệu vào các categories:
 | `reports` | Audit reports, assessments | Trend analysis |
 | `templates` | Mẫu biểu, forms | Document drafting |
 
-Plugin cũng hỗ trợ review tổ chức tài liệu theo **PARA (Second Brain)**, **ISO 27001 hierarchy**, hoặc **custom framework** qua `/secops:doc-review`.
+Plugin cũng hỗ trợ review tổ chức tài liệu theo **PARA (Second Brain)**, **ISO 27001 hierarchy**, hoặc **custom framework** qua `/cyberops:doc-review`.
 
 ---
 
@@ -175,17 +177,17 @@ Plugin cũng hỗ trợ review tổ chức tài liệu theo **PARA (Second Brain
 ### Document sources
 
 ```text
-/secops:config add-source D:\New-Docs     # Thêm folder tài liệu
-/secops:config remove-source D:\Old-Docs  # Xóa folder
-/secops:config rescan                     # Rescan tất cả sources
-/secops:config show-mapping               # Xem mapping hiện tại
+/cyberops:config add-source D:\New-Docs     # Thêm folder tài liệu
+/cyberops:config remove-source D:\Old-Docs  # Xóa folder
+/cyberops:config rescan                     # Rescan tất cả sources
+/cyberops:config show-mapping               # Xem mapping hiện tại
 ```
 
 ### Hook profiles
 
 ```bash
-SECOPS_PROFILE=dev claude        # Nhẹ — chỉ check secrets
-SECOPS_PROFILE=strict claude     # Nghiêm ngặt — block cả warnings
+CYBEROPS_PROFILE=dev claude        # Nhẹ — chỉ check secrets
+CYBEROPS_PROFILE=strict claude     # Nghiêm ngặt — block cả warnings
 ```
 
 ### Thêm components

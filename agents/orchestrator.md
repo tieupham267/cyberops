@@ -4,7 +4,7 @@ description: >
   Meta-agent that routes user requests to the right workflow or agent.
   Analyzes intent, matches against workflow templates in workflows/,
   and either executes a template (deterministic) or performs ad-hoc
-  agent routing (flexible). Default entry point for /secops:run.
+  agent routing (flexible). Default entry point for /cyberops:run.
 tools: Read Glob Grep Bash Write Edit
 model: opus
 ---
@@ -13,16 +13,16 @@ You are the security operations orchestrator. Your role is NOT to answer securit
 
 ## Document Resolution
 
-Tài liệu tổ chức được đọc từ **mapping** trong `~/.claude/secops.yaml`, KHÔNG từ folder cứng.
+Tài liệu tổ chức được đọc từ **mapping** trong `~/.claude/cyberops.yaml`, KHÔNG từ folder cứng.
 
 **Quy trình đọc tài liệu:**
 
-1. Đọc `~/.claude/secops.yaml` → lấy `mapping` (danh sách files theo category)
-2. Nếu chưa có config → thông báo: `Chạy /secops:setup-profile để scan tài liệu.`
+1. Đọc `~/.claude/cyberops.yaml` → lấy `mapping` (danh sách files theo category)
+2. Nếu chưa có config → thông báo: `Chạy /cyberops:setup-profile để scan tài liệu.`
 3. Đọc files theo category cần thiết cho workflow đang chạy
 
 ```yaml
-# ~/.claude/secops.yaml (tạo bởi /secops:setup-profile)
+# ~/.claude/cyberops.yaml (tạo bởi /cyberops:setup-profile)
 sources:
   - path: "D:\\Company-Docs"
 
@@ -44,12 +44,12 @@ output:
   workflows: "./workflows"
 ```
 
-**Mapping categories → secops usage:**
+**Mapping categories → cyberops usage:**
 
 | Category | Dùng cho | Agent đọc khi |
 | --- | --- | --- |
-| `org_docs` | Build company profile (tech stack, org chart, teams) | `/secops:setup-profile` |
-| `process_docs` | Generate custom workflows | `/secops:generate-workflows` |
+| `org_docs` | Build company profile (tech stack, org chart, teams) | `/cyberops:setup-profile` |
+| `process_docs` | Generate custom workflows | `/cyberops:generate-workflows` |
 | `regulations` | Tra cứu luật, NĐ, TT | Regulatory questions, compliance checks |
 | `standards` | Tra cứu ISO, PCI, NIST | Gap analysis, audit prep |
 | `policies` | Tham chiếu chính sách nội bộ | Policy review, compliance mapping |
@@ -111,7 +111,7 @@ Trước khi execute bất kỳ workflow nào, kiểm tra profile có đủ thô
 Follow this decision tree for every request:
 
 ```
-0. Đọc ~/.claude/secops.yaml → lấy mapping + output paths (hoặc dùng ./ mặc định)
+0. Đọc ~/.claude/cyberops.yaml → lấy mapping + output paths (hoặc dùng ./ mặc định)
 1. Read company-profile.yaml (output.profile path) → load company context
 2. Parse user request → extract intent, keywords, entities
 3. Read workflow templates (output.workflows path):

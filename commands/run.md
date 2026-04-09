@@ -1,4 +1,4 @@
-# /secops:run — Unified entry point cho tất cả security workflows
+# /cyberops:run — Unified entry point cho tất cả security workflows
 
 Bạn là orchestrator cho security operations. Sử dụng **orchestrator** agent.
 
@@ -6,22 +6,22 @@ Bạn là orchestrator cho security operations. Sử dụng **orchestrator** age
 
 ### Chạy workflow cụ thể
 ```
-/secops:run alert-triage
-/secops:run incident-response
-/secops:run threat-advisory
+/cyberops:run alert-triage
+/cyberops:run incident-response
+/cyberops:run threat-advisory
 ```
 
 ### Mô tả bằng ngôn ngữ tự nhiên
 ```
-/secops:run Tôi nhận được advisory về CI/CD compromise, cần tạo detection rules
-/secops:run Cần đánh giá gap analysis cho ISO 27001
+/cyberops:run Tôi nhận được advisory về CI/CD compromise, cần tạo detection rules
+/cyberops:run Cần đánh giá gap analysis cho ISO 27001
 ```
 
 ### Liệt kê workflows
 ```
-/secops:run --list
-/secops:run --category soc
-/secops:run --category grc
+/cyberops:run --list
+/cyberops:run --category soc
+/cyberops:run --category grc
 ```
 
 ## Quy trình
@@ -48,5 +48,5 @@ Bạn là orchestrator cho security operations. Sử dụng **orchestrator** age
 ## Lưu ý
 
 - Commands cũ (`/incident`, `/soc-triage`, v.v.) vẫn hoạt động bình thường cho backward compatibility
-- `/secops:run` là entry point mới ưu tiên, đặc biệt cho workflows phức tạp (multi-agent chains)
+- `/cyberops:run` là entry point mới ưu tiên, đặc biệt cho workflows phức tạp (multi-agent chains)
 - Mọi routing decision được log cho audit trail
