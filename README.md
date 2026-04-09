@@ -1,10 +1,14 @@
 # secops — Claude Code Plugin
 
-Plugin toàn diện cho team Cyber Security. Biến Claude Code thành trợ lý bảo mật với 12 agents chuyên biệt, 8 skills chuyên sâu, 14 slash commands, hooks tự động, và rules enforce standards. Hỗ trợ hybrid orchestration với workflow templates.
+Plugin biến Claude Code thành trợ lý cybersecurity toàn diện. 12 agents chuyên biệt, 8 skills, 14 commands, hybrid orchestration với workflow templates, hooks bảo mật, và rules enforce standards.
+
+> **Getting Started**: [GETTING-STARTED.md](GETTING-STARTED.md) — cài đặt, setup, cấu hình chi tiết
+>
+> **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) — phát triển và contribute plugin
+
+---
 
 ## Cài đặt
-
-> Hướng dẫn chi tiết từng bước: xem [GETTING-STARTED.md](GETTING-STARTED.md)
 
 ### Từ GitHub *(recommended)*
 
@@ -21,12 +25,38 @@ cd secops
 claude --plugin-dir .
 ```
 
+### Sau khi cài
+
+```text
+/secops:setup-profile          # Khởi tạo data cho tổ chức
+/secops:run --list             # Xem danh sách workflows
+```
+
+### Nâng cấp / Gỡ cài đặt
+
+```text
+/plugin update secops@secops                          # Update lên bản mới nhất
+/plugin uninstall secops@secops --scope user           # Gỡ (user scope)
+/plugin uninstall secops@secops --scope project        # Gỡ (project scope)
+```
+
+> Data (`context/`, `workflows/`, `references/`) không bị ảnh hưởng khi update hoặc gỡ plugin.
+
+### Nâng cấp từ secops-toolkit (v1)
+
+```text
+/plugin uninstall secops-toolkit@secops --scope user   # Gỡ bản cũ
+/plugin install secops@secops                          # Cài bản mới
+```
+
+---
+
 ## Thành phần
 
 ### Agents (12)
 
 | Agent | Chức năng | Model |
-|-------|-----------|-------|
+| --- | --- | --- |
 | `soc-analyst` | SOC L1-L3: triage alerts, log analysis, SIEM queries, detection rules | sonnet |
 | `incident-commander` | IR playbooks, forensics, stakeholder communications | opus |
 | `threat-analyst` | IOC processing, MITRE ATT&CK, threat briefings | sonnet |
@@ -43,7 +73,7 @@ claude --plugin-dir .
 ### Skills (8)
 
 | Skill | Nội dung |
-|-------|---------|
+| --- | --- |
 | `incident-response` | Playbooks (ransomware, BEC, data breach), forensic procedures, report templates |
 | `risk-assessment` | FAIR methodology, 5x5 matrix, BIA, TPRM questionnaire, treatment framework |
 | `compliance-frameworks` | ISO 27001:2022, NIST CSF 2.0, CIS v8, PCI-DSS v4.0, Vietnamese regulations |
@@ -56,7 +86,7 @@ claude --plugin-dir .
 ### Commands (14)
 
 | Command | Mô tả |
-|---------|-------|
+| --- | --- |
 | `/secops:run` | **Unified entry point** — chạy workflow hoặc mô tả tự nhiên |
 | `/secops:setup-profile` | Tạo/cập nhật company profile từ org documents |
 | `/secops:generate-workflows` | Tạo workflows từ process documents nội bộ |
@@ -75,7 +105,7 @@ claude --plugin-dir .
 ### Hooks (6)
 
 | Hook | Event | Chức năng |
-|------|-------|----------|
+| --- | --- | --- |
 | Secret detection | PreToolUse (Write/Edit) | Block nếu phát hiện credentials |
 | Pre-commit security | PreToolUse (git commit) | Scan secrets, private keys, .env trước commit |
 | Block --no-verify | PreToolUse (git*) | Chặn --no-verify, force push lên main/master |
@@ -86,89 +116,92 @@ claude --plugin-dir .
 ### Rules (5)
 
 | Rule | Áp dụng |
-|------|---------|
+| --- | --- |
 | `cybersecurity.md` | Index — tham chiếu các rules bên dưới |
 | `data-handling.md` | Data classification, PII/credentials handling |
 | `output-standards.md` | Severity ratings, TLP marking, bilingual output |
 | `incident-response.md` | IR procedures, MITRE ATT&CK mapping, regulatory implications |
 | `tool-safety.md` | Scanning authorization, safe command execution |
 
-### Nâng cấp từ secops-toolkit (v1)
+### Workflows (10 defaults)
 
-Gỡ phiên bản cũ (chọn đúng scope đã cài):
+| Workflow | Mục đích |
+| --- | --- |
+| `incident-response-default` | Ứng phó sự cố (NIST 800-61) |
+| `data-breach-notification-default` | Thông báo vi phạm DLCN (NĐ 13/2023, 72h) |
+| `vuln-management-default` | Xử lý lỗ hổng bảo mật |
+| `access-review-default` | Rà soát quyền truy cập |
+| `change-management-default` | Quản lý thay đổi |
+| `vendor-risk-default` | Đánh giá rủi ro vendor |
+| `bcdr-drill-default` | Diễn tập BCP/DRP |
+| `security-awareness-default` | Đào tạo nhận thức ATTT |
+| `risk-assessment-default` | Đánh giá rủi ro CNTT |
+| `fraud-investigation-default` | Điều tra gian lận |
 
-```text
-# Nếu cài ở user scope (global)
-/plugin uninstall secops-toolkit@secops --scope user
+Custom workflows được tạo từ SOPs/playbooks nội bộ qua `/secops:generate-workflows`.
 
-# Nếu cài ở project scope
-/plugin uninstall secops-toolkit@secops --scope project
-```
+---
 
-Cài lại với tên mới:
+## Data Architecture
 
-```text
-/plugin install secops@secops
-```
+Plugin tách biệt **code** (agents, skills, commands, hooks) và **data** (context, workflows, references):
 
-### Update
+| Folder | Nội dung | Cách tạo |
+| --- | --- | --- |
+| `context/company-profile.yaml` | Tech stack, org mapping, escalation matrix | `/secops:setup-profile` |
+| `context/org-docs/` | Tài liệu tổ chức (sơ đồ, danh sách tools) | User đặt files |
+| `context/process-docs/` | SOPs, playbooks, runbooks | User đặt files |
+| `workflows/defaults/` | 10 default workflow templates | `/secops:setup-profile` (copy từ plugin) |
+| `workflows/<category>/` | Custom workflows | `/secops:generate-workflows` |
+| `references/regulations/` | Luật, NĐ, TT bổ sung/cập nhật | User đặt files |
+| `references/standards/` | ISO, PCI, NIST controls bổ sung | User đặt files |
+| `references/policies/` | ISMS, chính sách nội bộ công ty | User đặt files |
 
-```text
-/plugin update secops@secops
-```
+Data nằm trong **working directory** (default) hoặc **folder riêng** (config qua `/secops:config` hoặc `~/.claude/secops.yaml`).
 
-### Gỡ cài đặt
-
-```text
-# Chọn đúng scope đã cài
-/plugin uninstall secops@secops --scope user
-/plugin uninstall secops@secops --scope project
-```
-
-> Data (context, workflows, references) không bị ảnh hưởng khi update hoặc gỡ plugin.
-
-## Yêu cầu
-
-- Claude Code v2.0.12+
-- Gói Claude Pro hoặc Max subscription
+---
 
 ## Tùy chỉnh
 
-### Thêm context tổ chức
+### Data paths
 
-Tạo file `CLAUDE.md` trong project và thêm thông tin:
-
-```markdown
-# Security Context
-- Organization: [Tên tổ chức]
-- Industry: [Ngành nghề]
-- Compliance: [ISO 27001 / PCI-DSS / ...]
-- SIEM: [Splunk / Elastic / QRadar / ...]
-- EDR: [CrowdStrike / Defender / ...]
+```text
+/secops:config context_dir C:\SecOps-Data\context
+/secops:config workflows_dir C:\SecOps-Data\workflows
+/secops:config references_dir C:\SecOps-Data\references
 ```
 
-### Thêm agent mới
+### Hook profiles
 
-Tạo file `.md` trong `agents/` theo format frontmatter YAML.
-
-### Disable hook cụ thể
-
-Trong `.claude/settings.json`:
-
-```json
-{
-  "hooks": {
-    "disabled": ["check-secrets"]
-  }
-}
+```bash
+SECOPS_PROFILE=dev claude        # Nhẹ — chỉ check secrets
+SECOPS_PROFILE=strict claude     # Nghiêm ngặt — block cả warnings
 ```
+
+### Thêm components
+
+| Component | Tạo file | Tham khảo |
+| --- | --- | --- |
+| Agent | `agents/<name>.md` | Xem agent hiện có |
+| Skill | `skills/<name>/SKILL.md` | YAML frontmatter |
+| Workflow | `workflows/<category>/<name>.yaml` | `workflows/SCHEMA.md` |
+| Reference | `references/<type>/<name>.md` | Markdown tự do |
+
+---
+
+## Yêu cầu
+
+- Claude Code (VS Code extension hoặc CLI)
+- Claude Pro hoặc Max subscription
+- Windows: Git Bash (cho hook scripts)
 
 ## Lưu ý bảo mật
 
-- Plugin KHÔNG lưu trữ bất kỳ credentials hay dữ liệu nhạy cảm nào
+- Plugin **KHÔNG** lưu trữ credentials hay dữ liệu nhạy cảm
 - Tất cả output cần được review bởi security professional trước khi sử dụng
-- Plugin là công cụ hỗ trợ, KHÔNG thay thế expertise con người
+- Plugin là công cụ hỗ trợ, **KHÔNG** thay thế expertise con người
 - Tuân thủ chính sách ATTT của tổ chức khi sử dụng AI tools
+- Redact credentials/PII trước khi đặt tài liệu vào `context/` hoặc `references/`
 
 ## License
 
