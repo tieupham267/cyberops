@@ -36,6 +36,14 @@ output:
   sections: list[string]        # Các sections bắt buộc trong output
   language: string              # vi | en | bilingual (default: vi)
 
+# --- Escalation (auto-trigger workflow khác khi đủ tiêu chí) ---
+escalate:                         # Optional — escalate sang workflow khác sau khi triage
+  target: string                  # Tên workflow đích (e.g., emergency-patch)
+  criteria: list[string]          # Điều kiện escalate (agent đánh giá — bất kỳ điều kiện nào match → escalate)
+  carry_fields:                   # Map input fields sang target workflow (optional)
+    target_field: source_field    # e.g., vuln_source: vuln_source
+  prompt_user: boolean            # Hỏi user trước khi escalate? (default: true)
+
 # --- Routing (cho orchestrator matching) ---
 keywords: list[string]          # Keywords để orchestrator match intent
 triggers: list[string]          # Exact phrases that trigger this workflow
@@ -57,6 +65,9 @@ overrides: string               # Tên default workflow mà custom workflow này
 4. `keywords` nên bao gồm cả tiếng Việt và tiếng Anh
 5. Mỗi workflow phải có ít nhất 1 `input` field
 6. `output.sections` phải match với sections đã define trong agent tương ứng
+7. `escalate.target` phải trỏ đến workflow `name` đã tồn tại
+8. Khi `escalate.prompt_user: false`, orchestrator tự động chuyển mà không hỏi — chỉ dùng cho escalation rõ ràng (e.g., CVSS ≥ 9.0 + KEV)
+9. `escalate.carry_fields` map field names — nếu target workflow có field cùng tên, tự động điền từ output của workflow hiện tại
 
 ## Default vs Custom Workflows
 

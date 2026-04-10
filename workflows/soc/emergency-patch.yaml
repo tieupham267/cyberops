@@ -1,0 +1,121 @@
+name: emergency-patch
+title: Quy trình vá lỗi khẩn cấp toàn tổ chức
+description: >
+  Xử lý khi có lỗ hổng critical cần patch khẩn cấp (zero-day actively exploited,
+  supply chain compromise, KEV mới). Chain: vuln-manager đánh giá scope →
+  devsecops tạo rollout plan → soc-analyst tạo detection rules → ciso-fintech
+  brief leadership. SLA: 24h cho containment, 72h cho full remediation.
+category: soc
+
+chain:
+  - agent: vuln-manager
+    skills: []
+    task: >
+      Đánh giá lỗ hổng khẩn cấp:
+      1. Phân tích CVE/advisory: severity, attack vector, exploitation status (KEV?)
+      2. Xác định blast radius: hệ thống nào affected? (đọc company-profile.yaml)
+      3. Phân loại theo SSVC: Exploitation (active/POC/none), Exposure (internet/internal),
+         Asset Criticality (crown jewels/business critical/standard)
+      4. Xác định safe versions, patch availability
+      5. Nếu supply chain: liệt kê affected packages, transitive dependencies,
+         postinstall scripts, package signing status
+      6. Đề xuất priority (P1 Emergency / P2 Critical) và SLA timeline
+    output_key: vuln_assessment
+  - agent: devsecops
+    skills: []
+    task: >
+      Tạo remediation plan chi tiết cho engineering teams:
+      1. Patch/upgrade commands cụ thể cho từng ecosystem (npm, pip, maven, docker, etc.)
+      2. Rollout strategy: staging → canary → production, rollback plan
+      3. CI/CD pipeline changes: block affected versions, add scanning gates
+      4. Cache cleanup: node_modules purge, Docker layer cache, CI artifact cache
+      5. Lock file regeneration từ trusted sources
+      6. Post-patch verification: regression test checklist, dependency audit
+      7. Prevention controls: dependency pinning, install script policies, SBOM generation
+    output_key: remediation_plan
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Tạo detection và monitoring cho giai đoạn patch:
+      1. Detection rules cho exploitation attempts (SIEM queries)
+      2. IOC-based blocking: C2 domains/IPs trên firewall, proxy, DNS
+      3. EDR hunt queries cho artifacts/indicators of compromise
+      4. Monitoring dashboard: track patching progress, detect unpatched systems
+      5. Post-patch validation: verify systems no longer vulnerable
+    output_key: detection_monitoring
+  - agent: ciso-fintech
+    skills:
+      - risk-assessment
+    task: >
+      Executive brief và coordination:
+      1. Business impact assessment: affected services, customer exposure, SLA risk
+      2. Risk score trước và sau patch
+      3. Regulatory implications (NĐ 13/2023 nếu data breach, TT 09/2020 nếu fintech)
+      4. Communication plan: nội bộ (teams affected), leadership, customers (nếu cần)
+      5. Resource allocation: ai làm gì, deadline cụ thể
+      6. Lessons learned template cho post-mortem
+    output_key: executive_brief
+
+input:
+  - field: vuln_source
+    prompt: "Nguồn thông tin lỗ hổng? (paste advisory, CVE, hoặc URL)"
+    type: multiline
+    required: true
+  - field: vuln_type
+    prompt: "Loại lỗ hổng?"
+    type: choice
+    options: [Zero-day actively exploited, Supply chain compromise, Critical CVE (KEV), Critical CVE (POC available), Vendor emergency patch, Khác]
+    required: true
+  - field: ecosystem
+    prompt: "Ecosystem/platform bị ảnh hưởng?"
+    type: choice
+    options: [npm/Node.js, PyPI/Python, Maven/Java, Docker/Container, OS (Windows), OS (Linux), Cloud (AWS/Azure/GCP), Network device, Khác]
+    required: true
+  - field: affected_scope
+    prompt: "Phạm vi ảnh hưởng đã biết? (số systems, services, teams)"
+    type: multiline
+    required: false
+    auto_from: context/company-profile.yaml
+
+output:
+  format: emergency-patch-report
+  sections:
+    - vuln-analysis
+    - blast-radius-assessment
+    - ssvc-prioritization
+    - safe-versions
+    - remediation-commands
+    - rollout-strategy
+    - rollback-plan
+    - cicd-gate-changes
+    - detection-rules
+    - ioc-blocking
+    - post-patch-verification
+    - executive-brief
+    - action-items-by-team
+    - sla-timeline
+    - communication-plan
+  language: bilingual
+
+keywords:
+  - emergency patch
+  - zero-day
+  - critical vulnerability
+  - vá khẩn cấp
+  - lỗ hổng nghiêm trọng
+  - actively exploited
+  - KEV
+  - supply chain patch
+  - forced upgrade
+  - hotfix
+triggers:
+  - "cần patch khẩn cấp"
+  - "emergency patching"
+  - "zero-day cần xử lý"
+  - "critical vulnerability needs immediate patching"
+  - "lỗ hổng critical cần vá ngay"
+priority: 1
+
+tags: [soc, vulnerability, emergency, critical, supply-chain]
+version: "1.0.0"
+author: cyberops-team

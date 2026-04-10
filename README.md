@@ -8,6 +8,7 @@ Claude Code plugin biến Claude thành trợ lý cybersecurity cho team SOC, GR
 - **9 knowledge-base skills** — incident response, compliance frameworks, risk assessment, Vietnam regulations, payment fraud, ITSM reference, document drafting, document organization, security maturity
 - **Workflow templates** — YAML-based, deterministic hoặc ad-hoc routing qua orchestrator
 - **Security hooks** — tự động chặn secrets, kiểm tra pre-commit, audit logging
+- **Memvid integration** *(optional)* — Semantic search cho hàng ngàn file đa format (PDF, DOCX, XLSX). Không cài thì fallback về Grep/Glob
 - **Bilingual** — Vietnamese (primary) + English. Technical terms (MITRE ATT&CK, CVE, CVSS) giữ nguyên English
 - **Framework alignment** — ISO 27001:2022, NIST CSF 2.0, CIS Controls v8, MITRE ATT&CK, Luật An ninh mạng 2018, NĐ 13/2023
 
@@ -103,6 +104,25 @@ CYBEROPS_PROFILE=strict claude --plugin-dir .
 bash tests/run-all.sh          # All 5 layers
 bash tests/run-all.sh 1        # Layer 1 only
 ```
+
+## Memvid — Semantic Search *(tùy chọn)*
+
+Khi folder team có hàng ngàn file, cài [memvid](https://github.com/memvid/memvid) để bật semantic search:
+
+```bash
+pip install memvid
+memvid index "D:\CyberSec-Team" --output memory.mv2e --encrypt
+```
+
+Thêm vào `~/.claude/cyberops.yaml`:
+
+```yaml
+memvid:
+  enabled: true
+  index: "D:\\CyberSec-Team\\memory.mv2e"
+```
+
+Không cài memvid → plugin dùng Grep/Glob bình thường. Xem chi tiết tại [GETTING-STARTED.md](GETTING-STARTED.md) → Bước 8.
 
 ## Tài liệu
 

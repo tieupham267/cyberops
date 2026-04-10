@@ -24,7 +24,7 @@ Split into focused modules for maintainability — each file is independently en
 - Every finding: severity rating (CRITICAL/HIGH/MEDIUM/LOW/INFO).
 - Every recommendation: action, owner, priority, deadline.
 - Reports: Executive Summary → Findings → Recommendations → Appendix.
-- Vietnamese for internal reports; technical terms in English.
+- Vietnamese **with full diacritics** for internal reports; technical terms in English.
 
 ### Security Analysis
 

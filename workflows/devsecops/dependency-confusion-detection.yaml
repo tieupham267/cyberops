@@ -1,0 +1,103 @@
+name: dependency-confusion-detection
+title: Phát hiện và phòng chống dependency confusion / typosquatting
+description: >
+  Rà soát hệ thống package management cho các rủi ro supply chain:
+  dependency confusion (private/public name collision), typosquatting
+  (tên package gần giống), vendored malicious dependencies.
+  Devsecops scan repos → soc-analyst tạo detection → ciso-fintech đánh giá risk.
+category: devsecops
+
+chain:
+  - agent: devsecops
+    skills: []
+    task: >
+      Audit dependency security:
+      1. Private package registry audit: kiểm tra internal packages có bị name collision
+         với public registry không (npm, PyPI, Maven)
+      2. Typosquatting scan: so sánh tên dependencies với known-good packages,
+         flag tên gần giống (edit distance ≤ 2)
+      3. Lock file analysis: phát hiện version downgrades bất thường (indicator of confusion attack)
+      4. Postinstall/preinstall script audit: liệt kê packages có install scripts,
+         flag scripts obfuscated hoặc có network calls
+      5. Vendored dependency scan: kiểm tra packages có bundle dependencies
+         trong node_modules/ hoặc vendor/ khác với declared dependencies
+      6. Scope/namespace verification: packages có đúng org scope (@org/) không?
+      7. Registry configuration: .npmrc, pip.conf, settings.xml có đúng trusted registries?
+      8. Tạo remediation plan cho findings
+    output_key: dependency_audit
+  - agent: soc-analyst
+    skills: []
+    task: >
+      Tạo detection và monitoring cho dependency attacks:
+      1. Alert rules cho package manager traffic bất thường (install từ untrusted registry)
+      2. DNS monitoring cho typosquat domains
+      3. Network detection cho postinstall callback patterns
+      4. File integrity monitoring cho lock files thay đổi bất thường
+    output_key: detection_rules
+  - agent: ciso-fintech
+    skills:
+      - risk-assessment
+    task: >
+      Risk assessment cho dependency security posture:
+      1. Đánh giá maturity hiện tại của dependency management
+      2. Gap analysis vs SLSA framework
+      3. Prioritized recommendations cho leadership
+      4. Budget estimate cho tooling (Snyk, Socket, Phylum, etc.)
+    output_key: risk_assessment
+
+input:
+  - field: scan_scope
+    prompt: "Phạm vi scan? (mono-repo, multi-repo, specific repos)"
+    type: text
+    required: true
+  - field: ecosystems
+    prompt: "Package ecosystems cần audit?"
+    type: choice
+    options: [npm/Node.js, PyPI/Python, Maven/Java, NuGet/.NET, Go modules, Tất cả]
+    required: true
+  - field: private_registry
+    prompt: "Có sử dụng private registry không? (Artifactory, Nexus, GitHub Packages, etc.)"
+    type: text
+    required: false
+  - field: trigger_reason
+    prompt: "Lý do audit? (scheduled, post-incident, new advisory, compliance)"
+    type: choice
+    options: [Scheduled quarterly audit, Post-incident review, New advisory/threat, Compliance requirement, Proactive assessment]
+    required: true
+
+output:
+  format: dependency-security-report
+  sections:
+    - dependency-confusion-findings
+    - typosquatting-findings
+    - install-script-audit
+    - vendored-dependency-audit
+    - registry-configuration-review
+    - lock-file-integrity
+    - detection-rules
+    - risk-assessment
+    - remediation-plan
+    - slsa-gap-analysis
+    - tooling-recommendations
+  language: bilingual
+
+keywords:
+  - dependency confusion
+  - typosquatting
+  - private registry
+  - package audit
+  - supply chain scan
+  - dependency security
+  - SLSA
+  - postinstall audit
+  - vendored dependencies
+triggers:
+  - "audit dependencies"
+  - "dependency confusion check"
+  - "kiểm tra typosquatting"
+  - "package security audit"
+priority: 2
+
+tags: [devsecops, supply-chain, proactive, audit]
+version: "1.0.0"
+author: cyberops-team

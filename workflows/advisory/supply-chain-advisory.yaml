@@ -36,6 +36,19 @@ chain:
       Thêm: hunt cho RAT artifacts trên endpoints, C2 beacon patterns,
       DNS queries đến malicious domains.
     output_key: detection_rules
+  - agent: devsecops
+    skills: []
+    task: >
+      Post-incident verification checklist:
+      1. Attestation: xác nhận tất cả affected packages đã removed/upgraded trên mọi repos
+      2. Lock file verification: regenerate từ trusted sources, diff với bản cũ
+      3. Cache purge confirmation: npm cache, pip cache, Docker layer cache, CI artifact cache
+      4. Build artifact rebuild: tất cả artifacts publish trong thời gian nhiễm đã rebuilt chưa?
+      5. Regression testing: applications hoạt động đúng sau upgrade
+      6. Dependency audit clean: `npm audit`, `pip-audit`, `trivy` pass clean
+      7. CI/CD gates: scanning gates đã thêm để block affected versions
+      8. SBOM update: SBOM đã regenerate với clean dependencies
+    output_key: post_incident_verification
   - agent: ciso-fintech
     skills:
       - risk-assessment
@@ -43,6 +56,7 @@ chain:
       Đánh giá relevance cho tổ chức (đọc company-profile.yaml), risk assessment,
       tạo executive brief với business impact. Đánh giá: có dùng affected package không?
       CI/CD có bị ảnh hưởng không? Credential rotation scope? Regulatory obligations?
+      Nếu affected: customer/partner notification cần không? Responsible disclosure timeline?
     output_key: executive_brief
 
 input:
@@ -83,6 +97,8 @@ output:
     - rat-artifact-check
     - remediation-steps
     - prevention-recommendations
+    - post-incident-verification-checklist
+    - artifact-attestation
     - detection-rules
     - threat-hunting-hypotheses
     - executive-brief

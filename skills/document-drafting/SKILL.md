@@ -176,7 +176,10 @@ Mọi tài liệu soạn xong phải có format:
 
 ## Ngôn ngữ
 
-- Mặc định: **Tiếng Việt** — tất cả tài liệu soạn bằng tiếng Việt trừ khi yêu cầu khác
+- Mặc định: **Tiếng Việt có đầy đủ dấu** — tất cả tài liệu soạn bằng tiếng Việt có dấu trừ khi yêu cầu khác
+  - Đúng: "Kính gửi", "lỗ hổng bảo mật", "khuyến nghị", "đánh giá rủi ro"
+  - **SAI**: "Kinh gui", "lo hong bao mat", "khuyen nghi", "danh gia rui ro"
+  - Tiếng Việt không dấu là **KHÔNG chấp nhận được** — khó đọc và thiếu chuyên nghiệp
 - Chuyển sang tiếng Anh chỉ khi user yêu cầu rõ ràng
 - Thuật ngữ kỹ thuật quốc tế giữ nguyên tiếng Anh (CVSS, MITRE ATT&CK, CVE, SLA)
 - Lần đầu dùng thuật ngữ → giải thích: "RBAC (Role-Based Access Control — Kiểm soát truy cập theo vai trò)"

@@ -10,6 +10,20 @@ type: default
 agent: vuln-manager
 skills: []
 
+escalate:
+  target: emergency-patch
+  criteria:
+    - "CVSS >= 9.0 (Critical severity)"
+    - "Actively exploited — đã có trong CISA KEV catalog"
+    - "Supply chain compromise có install scripts (postinstall/preinstall)"
+    - "POC public + internet-facing + asset criticality >= business critical"
+    - "Vendor phát hành emergency advisory / out-of-band patch"
+    - "Exploit trivial (không cần special tools/privileges) + blast radius rộng"
+  carry_fields:
+    vuln_source: vuln_source
+    vuln_detail: vuln_detail
+  prompt_user: true
+
 input:
   - field: vuln_source
     prompt: "Nguồn phát hiện lỗ hổng?"
@@ -30,6 +44,7 @@ output:
   sections:
     - vuln-triage
     - risk-prioritization
+    - escalation-assessment
     - remediation-plan
     - owner-assignment
     - sla-tracking
@@ -52,5 +67,5 @@ triggers:
 priority: 2
 
 tags: [soc, vulnerability, default]
-version: "1.0.0"
+version: "1.1.0"
 author: cyberops-defaults

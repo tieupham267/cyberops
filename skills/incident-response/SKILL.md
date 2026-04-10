@@ -84,6 +84,146 @@ với timeline, communication plan, và evidence checklist.
 5. Prepare notification (regulatory + affected individuals)
 6. Coordinate with PR for public communication if needed
 
+### Supply Chain Compromise
+
+**Trigger**: Malicious package discovered in dependency tree, compromised maintainer account, trojanized library, dependency confusion attack
+
+**DO NOT**:
+- Run `npm install` / `pip install` trên hệ thống chưa isolated (có thể trigger postinstall malware)
+- Xóa `node_modules` / artifacts trước khi thu thập evidence
+- Giả định scope chỉ giới hạn ở 1 package (check transitive dependencies)
+
+**Immediate (0-30 min)**:
+1. Xác nhận affected versions và safe versions từ advisory
+2. Block egress traffic tới C2 domains/IPs trên firewall/proxy/DNS
+3. Identify blast radius: repos, CI/CD pipelines, build servers, dev machines đã install affected versions
+4. Preserve evidence: lock files, `node_modules/`, CI/CD logs, build artifacts (TRƯỚC khi cleanup)
+
+**Short-term (30 min - 4 hours)**:
+1. Scan toàn bộ repos cho affected packages:
+   ```bash
+   # npm
+   grep -r "affected-package" package-lock.json yarn.lock
+   npm ls affected-package
+   # pip
+   pip list | grep affected-package
+   pip show affected-package  # check dependencies
+   # Check vendored dependencies
+   find . -path "*/node_modules/affected-package" -type d
+   ```
+2. Check RAT artifacts theo OS:
+   - macOS: `/Library/Caches/com.apple.act.mond`, unexpected LaunchAgents
+   - Windows: `%PROGRAMDATA%\wt.exe`, `%PROGRAMDATA%\system.bat`, Registry Run keys
+   - Linux: `/tmp/ld.py`, unexpected cron jobs, `/tmp/` executables
+3. Audit CI/CD pipeline runs trong thời gian nhiễm:
+   - Xác định jobs nào đã install affected version
+   - Check CI/CD secrets có bị exfiltrate không
+   - Review build artifacts đã publish trong thời gian nhiễm
+4. Kiểm tra postinstall scripts trong malicious packages
+5. Check DNS logs cho C2 beacon patterns
+
+**Eradication (4-24 hours)**:
+1. Downgrade/upgrade tất cả instances về safe version
+2. Xóa malicious packages khỏi `node_modules/`, caches, registries
+3. Purge CI/CD caches: Docker layer cache, npm cache, pip cache, build artifact cache
+4. Regenerate lock files từ trusted sources
+5. Xóa RAT artifacts và persistence mechanisms (Registry keys, cron jobs, LaunchAgents)
+6. **Rotate ALL credentials** trên hệ thống bị compromise (bắt buộc, không ngoại lệ)
+
+**Recovery & Verification**:
+1. Rebuild CI/CD artifacts từ clean state
+2. Verify lock files chỉ chứa known-good packages
+3. Run dependency audit: `npm audit`, `pip-audit`, `trivy fs .`
+4. Kiểm tra không còn postinstall scripts bất thường
+5. Enhanced monitoring: SIEM alerts cho C2 patterns, EDR cho RAT indicators
+6. Regression testing: verify applications hoạt động đúng sau patch
+
+**Post-Incident**:
+1. Root cause: compromised credentials? Dependency confusion? Typosquatting?
+2. Update dependency management policy: pinning, lockfile enforcement, install script restrictions
+3. Implement SBOM generation và provenance verification
+4. Review CI/CD security: short-lived tokens, least-privilege, SLSA compliance
+
+### Supply Chain Evidence Checklist
+
+Khi thu thập evidence cho supply chain incident, collect theo thứ tự:
+
+**Package Manager Evidence**:
+```bash
+# Lock files (TRƯỚC khi regenerate)
+cp package-lock.json /evidence/package-lock.json.bak
+cp yarn.lock /evidence/yarn.lock.bak
+cp Pipfile.lock /evidence/Pipfile.lock.bak
+
+# Installed packages snapshot
+npm ls --all --json > /evidence/npm-dependency-tree.json
+pip freeze > /evidence/pip-freeze.txt
+pip list --format=json > /evidence/pip-list.json
+
+# Package content (malicious package)
+tar czf /evidence/malicious-package.tar.gz node_modules/affected-package/
+
+# Postinstall scripts
+cat node_modules/affected-package/package.json | jq '.scripts' > /evidence/package-scripts.json
+
+# npm/pip config (check registry URLs)
+npm config list > /evidence/npm-config.txt
+cat ~/.npmrc > /evidence/npmrc.txt 2>/dev/null
+cat pip.conf > /evidence/pip-conf.txt 2>/dev/null
+```
+
+**CI/CD Evidence**:
+```bash
+# GitHub Actions
+gh run list --limit 50 --json databaseId,createdAt,status,conclusion > /evidence/gh-runs.json
+gh run view <run-id> --log > /evidence/gh-run-<id>.log
+
+# GitLab CI
+curl --header "PRIVATE-TOKEN: $TOKEN" "$GITLAB/api/v4/projects/$PID/pipelines?per_page=50" > /evidence/gl-pipelines.json
+
+# Build artifacts list
+ls -la dist/ build/ .next/ > /evidence/build-artifacts.txt
+
+# CI/CD secrets audit (list names only, NOT values)
+gh secret list > /evidence/gh-secrets-list.txt
+```
+
+**Registry Evidence**:
+```bash
+# npm registry audit log (self-hosted)
+# Check package publish history
+npm view affected-package time --json > /evidence/package-publish-history.json
+npm view affected-package dist.tarball > /evidence/package-tarball-url.txt
+
+# Docker registry
+docker image history <image> > /evidence/docker-history.txt
+docker inspect <image> > /evidence/docker-inspect.json
+```
+
+**Network Evidence (C2 Communication)**:
+```bash
+# DNS logs for C2 domains
+# Firewall/proxy logs for C2 IPs
+# NetFlow data for beacon patterns (60s intervals typical)
+```
+
+**RAT Artifact Evidence**:
+```powershell
+# Windows
+Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" > evidence\registry-run.txt
+Get-ChildItem "$env:PROGRAMDATA" -Filter "*.bat" > evidence\programdata-bat.txt
+Get-ChildItem "$env:PROGRAMDATA" -Filter "wt.exe" > evidence\suspicious-exe.txt
+Get-Content "$env:PROGRAMDATA\system.bat" > evidence\persistence-script.txt 2>$null
+
+# macOS
+ls -la /Library/Caches/com.apple.* > /evidence/mac-caches.txt
+launchctl list > /evidence/mac-launchctl.txt
+
+# Linux
+ls -la /tmp/*.py > /evidence/tmp-python.txt
+crontab -l > /evidence/crontab.txt
+```
+
 ## Forensic Evidence Collection
 
 ### Order of Volatility (collect in this order):
@@ -203,4 +343,83 @@ Khi viết incident report, LUÔN follow cấu trúc này:
 - Evidence inventory
 - IOCs extracted
 - Communication log
+```
+
+## Supply Chain Incident — External Notification Templates
+
+Khi supply chain incident ảnh hưởng đến customers hoặc downstream consumers, sử dụng templates sau.
+
+### Customer/Partner Notification
+
+```
+# Security Advisory: [Tên sự cố]
+## TLP: [AMBER/GREEN]
+
+Kính gửi [Tên đối tác/khách hàng],
+
+### Tóm tắt sự cố
+[Mô tả ngắn gọn: gì xảy ra, khi nào phát hiện, scope ảnh hưởng]
+
+### Ảnh hưởng đến quý đối tác
+- Hệ thống/dịch vụ bị ảnh hưởng: [liệt kê]
+- Dữ liệu bị ảnh hưởng: [loại dữ liệu, có/không bao gồm PII]
+- Thời gian exposure: [từ — đến]
+
+### Hành động chúng tôi đã thực hiện
+1. [Containment actions]
+2. [Eradication actions]
+3. [Recovery status]
+
+### Hành động khuyến nghị cho quý đối tác
+1. [Specific actions: rotate credentials, check systems, etc.]
+2. [IOCs để tự kiểm tra]
+3. [Safe versions để upgrade]
+
+### Thông tin liên hệ
+- Security team: [email/phone]
+- Escalation: [contact]
+- Cập nhật tiếp theo: [thời gian dự kiến]
+
+### Timeline thông báo
+| Thời gian | Nội dung |
+|-----------|----------|
+| [T+0] | Phát hiện sự cố |
+| [T+Xh] | Containment hoàn tất |
+| [T+Xh] | Thông báo này (initial notification) |
+| [T+Xd] | Update tiếp theo (dự kiến) |
+```
+
+### Responsible Disclosure (cho upstream maintainers)
+
+```
+Subject: [SECURITY] Vulnerability/Compromise Report — [Package Name]
+
+## Summary
+- Package: [name@version]
+- Registry: [npm/PyPI/Maven/etc.]
+- Type: [Compromised maintainer / Malicious dependency / Typosquatting]
+- Severity: [Critical/High]
+- Discovery date: [date]
+
+## Technical Details
+- Affected versions: [list]
+- Malicious behavior: [mô tả kỹ thuật]
+- IOCs: [C2 domains, file hashes, etc.]
+- MITRE ATT&CK: [technique IDs]
+
+## Evidence
+[Attach/link technical evidence]
+
+## Recommended Actions
+1. Yank/unpublish affected versions
+2. Rotate maintainer credentials
+3. Publish security advisory
+
+## Coordinated Disclosure Timeline
+- [Date]: Report to maintainer/registry
+- [Date + 7d]: Follow-up if no response
+- [Date + 30d]: Public disclosure (nếu chưa fix)
+
+## Contact
+[Your security team contact]
 ```

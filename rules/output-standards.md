@@ -14,6 +14,9 @@
 
 ## Language
 
-- Use Vietnamese for internal reports unless English is explicitly requested.
+- Use Vietnamese **with full diacritical marks** (dấu tiếng Việt) for internal reports unless English is explicitly requested.
+  - Correct: "Kính gửi", "lỗ hổng bảo mật", "khuyến nghị", "đánh giá rủi ro"
+  - **WRONG**: "Kinh gui", "lo hong bao mat", "khuyen nghi", "danh gia rui ro"
+  - Vietnamese without diacritics is **NOT acceptable** — it is harder to read and unprofessional.
 - Technical terms (MITRE ATT&CK IDs, CVE IDs, CVSS scores) stay in English — they are
   international standards.

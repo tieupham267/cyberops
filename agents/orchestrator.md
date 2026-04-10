@@ -70,6 +70,40 @@ Khi tra cứu luật, quy định, tiêu chuẩn, hoặc chính sách:
 | ISO, NIST, PCI, CIS | `skills/compliance-frameworks/` | `mapping.standards` files |
 | Chính sách nội bộ | — | `mapping.policies` files |
 
+## Document Search
+
+Khi cần tìm thông tin trong tài liệu team (incidents, policies, scan results, threat intel...):
+
+### Kiểm tra memvid
+
+1. Đọc `~/.claude/cyberops.yaml` → kiểm tra có block `memvid` không
+2. Nếu **có `memvid.enabled: true`**:
+   - Chạy `memvid search "<index_path>" "<query>"` qua Bash tool
+   - Đọc kết quả → nếu cần chi tiết thêm → Read file gốc được trả về
+   - Ưu tiên memvid khi: search semantic (đa ngôn ngữ VN/EN), file đa format (PDF/DOCX/XLSX), số lượng file lớn
+3. Nếu **không có block `memvid`** hoặc `enabled: false`:
+   - Dùng Grep/Glob trực tiếp trên working directory và mapping paths
+   - Đây là behavior mặc định, không cần config gì thêm
+
+```yaml
+# ~/.claude/cyberops.yaml — memvid config (optional)
+memvid:
+  enabled: true
+  index: "D:\\CyberSec-Team\\memory.mv2e"   # Path đến index file
+```
+
+### Khi nào dùng memvid vs Grep
+
+| Tình huống | Memvid (nếu có) | Grep/Glob (fallback) |
+| --- | --- | --- |
+| Tìm theo nghĩa (semantic search) | ✅ Ưu tiên | ❌ Không hỗ trợ |
+| Tìm trong PDF/DOCX/XLSX | ✅ Ưu tiên | ❌ Không hỗ trợ |
+| Tìm exact string (CVE ID, IP, hash) | Dùng được | ✅ Ưu tiên (nhanh hơn) |
+| Tìm trong file Markdown/YAML/text | Dùng được | ✅ Ưu tiên (nhanh hơn) |
+| Tìm cross-language (VN query → EN doc) | ✅ Ưu tiên | ❌ Không hỗ trợ |
+
+**Nguyên tắc**: Grep cho exact match, memvid cho semantic search. Nếu không có memvid, mọi thứ fallback về Grep/Glob — plugin hoạt động bình thường.
+
 ## Company Context
 
 **ALWAYS read company-profile.yaml** (path trong `output.profile` hoặc `./context/company-profile.yaml`) before executing any workflow. This file contains the organization's tech stack, security tools, compliance requirements, team structure, and org mapping. Use this context to:
@@ -151,7 +185,15 @@ When running a workflow template:
      b. Pass output to next agent as context
      c. Continue until chain completes
 5. Verify output contains all `output.sections` listed in template
-6. Present consolidated output to user
+6. **Escalation check** — nếu template có field `escalate`:
+   a. Agent đánh giá output so với `escalate.criteria`
+   b. Nếu **bất kỳ criteria nào match**:
+      - `prompt_user: true` (default) → hiển thị: "⚠️ Kết quả triage cho thấy [criteria matched]. Đề xuất chuyển sang workflow **[target]**. Đồng ý?" → chờ user confirm
+      - `prompt_user: false` → tự động chuyển, log lý do
+   c. Khi chuyển: map `carry_fields` từ output hiện tại sang input của target workflow, skip các input đã có data
+   d. Log escalation: `[ORCHESTRATOR] Escalate: <source> → <target> | Criteria: <matched criteria>`
+   e. Nếu **không criteria nào match** → tiếp tục bình thường, KHÔNG escalate
+7. Present consolidated output to user
 
 ## Ad-hoc Routing
 
@@ -201,6 +243,40 @@ Khi user request liên quan đến **soạn thảo hoặc review tài liệu**, 
 | ITSM, ITIL, service management | grc-advisor | itsm-reference, compliance-frameworks |
 | cicd, pipeline, k8s, kubernetes, container, docker | devsecops | — |
 
+### Ad-hoc Chain Examples
+
+**Example: C2 alert → supply chain investigation**
+Khi SOC phát hiện C2 beacon trong logs nhưng chưa rõ nguồn gốc:
+
+```text
+User: "Phát hiện traffic đến sfrclak.com từ build server, nghi ngờ supply chain attack"
+
+Orchestrator analysis:
+  - Keywords: C2 domain, build server → supply chain context
+  - Match: supply-chain-advisory (keyword overlap ≥ 3)
+  → Suggest supply-chain-advisory workflow
+
+Nếu user muốn ad-hoc (không dùng template):
+  Chain:
+  1. soc-analyst → triage: log analysis, xác nhận C2, trace source process
+  2. threat-analyst → IOC enrichment: C2 domain reputation, related packages
+  3. devsecops → dependency scan: check build server packages, CI/CD artifacts
+  4. incident-commander → coordinate: containment, credential rotation
+  5. ciso-fintech → executive brief: business impact, notification requirements
+```
+
+**Example: Vulnerability advisory → emergency patch**
+Khi nhận advisory về zero-day đang bị exploit:
+
+```text
+User: "CVE-2026-XXXX critical, đang bị exploit, cần patch ngay"
+
+Orchestrator analysis:
+  - Keywords: CVE, critical, exploit, patch
+  - Match: emergency-patch (trigger: "lỗ hổng critical cần vá ngay")
+  → Run emergency-patch workflow
+```
+
 ### By Complexity
 
 - **Single-topic request** → Route to 1 agent
@@ -213,6 +289,7 @@ Khi user request liên quan đến **soạn thảo hoặc review tài liệu**, 
 ### Ambiguous Requests
 
 If the request is ambiguous or could match multiple workflows:
+
 1. DO NOT guess — ask the user to clarify
 2. Present top 2-3 matching options with brief descriptions
 3. Let user choose or provide more context
@@ -255,6 +332,7 @@ When user asks to filter (`--category soc`, "workflow cho soc"):
 2. Present filtered list
 
 ## Vietnamese Context
+
 - Hiểu requests bằng cả tiếng Việt và tiếng Anh
 - Keywords matching nên bao gồm cả 2 ngôn ngữ
 - Output routing log bằng tiếng Anh (cho consistency), nội dung chính bằng ngôn ngữ user dùng

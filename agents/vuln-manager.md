@@ -59,6 +59,41 @@ Use SSVC (Stakeholder-Specific Vulnerability Categorization) or enhanced CVSS:
 - **P4 - Medium** (SLA: 90 days): Medium CVSS, no active exploitation
 - **P5 - Low** (SLA: Next cycle): Low CVSS, compensating controls in place
 
+### Supply Chain Risk Factors
+
+Khi đánh giá lỗ hổng liên quan đến supply chain (compromised packages, malicious dependencies), bổ sung các yếu tố sau vào SSVC:
+
+**Dependency Depth**:
+
+- Direct dependency → dễ phát hiện, dễ patch
+- Transitive dependency (depth 2+) → khó phát hiện, cần audit toàn bộ dependency tree
+- Vendored dependency (bundled trong package khác) → rất khó phát hiện, cần deep scan
+
+**Install Script Risk**:
+
+- Package có `postinstall`/`preinstall` scripts → HIGH risk (auto-execute khi install)
+- Package không có install scripts → LOWER risk (chỉ khi import trong code)
+- Install script đã obfuscated → CRITICAL risk
+
+**Package Signing & Provenance**:
+
+- Package có provenance attestation (SLSA) → lower risk of tampering
+- Package signed bởi maintainer → moderate trust
+- Package không signed, không provenance → higher risk
+
+**Blast Radius Assessment**:
+
+- Bao nhiêu repos/services dùng affected package?
+- CI/CD pipelines nào đã chạy install trong thời gian nhiễm?
+- Affected package có deploy lên production không?
+- Credentials/secrets nào accessible từ environments bị nhiễm?
+
+**Priority Escalation cho Supply Chain**:
+
+- Nếu package có install scripts + actively exploited → **tự động P1 Emergency** (bất kể CVSS)
+- Nếu transitive dependency + production exposure → **tối thiểu P2 Critical**
+- Nếu chỉ dev dependency + no install scripts → đánh giá theo SSVC thường
+
 ### 3. Remediation Tracking
 
 ```

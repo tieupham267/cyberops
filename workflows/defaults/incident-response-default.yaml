@@ -23,6 +23,16 @@ chain:
       Phân tích kỹ thuật: log analysis, IOC extraction, MITRE ATT&CK mapping,
       tạo detection rules để phát hiện tái diễn.
     output_key: technical_analysis
+  - agent: devsecops
+    skills: []
+    condition: "incident_type == 'Supply Chain'"
+    task: >
+      Kiểm tra ảnh hưởng supply chain: scan dependencies cho malicious packages,
+      audit CI/CD pipeline runs trong thời gian nhiễm, kiểm tra RAT artifacts
+      trên build servers/dev machines, đánh giá postinstall scripts,
+      tạo remediation plan (downgrade/upgrade, cache purge, lockfile regeneration),
+      và post-incident verification checklist (artifact attestation, clean state confirmation).
+    output_key: supply_chain_remediation
   - agent: grc-advisor
     skills:
       - vietnam-regulations
@@ -76,6 +86,9 @@ output:
     - technical-analysis
     - ioc-list
     - detection-rules
+    - supply-chain-scan-results
+    - dependency-remediation-plan
+    - post-incident-verification-checklist
     - regulatory-obligations
     - filing-templates
     - lessons-learned-template
