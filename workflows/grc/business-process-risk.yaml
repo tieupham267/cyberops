@@ -1,0 +1,233 @@
+name: business-process-risk
+title: Đánh giá rủi ro bảo mật quy trình nội bộ
+description: >
+  Đánh giá rủi ro bảo mật cho quy trình nghiệp vụ nội bộ có nhiều phòng ban
+  tham gia (ví dụ: phát hành voucher, onboarding khách hàng, xử lý hoàn tiền,
+  quản lý thẻ, disbursement). Phân tích theo từng bước quy trình, handoff point
+  giữa các phòng ban, segregation of duties, authorization controls, audit trail,
+  fraud vectors, và compliance. Output: process risk map, risk register theo step,
+  control recommendations, compliance check.
+  Multi-agent chain: risk-assessor (process decomposition + risk per step) →
+  fraud-analyst (fraud vectors) → grc-advisor (controls + compliance + SoD).
+category: grc
+
+chain:
+  - agent: risk-assessor
+    skills:
+      - risk-assessment
+    task: >
+      Phase 1 — Process Decomposition & Risk Identification:
+
+      1. Decompose quy trình thành các bước cụ thể:
+         Với MỖI BƯỚC xác định:
+         - Tên bước và mô tả
+         - Actor / phòng ban thực hiện
+         - Input (nhận gì từ bước trước)
+         - Output (chuyển gì cho bước sau)
+         - Hệ thống / công cụ sử dụng
+         - Dữ liệu truy cập (loại, mức nhạy cảm)
+         - Quyền hạn yêu cầu (authorization level)
+
+      2. Identify handoff points (điểm chuyển giao giữa các phòng ban):
+         - Ai chuyển, ai nhận?
+         - Kênh chuyển giao (email, hệ thống, giấy, chat)?
+         - Có xác nhận/verify khi nhận không?
+         - Rủi ro: data loss, tampering, delay, unauthorized access
+
+      3. Risk identification cho MỖI BƯỚC (dùng 5x5 matrix):
+         Đánh giá theo 6 loại rủi ro:
+         a. Confidentiality — lộ thông tin nhạy cảm
+         b. Integrity — dữ liệu bị sửa đổi trái phép
+         c. Availability — gián đoạn quy trình
+         d. Authorization — vượt quyền, thiếu phê duyệt
+         e. Accountability — không truy vết được ai làm gì
+         f. Fraud — gian lận, lạm dụng quyền
+
+      4. Đánh giá controls hiện có tại mỗi bước:
+         - Preventive controls (ngăn chặn)
+         - Detective controls (phát hiện)
+         - Corrective controls (khắc phục)
+         → Inherent risk → Existing controls → Residual risk
+
+      5. Output format — Process Risk Map:
+         Bảng mỗi dòng = 1 bước quy trình:
+         | Bước | Actor | Input/Output | Risks | Inherent Risk | Controls | Residual Risk |
+
+    output_key: process_risk_map
+
+  - agent: fraud-analyst
+    skills:
+      - payment-fraud
+    task: >
+      Phase 2 — Fraud Vector Analysis:
+
+      Dựa trên process_risk_map, phân tích fraud vectors tại mỗi bước:
+
+      1. Internal fraud (nhân viên):
+         - Collusion giữa các phòng ban (ví dụ: MKT + Ops tạo voucher ảo)
+         - Lạm dụng quyền (approve cho chính mình, sửa điều kiện sau duyệt)
+         - Data theft (export danh sách voucher code)
+         - Ghost transactions (giao dịch ảo để claim voucher)
+
+      2. External fraud (khách hàng / đối tác):
+         - Abuse điều kiện (multi-account, multi-device, fake transactions)
+         - Social engineering nhân viên để được ưu đãi ngoài policy
+         - Merchant collusion (nếu có đối tác bên ngoài)
+
+      3. Process design flaws (lỗ hổng trong thiết kế quy trình):
+         - Thiếu maker-checker (1 người vừa tạo vừa duyệt)
+         - Thiếu giới hạn (không cap số lượng, giá trị)
+         - Thiếu reconciliation (không đối soát giữa phát hành và sử dụng)
+         - Thiếu expiration / revocation mechanism
+
+      4. Với mỗi fraud vector:
+         - Likelihood (1-5) và Impact (1-5)
+         - Worst-case financial estimation
+         - Đề xuất controls: preventive (design changes) + detective (monitoring rules)
+
+      5. Output: Fraud Risk Register bổ sung vào process risk map
+
+    output_key: fraud_analysis
+
+  - agent: grc-advisor
+    skills:
+      - compliance-frameworks
+      - vietnam-regulations
+      - itsm-reference
+    task: >
+      Phase 3 — Controls, Compliance & Segregation of Duties:
+
+      1. Segregation of Duties (SoD) analysis:
+         - Vẽ ma trận SoD: bước nào KHÔNG ĐƯỢC do cùng 1 người/phòng ban thực hiện?
+         - Identify SoD violations trong quy trình hiện tại
+         - Ví dụ conflicts: Initiate ↔ Approve, Create ↔ Reconcile, Develop ↔ Deploy
+         - Đề xuất tách quyền nếu có violation
+
+      2. Authorization controls assessment:
+         - Mỗi bước cần approval level gì? (staff / manager / director / C-level)
+         - Threshold-based approval (ví dụ: >100 triệu cần Director approve)
+         - Dual approval cho bước nào?
+         - Escalation path khi approver vắng
+
+      3. Audit trail & accountability:
+         - Mỗi bước có log không? Log ở đâu? Ai access được?
+         - Tamper-proof? (database audit log, không xóa được)
+         - Retention period đủ cho compliance không?
+         - Truy vết được: ai, làm gì, lúc nào, từ đâu?
+
+      4. Regulatory compliance check:
+         - NĐ 13/2023: bước nào xử lý DLCN? Cần consent? Data sharing agreement?
+         - PCI DSS: bước nào touch card data/payment data?
+         - TT 09/2020: rủi ro CNTT trong quy trình fintech
+         - ISO 27001: A.5.3 (SoD), A.8.3 (access control), A.8.15 (logging)
+
+      5. Control recommendations tổng hợp:
+         Kết hợp process_risk_map + fraud_analysis, đề xuất:
+         | Bước | Risk | Control Type | Control Description | Owner | Priority |
+         Phân loại: Quick wins (< 2 tuần) vs Strategic (> 1 tháng)
+
+      6. Output 2 bản:
+         a. Executive Summary (1 trang): process overview, top 5 risks, SoD violations,
+            compliance gaps, immediate actions
+         b. Full Report: process risk map + fraud register + SoD matrix +
+            compliance mapping + control recommendations
+
+    output_key: controls_and_compliance
+
+input:
+  - field: process_name
+    prompt: "Tên quy trình cần đánh giá?"
+    type: text
+    required: true
+  - field: process_description
+    prompt: >
+      Mô tả quy trình: các bước chính, phòng ban tham gia, hệ thống sử dụng.
+      (Paste SOP/flowchart nếu có, hoặc mô tả tự do)
+    type: multiline
+    required: true
+  - field: departments
+    prompt: "Các phòng ban tham gia? (mỗi dòng 1 phòng ban + vai trò)"
+    type: multiline
+    required: true
+  - field: process_category
+    prompt: "Loại quy trình?"
+    type: choice
+    options:
+      - Phát hành voucher / khuyến mãi / CTKM
+      - Onboarding khách hàng (KYC)
+      - Xử lý hoàn tiền / refund
+      - Quản lý thẻ (cấp / khóa / thay thế)
+      - Disbursement / giải ngân
+      - Procurement / mua sắm
+      - Change management (thay đổi hệ thống)
+      - Khác
+    required: true
+  - field: data_types
+    prompt: "Loại dữ liệu quy trình xử lý?"
+    type: choice
+    options:
+      - Dữ liệu cá nhân (PII) + Dữ liệu thanh toán
+      - Dữ liệu cá nhân (PII) only
+      - Dữ liệu thanh toán only
+      - Dữ liệu nội bộ (không PII)
+      - Chưa rõ
+    required: true
+  - field: transaction_volume
+    prompt: "Volume giao dịch / tác vụ? (ví dụ: 1000 voucher/tháng, 50 refund/ngày)"
+    type: text
+    required: false
+  - field: existing_controls
+    prompt: "Controls hiện có? (approval flow, system checks, audit log — mô tả nếu biết)"
+    type: multiline
+    required: false
+    default: "Chưa rõ — cần đánh giá"
+
+output:
+  format: business-process-risk-report
+  sections:
+    - executive-summary
+    - process-flow-decomposition
+    - handoff-point-analysis
+    - process-risk-map
+    - fraud-risk-register
+    - sod-matrix
+    - authorization-controls
+    - audit-trail-assessment
+    - regulatory-compliance
+    - control-recommendations
+    - quick-wins
+    - full-report
+  language: vi
+
+keywords:
+  - quy trình nội bộ
+  - business process risk
+  - process risk assessment
+  - segregation of duties
+  - SoD
+  - quy trình phát hành voucher
+  - quy trình hoàn tiền
+  - quy trình onboarding
+  - internal process
+  - handoff
+  - chuyển giao
+  - nhiều phòng ban
+  - cross-department
+  - maker checker
+  - phân quyền
+  - kiểm soát nội bộ
+  - internal controls
+triggers:
+  - "đánh giá quy trình"
+  - "rủi ro quy trình"
+  - "process risk"
+  - "business process risk"
+  - "đánh giá rủi ro quy trình"
+  - "kiểm soát nội bộ"
+  - "segregation of duties"
+  - "review quy trình"
+priority: 2
+
+tags: [grc, process-risk, sod, internal-controls, cross-department, multi-agent]
+version: "1.0.0"
+author: cyberops-team

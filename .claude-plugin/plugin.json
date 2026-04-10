@@ -1,7 +1,7 @@
 {
   "name": "cyberops",
-  "description": "Cybersecurity team toolkit — SOC, incident response, threat modeling, risk management, vulnerability management, GRC, fraud analysis, DevSecOps, security awareness, threat intelligence. 12 agents, 8 skills, hybrid orchestration with workflow templates. Aligned to ISO 27001, NIST CSF, MITRE ATT&CK, PCI DSS, and Vietnamese cybersecurity regulations.",
-  "version": "4.1.0",
+  "description": "Cybersecurity team toolkit — SOC, incident response, threat modeling, risk management, vulnerability management, GRC, fraud analysis, DevSecOps, security awareness, threat intelligence. 12 agents, 9 skills, hybrid orchestration with workflow templates. Aligned to ISO 27001, NIST CSF, MITRE ATT&CK, PCI DSS, and Vietnamese cybersecurity regulations.",
+  "version": "4.2.0",
   "author": {
     "name": "CyberSec Team"
   },

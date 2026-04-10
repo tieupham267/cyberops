@@ -18,7 +18,12 @@ chain:
       Phân tích chiến lược & chi phí:
       1. Đọc company-profile.yaml: xác định tech stack, team size, maturity level
       2. Xác định business requirements: vấn đề cần giải quyết, use cases ưu tiên
-      3. Định nghĩa tiêu chí đánh giá và trọng số mặc định:
+      3. Auto-suggest candidates (nếu user chưa liệt kê đủ 4-6 options):
+         - Gợi ý 4-6 giải pháp bao gồm: 2-3 market leaders (theo Gartner MQ / Forrester Wave),
+           1-2 strong performers / niche players, và 1 open-source alternative (nếu có).
+         - Lý do chọn mỗi candidate (vị trí trong MQ/Wave, phù hợp với stack/budget).
+         - Nếu user đã liệt kê đủ candidates → bỏ qua bước này.
+      4. Định nghĩa tiêu chí đánh giá và trọng số mặc định:
          - Tính năng core (25%) — coverage use cases chính
          - Chi phí TCO 3 năm (20%) — license + infra + implementation + training + maintenance
          - Khả năng tích hợp (15%) — API, protocol, compatibility với stack hiện tại
@@ -26,14 +31,21 @@ chain:
          - Bảo mật của chính giải pháp (10%) — CVE history, architecture, certifications
          - Vận hành & triển khai (10%) — complexity, team skill gap, time-to-value
          - Compliance fit (10%) — đáp ứng regulatory requirements
-      4. Với mỗi giải pháp: ước tính TCO 3 năm (Year 1 setup + Year 2-3 recurring)
+      5. Với mỗi giải pháp: ước tính TCO 3 năm (Year 1 setup + Year 2-3 recurring)
          - License/subscription cost
          - Infrastructure cost (nếu on-prem)
          - Implementation & integration effort (man-days)
          - Training cost
          - Ongoing maintenance & support
-      5. Build vs Buy analysis (nếu có option tự build)
-      6. Strategic fit: giải pháp nào align với security roadmap dài hạn?
+      6. Build vs Buy analysis (nếu có option tự build)
+      7. Strategic fit: giải pháp nào align với security roadmap dài hạn?
+      8. Nguồn research ưu tiên (search theo thứ tự):
+         - Gartner Magic Quadrant / Forrester Wave / IDC MarketScape cho category tương ứng
+         - MITRE ATT&CK Evaluations (bắt buộc cho EDR/XDR — so sánh detection rate, visibility)
+         - PeerSpot, G2, TrustRadius (real user reviews — lọc theo company size tương đương)
+         - CISA advisories, NVD CVE database (vulnerability history của chính vendor)
+         - Vendor security page: SOC 2 report, bug bounty program, responsible disclosure policy
+         - Pricing pages, case studies, integration documentation
     output_key: strategic_analysis
 
   - agent: soc-analyst
@@ -44,7 +56,14 @@ chain:
          - Với mỗi giải pháp, list tính năng theo categories (detection, response,
            reporting, automation, API, scalability)
          - Mark: ✅ native | ⚡ via plugin/add-on | ❌ không có | 🔄 roadmap
-      2. Integration assessment:
+      2. MITRE ATT&CK Evaluations (bắt buộc cho EDR/XDR, optional cho SIEM):
+         - Detection rate (analytic vs telemetry vs none)
+         - Visibility coverage theo technique
+         - Protection (block) rate
+         - So sánh giữa các candidates dựa trên kết quả evaluation round gần nhất
+         - Nguồn: attackevals.mitre-engenuity.org
+         - Nếu category không phải EDR/XDR → bỏ qua bước này
+      3. Integration assessment:
          - Compatibility với tech stack hiện tại (từ company-profile.yaml)
          - API quality: REST/GraphQL, documentation, rate limits, webhook support
          - Data format: CEF, LEEF, JSON, Syslog — ingestion & export
@@ -52,13 +71,13 @@ chain:
          - SOAR: playbook engine, integration count, custom connector support
          - EDR: OS coverage, detection engine, response actions, memory/CPU footprint
          - Firewall/WAF: throughput, rule management, SSL inspection, cloud-native
-      3. Operational complexity:
+      4. Operational complexity:
          - Deployment model: SaaS / hybrid / on-prem
          - Skill requirements: team cần skill gì để vận hành?
          - Time-to-value: bao lâu để go-live với basic use cases?
          - Day-2 operations: update, tuning, content development effort
-      4. Scalability: horizontal/vertical scaling, multi-tenant, HA/DR options
-      5. Proof-of-Concept checklist: POC scope đề xuất cho top candidates
+      5. Scalability: horizontal/vertical scaling, multi-tenant, HA/DR options
+      6. Proof-of-Concept checklist: POC scope đề xuất cho top candidates
     output_key: technical_assessment
 
   - agent: risk-assessor
@@ -66,20 +85,30 @@ chain:
       - risk-assessment
     task: >
       Đánh giá rủi ro & vendor due diligence:
-      1. Vendor risk assessment cho mỗi giải pháp:
+      1. Red flags checklist (go/no-go) — loại sớm vendor không đạt tiêu chuẩn tối thiểu:
+         ☐ Vendor từng bị breach mà xử lý kém (chậm thông báo, thiếu minh bạch, tái phạm)
+         ☐ Không có SOC 2 Type II hoặc ISO 27001 certification
+         ☐ Closed-source mà không cho POC / trial
+         ☐ Pricing không minh bạch (không công khai, không cung cấp khi yêu cầu)
+         ☐ Roadmap phụ thuộc 1 khách hàng lớn hoặc 1 thị trường duy nhất
+         ☐ Sản phẩm đã EOL hoặc có dấu hiệu bị sunset (giảm release frequency, team rời đi)
+         ☐ Không có data export / migration path (vendor lock-in cứng)
+         ☐ CVE critical chưa patch > 90 ngày
+         Nếu vendor có ≥ 2 red flags → đánh dấu NO-GO, giải thích lý do, không cần chấm điểm chi tiết.
+      2. Vendor risk assessment cho mỗi giải pháp (đã pass red flags):
          - Vendor profile: founded, headcount, revenue, funding, market share
          - Security certifications: SOC 2 Type II, ISO 27001, FedRAMP, CSA STAR
          - Data handling: data residency, encryption (at-rest, in-transit), key management
          - Incident history: past breaches, CVE track record, disclosure practices
          - Business continuity: vendor lock-in risk, data portability, exit strategy
-      2. Risk comparison matrix:
+      3. Risk comparison matrix:
          - Inherent risk score cho mỗi giải pháp (5x5 matrix)
          - Risk factors: data exposure, vendor dependency, technology obsolescence,
            integration complexity, compliance gaps
          - Residual risk sau khi áp dụng controls
-      3. Third-party risk questionnaire highlights (top concerns per vendor)
-      4. Concentration risk: nếu chọn giải pháp cùng vendor với tools hiện có
-      5. Migration risk: effort & risk chuyển từ solution hiện tại sang mỗi candidate
+      4. Third-party risk questionnaire highlights (top concerns per vendor)
+      5. Concentration risk: nếu chọn giải pháp cùng vendor với tools hiện có
+      6. Migration risk: effort & risk chuyển từ solution hiện tại sang mỗi candidate
     output_key: risk_assessment
 
   - agent: grc-advisor
@@ -107,7 +136,16 @@ chain:
          - Điều kiện tiên quyết trước khi triển khai
          - POC recommendation: scope, timeline, success criteria
          - Phê duyệt: approval chain theo risk level
-      5. Executive summary (1 trang) cho management/board
+      5. Output 2 bản riêng biệt:
+         a. Executive Brief (1 trang cho management/board):
+            - Vấn đề cần giải quyết (2-3 câu)
+            - Candidates đã đánh giá (bảng 1 dòng/vendor: tên, điểm tổng, red flags)
+            - Recommendation + runner-up (1 đoạn)
+            - TCO comparison (bảng Year 1-3)
+            - Next steps + approval cần thiết
+         b. Technical Deep-Dive (full report):
+            - Toàn bộ sections chi tiết từ tất cả agents
+            - Feature matrix, integration details, risk scoring, compliance mapping
     output_key: final_recommendation
 
 input:
@@ -129,9 +167,11 @@ input:
   - field: candidates
     prompt: >
       Danh sách giải pháp cần so sánh? (liệt kê tên, mỗi dòng 1 giải pháp,
-      ví dụ: Splunk ES, Microsoft Sentinel, Elastic SIEM)
+      ví dụ: Splunk ES, Microsoft Sentinel, Elastic SIEM.
+      Để trống nếu muốn agent tự đề xuất 4-6 candidates.)
     type: multiline
-    required: true
+    required: false
+    default: "Auto-suggest — agent sẽ đề xuất 4-6 candidates dựa trên Gartner MQ/Forrester Wave"
   - field: problem_statement
     prompt: "Vấn đề cần giải quyết / lý do đánh giá?"
     type: multiline
@@ -183,10 +223,13 @@ input:
 output:
   format: solution-comparison-report
   sections:
-    - executive-summary
+    - executive-brief-1page
     - business-requirements
     - evaluation-criteria-weights
+    - candidate-shortlist
+    - red-flags-assessment
     - feature-comparison-matrix
+    - mitre-attck-evaluations
     - integration-assessment
     - tco-comparison-3year
     - vendor-risk-assessment

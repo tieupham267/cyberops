@@ -1,0 +1,140 @@
+name: use-case-design
+title: Thiết kế Detection Use Case
+description: >
+  Thiết kế detection use case document hoàn chỉnh: phân tích compliance/risk,
+  threat intelligence, detection logic (pseudocode), response playbook tóm tắt,
+  deployment plan, và tuning triggers. Output theo format chuẩn hóa (bảng + pseudocode).
+category: soc
+
+chain:
+  - agent: ciso-fintech
+    skills: [compliance-frameworks, risk-assessment]
+    task: >
+      Phân tích compliance và risk cho use case:
+      (1) Compliance mapping — PCI-DSS, ISO 27001, NHNN/TT 09/2020, NĐ 13/2023 yêu cầu gì?
+      (2) Risk — gap nào trong detection coverage hiện tại?
+      (3) Business impact — use case bảo vệ asset/process nào?
+      Output ngắn gọn: compliance requirements, risk justification, business priority.
+    output_key: compliance_risk
+
+  - agent: threat-analyst
+    skills: []
+    task: >
+      Phân tích threat intelligence cho use case:
+      (1) Threat actors sử dụng TTP này — profile, motivation, target industries.
+      (2) MITRE ATT&CK mapping chi tiết — technique, sub-technique, procedure examples.
+      (3) IOCs và detection opportunities.
+      Output ngắn gọn: threat actors, MITRE mapping, detection points, data source requirements.
+    output_key: threat_brief
+
+  - agent: soc-analyst
+    skills: [incident-response]
+    task: >
+      Tổng hợp compliance_risk và threat_brief, tạo Use Case Design Document
+      theo format chuẩn hóa sau.
+
+      FILE OUTPUT:
+      - Ghi file chi tiết: {uc_folder}/UC-XXX-ten-use-case.md (kebab-case)
+      - Cập nhật registry: {uc_folder}/README.md — thêm dòng mới vào bảng Registry,
+        cập nhật Coverage Map và Thống kê.
+      - Nếu {uc_folder}/README.md chưa tồn tại, tạo mới với template registry chuẩn.
+
+      FORMAT OUTPUT — trong file UC chi tiết:
+
+      FORMAT OUTPUT — cho mỗi detection rule/sub-rule:
+
+      BẢNG THÔNG TIN:
+      | Trường | Nội dung |
+      | UC-ID | UC-xxx-yyy |
+      | Tên Use Case | ... |
+      | Phân loại | ... |
+      | Mục tiêu & Mô tả | Mô tả ngắn gọn: detect gì, dấu hiệu gì, tại sao quan trọng |
+      | Yêu cầu Tuân thủ | PCI-DSS, ISO 27001, TT 09/2020, NĐ 13/2023 (từ compliance_risk) |
+      | MITRE ATT&CK | Technique ID + Name + Tactic (từ threat_brief) |
+      | Nguồn dữ liệu | Log sources cụ thể, index pattern |
+      | Ngưỡng cảnh báo | Trigger conditions và thresholds cho mỗi severity level |
+      | Mức độ nghiêm trọng | CRITICAL / HIGH / MEDIUM / LOW — điều kiện cho mỗi mức |
+      | False Positive | Scenarios gây FP và cách mitigation |
+
+      PSEUDOCODE LOGIC:
+      ```
+      INPUT: ...
+      FILTER: ...
+      GROUP BY: ...
+      MEASURE: ...
+      CONDITION:
+        IF ... THEN
+            ALERT "..."
+            SEVERITY = ...
+            OUTPUT: ...
+        END IF
+      ```
+
+      Sau tất cả rules, thêm các sections tóm tắt:
+      - Response Playbook (bảng tóm tắt: Triage → Investigation → Containment → Eradication → Recovery → Escalation)
+      - Deployment Plan (bảng: tuần nào deploy rule nào, lý do thứ tự)
+      - Tuning Triggers (bảng: trigger, điều kiện, urgency)
+      - Blockers (bảng: blocker, rules bị ảnh hưởng, action)
+    output_key: use_case_document
+
+input:
+  - field: uc_folder
+    prompt: "Thư mục chứa use cases (ví dụ: D:\\SOC\\use-cases)?"
+    type: text
+    required: true
+  - field: uc_id
+    prompt: "UC-ID (ví dụ: UC-011)? Kiểm tra README.md trong thư mục use cases để lấy số tiếp theo."
+    type: text
+    required: true
+  - field: use_case_description
+    prompt: "Mô tả use case cần thiết kế (threat/attack scenario, mục tiêu detect gì)?"
+    type: multiline
+    required: true
+  - field: mitre_technique
+    prompt: "MITRE ATT&CK technique ID (nếu biết, ví dụ: T1566.001)?"
+    type: text
+    required: false
+  - field: data_sources
+    prompt: "Data sources hiện có (ví dụ: firewall logs, endpoint EDR, email gateway)?"
+    type: multiline
+    required: false
+  - field: siem_platform
+    prompt: "SIEM platform?"
+    type: choice
+    options: [OpenSearch, Splunk, Microsoft Sentinel, QRadar, Elastic, Khác]
+    required: true
+    default: "OpenSearch"
+
+output:
+  format: use-case-design-document
+  sections:
+    - use-case-summary
+    - compliance-mapping
+    - threat-brief
+    - detection-rules
+    - detection-logic-pseudocode
+    - response-playbook-summary
+    - deployment-plan
+    - tuning-triggers
+    - blockers
+  language: vi
+
+keywords:
+  - use case
+  - use case design
+  - thiết kế use case
+  - detection use case
+  - detection design
+  - SOC use case
+  - phát triển use case
+triggers:
+  - "thiết kế use case"
+  - "design use case"
+  - "tạo use case"
+  - "use case design"
+  - "use case detection"
+priority: 1
+
+tags: [soc, detection, use-case, design]
+version: "1.0.0"
+author: cyberops-team
